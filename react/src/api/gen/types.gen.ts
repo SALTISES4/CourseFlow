@@ -67,7 +67,7 @@ export type SuccessOut = {
 /**
  * AccountRole
  *
- * Canonical Django ``auth.Group`` names for account-level roles.
+ * Canonical Django auth.Group names for account-level roles.
  */
 export enum AccountRole {
   ADMIN = 'admin',
@@ -284,7 +284,7 @@ export enum WorkflowPermission {
 /**
  * WorkflowType
  *
- * Root graph workflow semantic layer (``task`` is not a valid root type).
+ * Root graph workflow semantic layer (task is not a valid root type).
  */
 export enum WorkflowType {
   PROGRAM = 'program',
@@ -559,22 +559,6 @@ export type ProjectUpdateIn = {
 }
 
 /**
- * TimeUnit
- *
- * Stable API/database values for legacy duration-unit fields.
- */
-export enum TimeUnit {
-  SECONDS = 'seconds',
-  MINUTES = 'minutes',
-  HOURS = 'hours',
-  DAYS = 'days',
-  SECTIONS = 'sections',
-  MONTHS = 'months',
-  YEARS = 'years',
-  CREDITS = 'credits'
-}
-
-/**
  * WorkflowDetailOut
  */
 export type WorkflowDetailOut = {
@@ -642,26 +626,25 @@ export type WorkflowOverviewMetadataOut = {
    */
   calculateTimeAutomatically?: boolean
   /**
-   * Time
+   * Timeminutes
    */
-  time?: number | null
-  timeUnits?: TimeUnit | null
+  timeMinutes?: number | null
   /**
    * Calculateponderationautomatically
    */
   calculatePonderationAutomatically?: boolean
   /**
-   * Theorytime
+   * Theorytimeminutes
    */
-  theoryTime?: number | null
+  theoryTimeMinutes?: number | null
   /**
-   * Practicaltime
+   * Practicaltimeminutes
    */
-  practicalTime?: number | null
+  practicalTimeMinutes?: number | null
   /**
-   * Individualtime
+   * Individualtimeminutes
    */
-  individualTime?: number | null
+  individualTimeMinutes?: number | null
   /**
    * Calculatecreditsautomatically
    */
@@ -675,19 +658,19 @@ export type WorkflowOverviewMetadataOut = {
    */
   calculateClassificationAutomatically?: boolean
   /**
-   * Generaltime
+   * Generaltimeminutes
    */
-  generalTime?: number | null
+  generalTimeMinutes?: number | null
   /**
-   * Specifictime
+   * Specifictimeminutes
    */
-  specificTime?: number | null
+  specificTimeMinutes?: number | null
 }
 
 /**
  * WorkflowCreateIn
  *
- * Create a root ``Workflow`` and its backing ``Graph`` row (1:1 ORM).
+ * Create a root Workflow and its backing Graph row (1:1 ORM).
  */
 export type WorkflowCreateIn = {
   /**
@@ -708,7 +691,7 @@ export type WorkflowCreateIn = {
 /**
  * WorkflowTypeIn
  *
- * Allowed root graph workflow types (``task`` is only valid on grid nodes).
+ * Allowed root graph workflow types (task is only valid on grid nodes).
  */
 export enum WorkflowTypeIn {
   PROGRAM = 'program',
@@ -817,26 +800,25 @@ export type WorkflowOverviewMetadataIn = {
    */
   calculateTimeAutomatically?: boolean | null
   /**
-   * Time
+   * Timeminutes
    */
-  time?: number | null
-  timeUnits?: TimeUnit | null
+  timeMinutes?: number | null
   /**
    * Calculateponderationautomatically
    */
   calculatePonderationAutomatically?: boolean | null
   /**
-   * Theorytime
+   * Theorytimeminutes
    */
-  theoryTime?: number | null
+  theoryTimeMinutes?: number | null
   /**
-   * Practicaltime
+   * Practicaltimeminutes
    */
-  practicalTime?: number | null
+  practicalTimeMinutes?: number | null
   /**
-   * Individualtime
+   * Individualtimeminutes
    */
-  individualTime?: number | null
+  individualTimeMinutes?: number | null
   /**
    * Calculatecreditsautomatically
    */
@@ -850,13 +832,13 @@ export type WorkflowOverviewMetadataIn = {
    */
   calculateClassificationAutomatically?: boolean | null
   /**
-   * Generaltime
+   * Generaltimeminutes
    */
-  generalTime?: number | null
+  generalTimeMinutes?: number | null
   /**
-   * Specifictime
+   * Specifictimeminutes
    */
-  specificTime?: number | null
+  specificTimeMinutes?: number | null
 }
 
 /**
@@ -998,7 +980,7 @@ export enum ContextClassification {
 /**
  * EdgeGraphOut
  *
- * Endpoints are node UUIDs; ``id`` distinguishes multiple edges between the same pair.
+ * Endpoints are node UUIDs; id distinguishes multiple edges between the same pair.
  */
 export type EdgeGraphOut = {
   /**
@@ -1038,7 +1020,8 @@ export type EdgeGraphOut = {
 /**
  * GraphMetaOut
  *
- * Graph UUID/revision plus root ``Workflow`` fields (graph row has no title/author/project).
+ * Graph UUID/revision plus root Workflow fields (graph row has no
+ * title/author/project).
  */
 export type GraphMetaOut = {
   /**
@@ -1149,26 +1132,25 @@ export type NodeGraphOut = {
   contextClassification?: ContextClassification | null
   taskClassification?: TaskClassification | null
   /**
-   * Timerequired
+   * Timerequiredminutes
    */
-  timeRequired?: number | null
-  timeUnits?: TimeUnit | null
+  timeRequiredMinutes?: number | null
   /**
    * Representsworkflow
    */
   representsWorkflow?: boolean
   /**
-   * Ponderationtheory
+   * Ponderationtheoryminutes
    */
-  ponderationTheory?: number | null
+  ponderationTheoryMinutes?: number | null
   /**
-   * Ponderationpractice
+   * Ponderationpracticeminutes
    */
-  ponderationPractice?: number | null
+  ponderationPracticeMinutes?: number | null
   /**
-   * Ponderationindividual
+   * Ponderationindividualminutes
    */
-  ponderationIndividual?: number | null
+  ponderationIndividualMinutes?: number | null
   /**
    * Credits
    */
@@ -1512,7 +1494,7 @@ export type GraphChannelsDeltaOut = {
 /**
  * GraphEdgeMutationOut
  *
- * Edge row; ``id`` is the integer PK (``cf_edge`` has no UUID column).
+ * Edge row; id is the integer PK (cf_edge has no UUID column).
  */
 export type GraphEdgeMutationOut = {
   /**
@@ -1638,26 +1620,25 @@ export type GraphNodeMutationOut = {
   contextClassification?: ContextClassification | null
   taskClassification?: TaskClassification | null
   /**
-   * Timerequired
+   * Timerequiredminutes
    */
-  timeRequired?: number | null
-  timeUnits?: TimeUnit | null
+  timeRequiredMinutes?: number | null
   /**
    * Representsworkflow
    */
   representsWorkflow?: boolean
   /**
-   * Ponderationtheory
+   * Ponderationtheoryminutes
    */
-  ponderationTheory?: number | null
+  ponderationTheoryMinutes?: number | null
   /**
-   * Ponderationpractice
+   * Ponderationpracticeminutes
    */
-  ponderationPractice?: number | null
+  ponderationPracticeMinutes?: number | null
   /**
-   * Ponderationindividual
+   * Ponderationindividualminutes
    */
-  ponderationIndividual?: number | null
+  ponderationIndividualMinutes?: number | null
   /**
    * Credits
    */
@@ -1867,7 +1848,7 @@ export type GraphTagsDeltaOut = {
 /**
  * GraphChannelInsertBelowIn
  *
- * Insert below ``channel_uuid``, or append at end when ``channel_uuid`` is omitted.
+ * Insert below channel_uuid, or append at end when channel_uuid is omitted.
  */
 export type GraphChannelInsertBelowIn = {
   /**
@@ -1972,7 +1953,7 @@ export type GraphSectionCreateIn = {
 /**
  * GraphSectionInsertBelowIn
  *
- * Insert a new section directly below ``section_uuid``; optionally duplicate title.
+ * Insert a new section directly below section_uuid; optionally duplicate title.
  */
 export type GraphSectionInsertBelowIn = {
   /**
@@ -2000,7 +1981,8 @@ export type GraphReorderSectionsIn = {
 /**
  * GraphNodeCreateIn
  *
- * Placement is required on ``Node`` (ORM); optional ``workflow_uuid`` selects a workflow on this graph.
+ * Placement is required on Node (ORM); optional workflow_uuid selects a workflow on
+ * this graph.
  */
 export type GraphNodeCreateIn = {
   /**
@@ -2024,7 +2006,7 @@ export type GraphNodeCreateIn = {
 /**
  * GraphNodeInsertBelowIn
  *
- * Insert a node below ``node_uuid``; backend computes grid reflow.
+ * Insert a node below node_uuid; backend computes grid reflow.
  */
 export type GraphNodeInsertBelowIn = {
   /**
@@ -2230,7 +2212,8 @@ export type SectionPatchIn = {
 /**
  * GraphNodePatchIn
  *
- * Partial update; do not send ``null`` for FK fields (ORM requires section, channel, workflow).
+ * Partial update; do not send null for FK fields (ORM requires section, channel,
+ * workflow).
  */
 export type GraphNodePatchIn = {
   /**
@@ -2264,7 +2247,7 @@ export type GraphNodeLinkOutcomeIn = {
 /**
  * GraphNodeMetaPatchIn
  *
- * Editable node metadata (grid placement and ``node_type`` are not patchable here).
+ * Editable node metadata (grid placement and node_type are not patchable here).
  */
 export type GraphNodeMetaPatchIn = {
   /**
@@ -2278,26 +2261,25 @@ export type GraphNodeMetaPatchIn = {
   contextClassification?: ContextClassification | null
   taskClassification?: TaskClassification | null
   /**
-   * Timerequired
+   * Timerequiredminutes
    */
-  timeRequired?: number | null
-  timeUnits?: TimeUnit | null
+  timeRequiredMinutes?: number | null
   /**
    * Representsworkflow
    */
   representsWorkflow?: boolean | null
   /**
-   * Ponderationtheory
+   * Ponderationtheoryminutes
    */
-  ponderationTheory?: number | null
+  ponderationTheoryMinutes?: number | null
   /**
-   * Ponderationpractice
+   * Ponderationpracticeminutes
    */
-  ponderationPractice?: number | null
+  ponderationPracticeMinutes?: number | null
   /**
-   * Ponderationindividual
+   * Ponderationindividualminutes
    */
-  ponderationIndividual?: number | null
+  ponderationIndividualMinutes?: number | null
   /**
    * Credits
    */
@@ -2315,7 +2297,8 @@ export type GraphNodeMetaPatchIn = {
 /**
  * GraphNodeLinkWorkflowIn
  *
- * Set or clear the node's symbolic link to a library workflow (parent ``workflow`` unchanged).
+ * Set or clear the node's symbolic link to a library workflow (parent workflow
+ * unchanged).
  */
 export type GraphNodeLinkWorkflowIn = {
   /**
@@ -2838,7 +2821,7 @@ export type NotificationItemOut = {
 /**
  * NotificationListMetaOut
  *
- * List metadata for a paginated inbox (``page`` and ``current_page`` are 1-based).
+ * List metadata for a paginated inbox (page and current_page are 1-based).
  */
 export type NotificationListMetaOut = {
   /**
@@ -3264,10 +3247,6 @@ export type ReferenceDataOut = {
    * Activitytaskclassifications
    */
   activityTaskClassifications?: Array<TaskReferenceOptionOut>
-  /**
-   * Timeunits
-   */
-  timeUnits?: Array<TimeUnitReferenceOptionOut>
 }
 
 /**
@@ -3275,13 +3254,6 @@ export type ReferenceDataOut = {
  */
 export type TaskReferenceOptionOut = {
   value: TaskClassification
-}
-
-/**
- * TimeUnitReferenceOptionOut
- */
-export type TimeUnitReferenceOptionOut = {
-  value: TimeUnit
 }
 
 /**

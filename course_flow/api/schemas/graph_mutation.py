@@ -9,11 +9,7 @@ from uuid import UUID
 from pydantic import Field, field_validator
 
 from course_flow.api.common.schemas import CamelSchema
-from course_flow.core.enum import (
-    ContextClassification,
-    TaskClassification,
-    TimeUnit,
-)
+from course_flow.core.enum import ContextClassification, TaskClassification
 
 
 class GraphNodeMutationOut(CamelSchema):
@@ -28,12 +24,11 @@ class GraphNodeMutationOut(CamelSchema):
     description: str = ""
     context_classification: ContextClassification | None = None
     task_classification: TaskClassification | None = None
-    time_required: float | None = None
-    time_units: TimeUnit | None = None
+    time_required_minutes: int | None = None
     represents_workflow: bool = False
-    ponderation_theory: float | None = None
-    ponderation_practice: float | None = None
-    ponderation_individual: float | None = None
+    ponderation_theory_minutes: int | None = None
+    ponderation_practice_minutes: int | None = None
+    ponderation_individual_minutes: int | None = None
     credits: int | None = None
     specific_education: bool = False
     tag_ids: list[int] = Field(default_factory=list)
@@ -252,12 +247,11 @@ class GraphNodeMetaPatchIn(CamelSchema):
     description: str | None = None
     context_classification: ContextClassification | None = None
     task_classification: TaskClassification | None = None
-    time_required: float | None = None
-    time_units: TimeUnit | None = None
+    time_required_minutes: int | None = Field(default=None, ge=0)
     represents_workflow: bool | None = None
-    ponderation_theory: float | None = None
-    ponderation_practice: float | None = None
-    ponderation_individual: float | None = None
+    ponderation_theory_minutes: int | None = Field(default=None, ge=0)
+    ponderation_practice_minutes: int | None = Field(default=None, ge=0)
+    ponderation_individual_minutes: int | None = Field(default=None, ge=0)
     credits: int | None = Field(default=None, ge=0)
     specific_education: bool | None = None
     tag_ids: list[int] | None = None

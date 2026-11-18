@@ -2,6 +2,7 @@ import {
   OutcomeTable,
   selectIsOutcomeExpanded
 } from '@cf/features/graph/state/selectors/outcomeTable.selectors'
+import { formatDurationHoursNumber } from '@cfComponents/duration'
 import {
   linkNodeOutcome,
   unlinkNodeOutcome
@@ -24,7 +25,7 @@ const TableBody = ({
   table: OutcomeTable
   workflowType: WorkflowType
 }) => {
-  const { t } = useTranslation('workflow')
+  const { t, i18n } = useTranslation('workflow')
   const groups = table.entities.sections.map((section, sectionIndex) => {
     const sectionDefaultTitle = t('systemLabels.sectionNumber', {
       number: (section.position ?? 0) + 1
@@ -89,8 +90,13 @@ const TableBody = ({
                         <Styled.TableCell
                           key={column.labelKey}
                           className={column.className}
+                          data-test-id={column.nodeTestId}
                         >
-                          {column.values[nodeUuid]}
+                          {renderExtraColumnValue(
+                            column.values[nodeUuid],
+                            column.format,
+                            i18n.language
+                          )}
                         </Styled.TableCell>
                       ))}
                     </Styled.CheckmarkGroup>
@@ -101,8 +107,12 @@ const TableBody = ({
                     className={`checkmarks-group ${group.className}`}
                     sx={{ marginLeft: 2 }}
                   >
-                    <Styled.TableCell>
-                      {group.values[nodeUuid]}
+                    <Styled.TableCell data-test-id={group.nodeTestId}>
+                      {renderExtraColumnValue(
+                        group.values[nodeUuid],
+                        group.format,
+                        i18n.language
+                      )}
                     </Styled.TableCell>
                   </Styled.CheckmarkGroup>
                 )
@@ -190,6 +200,7 @@ const SectionHeaderRow = ({
   table: OutcomeTable
   workflowType: WorkflowType
 }) => {
+  const { i18n } = useTranslation('workflow')
   const extraColumns = table.extraColumns[workflowType]
 
   return (
@@ -223,8 +234,15 @@ const SectionHeaderRow = ({
             <Styled.TagBarEmptyCell />
             <Styled.CheckmarkGroup className="checkmarks-group bg-dark">
               {group.columns.map((column) => (
-                <Styled.TableCell key={column.labelKey}>
-                  {column.values[uuid]}
+                <Styled.TableCell
+                  key={column.labelKey}
+                  data-test-id={column.sectionTestId}
+                >
+                  {renderExtraColumnValue(
+                    column.values[uuid],
+                    column.format,
+                    i18n.language
+                  )}
                 </Styled.TableCell>
               ))}
             </Styled.CheckmarkGroup>
@@ -235,12 +253,34 @@ const SectionHeaderRow = ({
             className={`checkmarks-group ${group.className}`}
             sx={{ marginLeft: 2 }}
           >
-            <Styled.TableCell>{group.values[uuid]}</Styled.TableCell>
+            <Styled.TableCell data-test-id={group.sectionTestId}>
+              {renderExtraColumnValue(
+                group.values[uuid],
+                group.format,
+                i18n.language
+              )}
+            </Styled.TableCell>
           </Styled.CheckmarkGroup>
         )
       )}
     </Styled.BodyRow>
   )
+}
+
+function renderExtraColumnValue(
+  value: number | null | undefined,
+  format: 'durationHours' | undefined,
+  locale: string
+) {
+  if (value === undefined) {
+    return null
+  }
+  if (value === null) {
+    return '—'
+  }
+  return format === 'durationHours'
+    ? formatDurationHoursNumber(value, locale)
+    : value
 }
 
 const OutcomeGroup = ({

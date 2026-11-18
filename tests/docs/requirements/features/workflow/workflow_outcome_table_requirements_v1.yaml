@@ -18,7 +18,7 @@
 #   - tests/docs/requirements/features/global/workspace_access_requirements_v1.yaml (denied access — FR-WS-ACCESS-002)
 #   - tests/docs/requirements/features/global/workspace_edit_lock_requirements_v1.yaml (workflow mutation controls require the current edit lock — FR-WS-LOCK-001 onward)
 #   - tests/docs/requirements/features/workflow/workflow_public_link_requirements_v1.yaml (anonymous read-only Outcome Table access — FR-WF-PUBLIC-002)
-#   - tests/docs/requirements/features/workflow/workflow_duration_requirements_v1.yaml (normalized Days + Hours display and arithmetic for node and section duration values — FR-WF-DURATION-001 through FR-WF-DURATION-003)
+#   - tests/docs/requirements/features/workflow/workflow_duration_requirements_v1.yaml (canonical-minute arithmetic and one-decimal-hours display for node and section duration values — FR-WF-DURATION-001 through FR-WF-DURATION-003)
 
 documentPreconditions:
   - actor is one of (a) authenticated owner, editor, commenter, or viewer with an explicit contributor role on the parent project of the workflow, (b) authenticated user (published-access, no explicit contributor role) viewing a workflow whose parent project is published, or (c) anonymousViewer viewing a workflow whose workflow-specific public-link mode is enabled per tests/docs/requirements/features/workflow/workflow_public_link_requirements_v1.yaml FR-WF-PUBLIC-002
@@ -372,17 +372,17 @@ requirements:
       - system renders summary columns in workflowOutcomeTableCompetencyMatrixLayout on a course workflow
 
     mainFlow:
-      - per workflowNode row, workflowOutcomeTableTotalHoursColumn cell displays workflowEditNodeFormTimeField for that workflowNode using the normalized localized Days + Hours presentation from FR-WF-DURATION-002 and FR-WF-DURATION-003
+      - per workflowNode row, workflowOutcomeTableTotalHoursColumn cell displays workflowEditNodeFormTimeField for that workflowNode as localized hours with exactly one fractional digit per FR-WF-DURATION-002 and FR-WF-DURATION-003
       - an unset per-node workflowEditNodeFormTimeField displays an em dash, while an explicit zero displays the localized zero-duration value
-      - workflowOutcomeTableSectionTotalHoursCell on workflowOutcomeTableSectionRow for workflowSectionContainer S converts each set workflowEditNodeFormTimeField to whole hours, sums all workflowNode entries in S, and normalizes the result to localized Days + Hours per FR-WF-DURATION-002
+      - workflowOutcomeTableSectionTotalHoursCell on workflowOutcomeTableSectionRow for workflowSectionContainer S sums canonical integer minutes for all workflowNode entries in S and presents the result as localized hours with exactly one fractional digit per FR-WF-DURATION-002
       - an unset duration contributes zero when at least one node in S has a set duration; when every node duration in S is unset, workflowOutcomeTableSectionTotalHoursCell displays an em dash instead of zero
 
     roleBehavior: {}
 
     acceptanceCriteria:
-      - given a course node time of 1 day and 2 hours, its Total hours cell displays the localized normalized equivalent of 1 day and 2 hours
+      - given a course node time of 1,560 minutes, its Total hours cell displays the localized equivalent of 26.0 hours
       - given a course node has unset time, its Total hours cell displays an em dash; given explicit zero time, the cell displays the localized zero-duration value
-      - given section S contains node times of 1 day 20 hours and 10 hours, S's total displays the localized normalized equivalent of 2 days and 6 hours
+      - given section S contains node times of 2,640 minutes and 600 minutes, S's total displays the localized equivalent of 54.0 hours
       - given S contains one set duration and one unset duration, the unset duration contributes zero to S's total
       - given every node time in S is unset, S's total displays an em dash rather than zero
 
@@ -434,22 +434,22 @@ requirements:
 
     mainFlow:
       - per workflowNode row, workflowOutcomeTableProgramGeneralEducationColumn cell displays workflowEditNodeFormTimeField when workflowEditNodeFormSpecificEducationSwitch is OFF and is empty when ON; workflowOutcomeTableProgramSpecificEducationColumn cell displays workflowEditNodeFormTimeField when ON and is empty when OFF; a displayed unset time value uses an em dash and an explicit zero uses the localized zero-duration value
-      - per workflowNode row, workflowOutcomeTableProgramPonderationTheoryColumn cell displays workflowEditNodeFormPonderationTheoryField; workflowOutcomeTableProgramPonderationPracticalColumn cell displays workflowEditNodeFormPonderationPracticeField; workflowOutcomeTableProgramPonderationIndividualColumn cell displays workflowEditNodeFormPonderationIndividualField; each set duration uses normalized localized Days + Hours per FR-WF-DURATION-002 and FR-WF-DURATION-003 and each unset duration displays an em dash
-      - workflowOutcomeTableProgramPonderationTotalHoursColumn cell converts each set Theory, Practical, and Individual duration to whole hours, treats an unset component as zero when at least one component is set, sums the components, and normalizes the result to localized Days + Hours; when all three components are unset, it displays an em dash
+      - per workflowNode row, workflowOutcomeTableProgramPonderationTheoryColumn cell displays workflowEditNodeFormPonderationTheoryField; workflowOutcomeTableProgramPonderationPracticalColumn cell displays workflowEditNodeFormPonderationPracticeField; workflowOutcomeTableProgramPonderationIndividualColumn cell displays workflowEditNodeFormPonderationIndividualField; each set duration uses localized hours with exactly one fractional digit per FR-WF-DURATION-002 and FR-WF-DURATION-003 and each unset duration displays an em dash
+      - workflowOutcomeTableProgramPonderationTotalHoursColumn cell sums canonical integer minutes for each set Theory, Practical, and Individual duration, treats an unset component as zero when at least one component is set, and presents localized hours with exactly one fractional digit; when all three components are unset, it displays an em dash
       - workflowOutcomeTableProgramCreditsColumn cell displays workflowEditNodeFormCreditsField numerically; an unset credit value displays an em dash and an explicit zero displays 0
       - on workflowOutcomeTableSectionRow for workflowSectionContainer S, each program summary column cell sums the per-node values shown in that column for all workflowNode entries in S; unset values contribute zero when at least one value in that column is set, and an all-unset column total displays an em dash
-      - every duration-valued section total converts contributions to whole hours and normalizes the sum to localized Days + Hours per FR-WF-DURATION-002 and FR-WF-DURATION-003; credit totals remain numeric
+      - every duration-valued section total sums canonical integer-minute contributions and presents localized hours with exactly one fractional digit per FR-WF-DURATION-002 and FR-WF-DURATION-003; credit totals remain numeric
 
     roleBehavior: {}
 
     acceptanceCriteria:
       - given a program node has Time T and Specific education OFF, T appears under General education and its Specific education cell is empty; given the switch is ON, T appears under Specific education and its General education cell is empty
       - given a displayed classification duration is unset, its applicable cell displays an em dash; given explicit zero, it displays the localized zero-duration value
-      - given a program node has Theory 1 day 20 hours, Practical 10 hours, and unset Individual work, the three component cells show their respective values and em dash and the node's Ponderation Total hours displays the localized normalized equivalent of 2 days and 6 hours
+      - given a program node has Theory 2,640 minutes, Practical 600 minutes, and unset Individual work, the three component cells show 44.0 hours, 10.0 hours, and an em dash and the node's Ponderation Total hours displays 54.0 hours
       - given all three ponderation components for a node are unset, that node's Ponderation Total hours displays an em dash
       - given a program node has unset Credits, its Credits cell displays an em dash; given explicit 0, it displays 0
       - given a section summary column contains at least one set value, unset values contribute zero and its total equals the sum of the set values; given every value in the column is unset, its total displays an em dash
-      - given a duration-valued section sum exceeds 23 hours, it is normalized to localized Days + Hours; credit totals remain numeric
+      - given a duration-valued section sum exceeds 23 hours, it remains displayed as total localized hours with exactly one fractional digit; credit totals remain numeric
 
     openQuestions: []
 

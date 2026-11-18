@@ -36,8 +36,7 @@ test("FR-WF-OT-009: course duration cells distinguish unset and zero and normali
   const firstTitle = "Course duration A";
   await patchOutcomeTableNodeViaApi(page, firstNode!.uuid, {
     title: firstTitle,
-    timeRequired: null,
-    timeUnits: null,
+    timeRequiredMinutes: null,
   });
   await createOutcomeViaApi(page, workflow.graphUuid, {
     title: "Course duration outcome",
@@ -55,35 +54,32 @@ test("FR-WF-OT-009: course duration cells distinguish unset and zero and normali
   await expect(sectionTotal).toHaveText("—");
 
   await patchOutcomeTableNodeViaApi(page, firstNode!.uuid, {
-    timeRequired: 0,
-    timeUnits: "hours",
+    timeRequiredMinutes: 0,
   });
   await page.reload();
   await selectOutcomeTableStyle(page, "Competency matrix");
-  await expect(firstValue).toHaveText("0 hours");
-  await expect(sectionTotal).toHaveText("0 hours");
+  await expect(firstValue).toHaveText("0.0");
+  await expect(sectionTotal).toHaveText("0.0");
 
   await patchOutcomeTableNodeViaApi(page, firstNode!.uuid, {
-    timeRequired: 44,
-    timeUnits: "hours",
+    timeRequiredMinutes: 2640,
   });
   const secondNodeUuid = await createWorkflowNodeViaApi(page, workflow);
   const secondTitle = "Course duration B";
   await patchOutcomeTableNodeViaApi(page, secondNodeUuid, {
     title: secondTitle,
-    timeRequired: 10,
-    timeUnits: "hours",
+    timeRequiredMinutes: 600,
   });
   await page.reload();
   await selectOutcomeTableStyle(page, "Competency matrix");
 
-  await expect(firstValue).toHaveText("1 day 20 hours");
+  await expect(firstValue).toHaveText("44.0");
   await expect(
     nodeRow(page, secondTitle).locator(
       '[data-test-id="workflow-outcome-table-total-hours-cell"]',
     ),
-  ).toHaveText("10 hours");
-  await expect(sectionTotal).toHaveText("2 days 6 hours");
+  ).toHaveText("10.0");
+  await expect(sectionTotal).toHaveText("54.0");
 });
 
 test.describe("program Competency matrix summaries", () => {
@@ -101,22 +97,20 @@ test.describe("program Competency matrix summaries", () => {
     const secondTitle = "Program summary specific";
     await patchOutcomeTableNodeViaApi(page, firstNodeUuid, {
       title: firstTitle,
-      timeRequired: 44,
-      timeUnits: "hours",
+      timeRequiredMinutes: 2640,
       specificEducation: false,
-      ponderationTheory: 44,
-      ponderationPractice: 10,
-      ponderationIndividual: null,
+      ponderationTheoryMinutes: 2640,
+      ponderationPracticeMinutes: 600,
+      ponderationIndividualMinutes: null,
       credits: 0,
     });
     await patchOutcomeTableNodeViaApi(page, secondNodeUuid, {
       title: secondTitle,
-      timeRequired: 10,
-      timeUnits: "hours",
+      timeRequiredMinutes: 600,
       specificEducation: true,
-      ponderationTheory: null,
-      ponderationPractice: null,
-      ponderationIndividual: null,
+      ponderationTheoryMinutes: null,
+      ponderationPracticeMinutes: null,
+      ponderationIndividualMinutes: null,
       credits: null,
     });
     await createOutcomeViaApi(page, workflow.graphUuid, {
@@ -152,7 +146,7 @@ test.describe("program Competency matrix summaries", () => {
       firstRow.locator(
         '[data-test-id="workflow-outcome-table-general-education-cell"]',
       ),
-    ).toHaveText("1 day 20 hours");
+    ).toHaveText("44.0");
     await expect(
       firstRow.locator(
         '[data-test-id="workflow-outcome-table-specific-education-cell"]',
@@ -160,12 +154,12 @@ test.describe("program Competency matrix summaries", () => {
     ).toHaveText("");
     await expect(
       firstRow.locator('[data-test-id="workflow-outcome-table-theory-cell"]'),
-    ).toHaveText("1 day 20 hours");
+    ).toHaveText("44.0");
     await expect(
       firstRow.locator(
         '[data-test-id="workflow-outcome-table-practical-cell"]',
       ),
-    ).toHaveText("10 hours");
+    ).toHaveText("10.0");
     await expect(
       firstRow.locator(
         '[data-test-id="workflow-outcome-table-individual-cell"]',
@@ -175,7 +169,7 @@ test.describe("program Competency matrix summaries", () => {
       firstRow.locator(
         '[data-test-id="workflow-outcome-table-ponderation-total-cell"]',
       ),
-    ).toHaveText("2 days 6 hours");
+    ).toHaveText("54.0");
     await expect(
       firstRow.locator('[data-test-id="workflow-outcome-table-credits-cell"]'),
     ).toHaveText("0");
@@ -190,7 +184,7 @@ test.describe("program Competency matrix summaries", () => {
       secondRow.locator(
         '[data-test-id="workflow-outcome-table-specific-education-cell"]',
       ),
-    ).toHaveText("10 hours");
+    ).toHaveText("10.0");
     await expect(
       secondRow.locator(
         '[data-test-id="workflow-outcome-table-ponderation-total-cell"]',
@@ -205,22 +199,22 @@ test.describe("program Competency matrix summaries", () => {
       sectionRow.locator(
         '[data-test-id="workflow-outcome-table-section-general-education-total"]',
       ),
-    ).toHaveText("1 day 20 hours");
+    ).toHaveText("44.0");
     await expect(
       sectionRow.locator(
         '[data-test-id="workflow-outcome-table-section-specific-education-total"]',
       ),
-    ).toHaveText("10 hours");
+    ).toHaveText("10.0");
     await expect(
       sectionRow.locator(
         '[data-test-id="workflow-outcome-table-section-theory-total"]',
       ),
-    ).toHaveText("1 day 20 hours");
+    ).toHaveText("44.0");
     await expect(
       sectionRow.locator(
         '[data-test-id="workflow-outcome-table-section-practical-total"]',
       ),
-    ).toHaveText("10 hours");
+    ).toHaveText("10.0");
     await expect(
       sectionRow.locator(
         '[data-test-id="workflow-outcome-table-section-individual-total"]',
@@ -230,7 +224,7 @@ test.describe("program Competency matrix summaries", () => {
       sectionRow.locator(
         '[data-test-id="workflow-outcome-table-section-ponderation-total-total"]',
       ),
-    ).toHaveText("2 days 6 hours");
+    ).toHaveText("54.0");
     await expect(
       sectionRow.locator(
         '[data-test-id="workflow-outcome-table-section-credits-total"]',

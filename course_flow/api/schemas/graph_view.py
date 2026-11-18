@@ -14,11 +14,7 @@ from pydantic import Field
 from course_flow.api.common.schemas import CamelSchema
 from course_flow.api.schemas.permissions import PermissionContextOut
 from course_flow.api.schemas.project_subresources import TagListItemOut
-from course_flow.core.enum import (
-    ContextClassification,
-    TaskClassification,
-    TimeUnit,
-)
+from course_flow.core.enum import ContextClassification, TaskClassification
 
 
 class GraphMetaOut(CamelSchema):
@@ -80,12 +76,11 @@ class NodeGraphOut(CamelSchema):
     description: str = ""
     context_classification: ContextClassification | None = None
     task_classification: TaskClassification | None = None
-    time_required: float | None = None
-    time_units: TimeUnit | None = None
+    time_required_minutes: int | None = None
     represents_workflow: bool = False
-    ponderation_theory: float | None = None
-    ponderation_practice: float | None = None
-    ponderation_individual: float | None = None
+    ponderation_theory_minutes: int | None = None
+    ponderation_practice_minutes: int | None = None
+    ponderation_individual_minutes: int | None = None
     credits: int | None = None
     specific_education: bool = False
     tag_ids: list[int] = Field(default_factory=list)

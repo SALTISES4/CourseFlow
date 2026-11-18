@@ -57,7 +57,11 @@ type ExtraColumnLabelKey = Extract<
 type ExtraColumnLeaf = {
   labelKey: ExtraColumnLabelKey
   className?: string
-  values: Record<string, number> // nodeUuid, value
+  format?: 'durationHours'
+  headerTestId?: string
+  nodeTestId?: string
+  sectionTestId?: string
+  values: Record<string, number | null | undefined> // nodeUuid or groupUuid, value
 }
 
 type ExtraColumnGroup = {
@@ -69,25 +73,28 @@ type ExtraColumn = ExtraColumnLeaf | ExtraColumnGroup
 
 type ExtraColumnValueKey =
   | 'totalCredits'
-  | 'totalHours'
-  | 'totalHoursMatrix'
-  | 'generalEducation'
-  | 'specificEducation'
-  | 'ponderationTheory'
-  | 'ponderationPractical'
-  | 'ponderationIndividual'
+  | 'totalDurationMinutes'
+  | 'ponderationTotalMinutes'
+  | 'generalEducationMinutes'
+  | 'specificEducationMinutes'
+  | 'ponderationTheoryMinutes'
+  | 'ponderationPracticalMinutes'
+  | 'ponderationIndividualMinutes'
 
-type ExtraColumnValues = Record<ExtraColumnValueKey, Record<string, number>>
+type ExtraColumnValues = Record<
+  ExtraColumnValueKey,
+  Record<string, number | null | undefined>
+>
 
 const createExtraColumnValues = (): ExtraColumnValues => ({
   totalCredits: {},
-  totalHours: {},
-  totalHoursMatrix: {},
-  generalEducation: {},
-  specificEducation: {},
-  ponderationTheory: {},
-  ponderationPractical: {},
-  ponderationIndividual: {}
+  totalDurationMinutes: {},
+  ponderationTotalMinutes: {},
+  generalEducationMinutes: {},
+  specificEducationMinutes: {},
+  ponderationTheoryMinutes: {},
+  ponderationPracticalMinutes: {},
+  ponderationIndividualMinutes: {}
 })
 
 const selectOutcomeTableUi = (state: RootState) => state.graph.outcomeTableUi
@@ -174,7 +181,11 @@ const makeSelectOutcomeTable = lruMemoize(
           {
             labelKey: 'outcomeTable.summary.totalHours',
             className: 'bg-dark',
-            values: extraColumnValues.totalHours
+            format: 'durationHours',
+            headerTestId: 'workflow-outcome-table-total-hours-column',
+            nodeTestId: 'workflow-outcome-table-total-hours-cell',
+            sectionTestId: 'workflow-outcome-table-section-total-hours-total',
+            values: extraColumnValues.totalDurationMinutes
           }
         ]
 
@@ -184,11 +195,19 @@ const makeSelectOutcomeTable = lruMemoize(
             columns: [
               {
                 labelKey: 'outcomeTable.summary.generalEducation',
-                values: extraColumnValues.generalEducation
+                format: 'durationHours',
+                nodeTestId: 'workflow-outcome-table-general-education-cell',
+                sectionTestId:
+                  'workflow-outcome-table-section-general-education-total',
+                values: extraColumnValues.generalEducationMinutes
               },
               {
                 labelKey: 'outcomeTable.summary.specificEducation',
-                values: extraColumnValues.specificEducation
+                format: 'durationHours',
+                nodeTestId: 'workflow-outcome-table-specific-education-cell',
+                sectionTestId:
+                  'workflow-outcome-table-section-specific-education-total',
+                values: extraColumnValues.specificEducationMinutes
               }
             ]
           },
@@ -197,26 +216,42 @@ const makeSelectOutcomeTable = lruMemoize(
             columns: [
               {
                 labelKey: 'outcomeTable.summary.theory',
-                values: extraColumnValues.ponderationTheory
+                format: 'durationHours',
+                nodeTestId: 'workflow-outcome-table-theory-cell',
+                sectionTestId: 'workflow-outcome-table-section-theory-total',
+                values: extraColumnValues.ponderationTheoryMinutes
               },
               {
                 labelKey: 'outcomeTable.summary.practical',
-                values: extraColumnValues.ponderationPractical
+                format: 'durationHours',
+                nodeTestId: 'workflow-outcome-table-practical-cell',
+                sectionTestId: 'workflow-outcome-table-section-practical-total',
+                values: extraColumnValues.ponderationPracticalMinutes
               },
               {
                 labelKey: 'outcomeTable.summary.individualWork',
-                values: extraColumnValues.ponderationIndividual
+                format: 'durationHours',
+                nodeTestId: 'workflow-outcome-table-individual-cell',
+                sectionTestId:
+                  'workflow-outcome-table-section-individual-total',
+                values: extraColumnValues.ponderationIndividualMinutes
               },
               {
                 labelKey: 'outcomeTable.summary.totalHours',
                 className: 'bg-dark',
-                values: extraColumnValues.totalHoursMatrix
+                format: 'durationHours',
+                nodeTestId: 'workflow-outcome-table-ponderation-total-cell',
+                sectionTestId:
+                  'workflow-outcome-table-section-ponderation-total-total',
+                values: extraColumnValues.ponderationTotalMinutes
               }
             ]
           },
           {
             labelKey: 'outcomeTable.summary.credits',
             className: 'bg-dark',
+            nodeTestId: 'workflow-outcome-table-credits-cell',
+            sectionTestId: 'workflow-outcome-table-section-credits-total',
             values: extraColumnValues.totalCredits
           }
         ]
@@ -301,30 +336,52 @@ function populateExtraColumns(
   node: NodeEntity,
   extraColumnValues: ExtraColumnValues
 ) {
-  const theory = node.ponderationTheory ?? 0
-  const practice = node.ponderationPractice ?? 0
-  const individual = node.ponderationIndividual ?? 0
+  const theory = node.ponderationTheoryMinutes
+  const practice = node.ponderationPracticeMinutes
+  const individual = node.ponderationIndividualMinutes
   const isSpecific = node.specificEducation
 
-  const timeRequired = node.timeRequired ?? 0
+  const timeRequired = node.timeRequiredMinutes
 
-  const values: Record<ExtraColumnValueKey, number> = {
-    specificEducation: isSpecific ? timeRequired : 0,
-    generalEducation: !isSpecific ? timeRequired : 0,
-    ponderationTheory: theory,
-    ponderationPractical: practice,
-    ponderationIndividual: individual,
-    totalHours: timeRequired,
-    totalHoursMatrix: theory + practice + individual,
-    totalCredits: node.credits ?? 0
+  const values: Record<ExtraColumnValueKey, number | null | undefined> = {
+    specificEducationMinutes: isSpecific ? timeRequired : undefined,
+    generalEducationMinutes: isSpecific ? undefined : timeRequired,
+    ponderationTheoryMinutes: theory,
+    ponderationPracticalMinutes: practice,
+    ponderationIndividualMinutes: individual,
+    totalDurationMinutes: timeRequired,
+    ponderationTotalMinutes: sumNullableValues([theory, practice, individual]),
+    totalCredits: node.credits
   }
 
   for (const column of Object.keys(values) as ExtraColumnValueKey[]) {
     const value = values[column]
     const columnValues = extraColumnValues[column]
+
+    // Undefined means that the column does not apply to this node. Null means
+    // that the column applies but the user has not entered a value.
+    if (value === undefined) {
+      continue
+    }
+
     columnValues[node.uuid] = value
-    columnValues[groupUuid] = (columnValues[groupUuid] ?? 0) + value
+    if (!(groupUuid in columnValues)) {
+      columnValues[groupUuid] = null
+    }
+    if (value !== null) {
+      columnValues[groupUuid] = (columnValues[groupUuid] ?? 0) + value
+    }
   }
+}
+
+function sumNullableValues(
+  values: Array<number | null | undefined>
+): number | null {
+  const setValues = values.filter((value): value is number => value != null)
+  if (setValues.length === 0) {
+    return null
+  }
+  return setValues.reduce((total, value) => total + value, 0)
 }
 
 function getOutcomeStatus(

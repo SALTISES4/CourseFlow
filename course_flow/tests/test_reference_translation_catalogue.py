@@ -6,7 +6,6 @@ from course_flow.core.reference_data import (
     ACTIVITY_CONTEXT_OPTIONS,
     ACTIVITY_TASK_OPTIONS,
     COURSE_CONTEXT_OPTIONS,
-    TIME_UNIT_OPTIONS,
 )
 from course_flow.core.system_labels import SYSTEM_CHANNEL_LABEL_CODES
 from course_flow.core.system_notifications import SYSTEM_NOTIFICATION_CODES
@@ -56,11 +55,10 @@ def test_all_backend_reference_values_have_frontend_translations():
         value.value for value in (*ACTIVITY_CONTEXT_OPTIONS, *COURSE_CONTEXT_OPTIONS)
     }
     task_values = {value.value for value in ACTIVITY_TASK_OPTIONS}
-    time_unit_values = {value.value for value in TIME_UNIT_OPTIONS}
 
     assert context_values <= _translation_keys("context")
     assert task_values <= _translation_keys("taskClassification")
-    assert time_unit_values == _translation_keys("timeUnit")
+    assert "timeUnit" not in REFERENCE_CATALOGUE.read_text()
 
 
 def test_all_backend_system_channel_codes_have_frontend_translations():

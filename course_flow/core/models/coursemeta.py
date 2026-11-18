@@ -13,18 +13,11 @@ class Coursemeta(models.Model):
         node_id: int | None
 
     calculate_time = models.BooleanField(default=False)
-    time_required = models.DecimalField(
-        max_digits=10, decimal_places=2, null=True, blank=True
-    )
-    time_units = models.CharField(max_length=16, null=True, blank=True)
-    ponderation_theory = models.DecimalField(
-        max_digits=10, decimal_places=2, null=True, blank=True
-    )
-    ponderation_practice = models.DecimalField(
-        max_digits=10, decimal_places=2, null=True, blank=True
-    )
-    ponderation_individual = models.DecimalField(
-        max_digits=10, decimal_places=2, null=True, blank=True
+    time_required_minutes = models.PositiveBigIntegerField(null=True, blank=True)
+    ponderation_theory_minutes = models.PositiveBigIntegerField(null=True, blank=True)
+    ponderation_practice_minutes = models.PositiveBigIntegerField(null=True, blank=True)
+    ponderation_individual_minutes = models.PositiveBigIntegerField(
+        null=True, blank=True
     )
     credits = models.PositiveIntegerField(null=True, blank=True)
     specific_education = models.BooleanField(default=False)

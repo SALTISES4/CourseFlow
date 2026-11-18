@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from decimal import Decimal
 from uuid import uuid4
 
 import pytest
@@ -19,7 +18,6 @@ from course_flow.core.enum import (
     NodeType,
     TaskClassification,
     TeamRole,
-    TimeUnit,
     WorkflowType,
 )
 from course_flow.core.models import (
@@ -137,8 +135,7 @@ def _build_source(owner, project):
     )
     node_a.activitymeta.context_classification = ContextClassification.IN_THE_CLASSROOM
     node_a.activitymeta.task_classification = TaskClassification.ANALYZE
-    node_a.activitymeta.time_required = "2.50"
-    node_a.activitymeta.time_units = TimeUnit.MINUTES
+    node_a.activitymeta.time_required_minutes = 150
     node_a.activitymeta.represents_workflow = True
     node_a.activitymeta.context = "Seminar"
     node_a.activitymeta.classification = "Formative"
@@ -331,8 +328,7 @@ def test_copy_preserves_activity_workflow_and_task_node_metadata():
     )
     source.activitymeta.context_classification = ContextClassification.IN_THE_CLASSROOM
     source.activitymeta.task_classification = TaskClassification.CREATE_DESIGN
-    source.activitymeta.time_required = Decimal("3.25")
-    source.activitymeta.time_units = TimeUnit.MINUTES
+    source.activitymeta.time_required_minutes = 195
     source.activitymeta.represents_workflow = True
     source.activitymeta.context = "Lab"
     source.activitymeta.classification = "Summative"
@@ -355,8 +351,7 @@ def test_copy_preserves_activity_workflow_and_task_node_metadata():
     )
     task.taskmeta.context_classification = ContextClassification.INDIVIDUAL_WORK
     task.taskmeta.task_classification = TaskClassification.READ
-    task.taskmeta.time_required = Decimal("1.75")
-    task.taskmeta.time_units = TimeUnit.SECONDS
+    task.taskmeta.time_required_minutes = 105
     task.taskmeta.represents_workflow = True
     task.taskmeta.context = "Independent"
     task.taskmeta.save()
@@ -377,8 +372,7 @@ def test_copy_preserves_activity_workflow_and_task_node_metadata():
         == ContextClassification.IN_THE_CLASSROOM
     )
     assert copied.activitymeta.task_classification == TaskClassification.CREATE_DESIGN
-    assert copied.activitymeta.time_required == Decimal("3.25")
-    assert copied.activitymeta.time_units == TimeUnit.MINUTES
+    assert copied.activitymeta.time_required_minutes == 195
     assert copied.activitymeta.represents_workflow is True
     assert copied.activitymeta.context == "Lab"
     assert copied.activitymeta.classification == "Summative"
@@ -389,8 +383,10 @@ def test_copy_preserves_activity_workflow_and_task_node_metadata():
         == ContextClassification.INDIVIDUAL_WORK
     )
     assert copied_task.taskmeta.task_classification == TaskClassification.READ
-    assert copied_task.taskmeta.time_required == task.taskmeta.time_required
-    assert copied_task.taskmeta.time_units == TimeUnit.SECONDS
+    assert (
+        copied_task.taskmeta.time_required_minutes
+        == task.taskmeta.time_required_minutes
+    )
     assert copied_task.taskmeta.represents_workflow is True
     assert copied_task.taskmeta.context == "Independent"
 
@@ -409,8 +405,8 @@ def test_copy_preserves_program_overview_metadata():
     source.programmeta.calculate_credits = "manual"
     source.programmeta.calculate_ponderation = "automatic"
     source.programmeta.calculate_classification = "enabled"
-    source.programmeta.classification_general_time = timedelta(hours=12)
-    source.programmeta.classification_specific_time = timedelta(hours=4)
+    source.programmeta.classification_general_minutes = 720
+    source.programmeta.classification_specific_minutes = 240
     source.programmeta.save()
 
     response = _post_copy(
@@ -428,8 +424,8 @@ def test_copy_preserves_program_overview_metadata():
     assert copied.programmeta.calculate_credits == "manual"
     assert copied.programmeta.calculate_ponderation == "automatic"
     assert copied.programmeta.calculate_classification == "enabled"
-    assert copied.programmeta.classification_general_time == timedelta(hours=12)
-    assert copied.programmeta.classification_specific_time == timedelta(hours=4)
+    assert copied.programmeta.classification_general_minutes == 720
+    assert copied.programmeta.classification_specific_minutes == 240
 
 
 @pytest.mark.django_db

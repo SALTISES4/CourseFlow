@@ -110,18 +110,3 @@ class TaskClassification(StrEnum):
     ONE_MINUTE_PAPER = "one_minute_paper"
     DISTRIBUTED_PROBLEM_SOLVING = "distributed_problem_solving"
     PEER_ASSESSMENT = "peer_assessment"
-
-
-class TimeUnit(StrEnum):
-    """
-    Stable API/database values for legacy duration-unit fields.
-    """
-
-    SECONDS = "seconds"
-    MINUTES = "minutes"
-    HOURS = "hours"
-    DAYS = "days"
-    SECTIONS = "sections"
-    MONTHS = "months"
-    YEARS = "years"
-    CREDITS = "credits"

@@ -12,7 +12,7 @@ adapter, not a legacy migration path. The two source mechanisms remain distinct:
 
 ```text
 v2 ORM project -> v2 snapshot exporter ----┐
-                                            ├-> ProjectSnapshotBundle v1
+                                            ├-> ProjectSnapshotBundle v2
 v1 source -> future legacy source adapter -┘        -> validator
                                                      -> ProjectImportService
                                                      -> transactional v2 writer
@@ -23,7 +23,7 @@ The reusable boundary now exists in
 `course_flow/application/project_transfer/service.py`. The Django v2 exporter
 and destination writer are infrastructure adapters in
 `course_flow/infrastructure/project_transfer/`. The contract is published as
-`docs/schemas/project_snapshot_v1.schema.json`.
+`docs/schemas/project_snapshot_v2.schema.json`.
 
 This foundation does **not** mean that general import/export or v1 migration is
 complete. The current management-command workflow:
@@ -77,7 +77,7 @@ Do not import the v1 Django models into the v2 Django process. Both applications
 - `docs/architecture/repository_layout.md`: intended API/application/infrastructure boundaries.
 - `docs/architecture/adr_workflow_hierarchy_and_linked_nodes.md`: workflow and node type invariants.
 - `docs/architecture/adr_node_and_workflow_typed_meta.md`: typed metadata ownership.
-- `tests/docs/requirements/features/workflow/workflow_duration_requirements_v1.yaml`: accepted duration rules and unresolved legacy-duration policy.
+- `tests/docs/requirements/features/workflow/workflow_duration_requirements_v1.yaml`: accepted canonical-minute duration rules; current environments rebuild rather than migrate legacy duration values.
 - `course_flow/application/services/workflow_copy_service.py`: useful graph-copy mechanics, but currently coupled directly to Django ORM and not a legacy import boundary.
 
 ### Non-production sample database
@@ -265,7 +265,7 @@ Exit gate: no critical mapping category remains unknown, and no implementation a
 
 Deliverables:
 
-- canonical snapshot schema v1;
+- canonical snapshot schema v2;
 - golden legacy fixtures covering activity, course, program, standalone workflow, linked workflow, outcomes, edges, tags, and corrupt-data cases;
 - pure mapping tests for every enum and relationship;
 - preflight report contract;

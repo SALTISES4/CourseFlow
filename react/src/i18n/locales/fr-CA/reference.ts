@@ -76,16 +76,6 @@ const referenceFr = {
     distributed_problem_solving: 'Résolution distribuée de problèmes',
     peer_assessment: 'Évaluation par les pairs'
   },
-  timeUnit: {
-    seconds: 'Secondes',
-    minutes: 'Minutes',
-    hours: 'Heures',
-    days: 'Jours',
-    sections: 'Sections',
-    months: 'Mois',
-    years: 'Années',
-    credits: 'Crédits'
-  },
   unknown: 'Inconnu ({{code}})'
 } as const satisfies LocaleResourceShape<typeof reference>
 

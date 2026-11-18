@@ -40,34 +40,18 @@
           "default": null,
           "title": "Task Classification"
         },
-        "time_required": {
+        "time_required_minutes": {
           "anyOf": [
             {
-              "type": "number"
-            },
-            {
-              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,8}|(?=[\\d.]{1,11}0*$)\\d{0,8}\\.\\d{0,2}0*$)",
-              "type": "string"
+              "minimum": 0,
+              "type": "integer"
             },
             {
               "type": "null"
             }
           ],
           "default": null,
-          "title": "Time Required"
-        },
-        "time_units": {
-          "anyOf": [
-            {
-              "maxLength": 16,
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Time Units"
+          "title": "Time Required Minutes"
         },
         "represents_workflow": {
           "default": false,
@@ -157,82 +141,57 @@
           "title": "Calculate Time",
           "type": "boolean"
         },
-        "time_required": {
+        "time_required_minutes": {
           "anyOf": [
             {
-              "type": "number"
-            },
-            {
-              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,8}|(?=[\\d.]{1,11}0*$)\\d{0,8}\\.\\d{0,2}0*$)",
-              "type": "string"
+              "minimum": 0,
+              "type": "integer"
             },
             {
               "type": "null"
             }
           ],
           "default": null,
-          "title": "Time Required"
+          "title": "Time Required Minutes"
         },
-        "time_units": {
+        "ponderation_theory_minutes": {
           "anyOf": [
             {
-              "maxLength": 16,
-              "type": "string"
+              "minimum": 0,
+              "type": "integer"
             },
             {
               "type": "null"
             }
           ],
           "default": null,
-          "title": "Time Units"
+          "title": "Ponderation Theory Minutes"
         },
-        "ponderation_theory": {
+        "ponderation_practice_minutes": {
           "anyOf": [
             {
-              "type": "number"
-            },
-            {
-              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,8}|(?=[\\d.]{1,11}0*$)\\d{0,8}\\.\\d{0,2}0*$)",
-              "type": "string"
+              "minimum": 0,
+              "type": "integer"
             },
             {
               "type": "null"
             }
           ],
           "default": null,
-          "title": "Ponderation Theory"
+          "title": "Ponderation Practice Minutes"
         },
-        "ponderation_practice": {
+        "ponderation_individual_minutes": {
           "anyOf": [
             {
-              "type": "number"
-            },
-            {
-              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,8}|(?=[\\d.]{1,11}0*$)\\d{0,8}\\.\\d{0,2}0*$)",
-              "type": "string"
+              "minimum": 0,
+              "type": "integer"
             },
             {
               "type": "null"
             }
           ],
           "default": null,
-          "title": "Ponderation Practice"
-        },
-        "ponderation_individual": {
-          "anyOf": [
-            {
-              "type": "number"
-            },
-            {
-              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,8}|(?=[\\d.]{1,11}0*$)\\d{0,8}\\.\\d{0,2}0*$)",
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Ponderation Individual"
+          "title": "Ponderation Individual Minutes"
         },
         "credits": {
           "anyOf": [
@@ -682,82 +641,57 @@
           "title": "Calculate Classification",
           "type": "string"
         },
-        "time_required": {
+        "time_required_minutes": {
           "anyOf": [
             {
-              "type": "number"
-            },
-            {
-              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,8}|(?=[\\d.]{1,11}0*$)\\d{0,8}\\.\\d{0,2}0*$)",
-              "type": "string"
+              "minimum": 0,
+              "type": "integer"
             },
             {
               "type": "null"
             }
           ],
           "default": null,
-          "title": "Time Required"
+          "title": "Time Required Minutes"
         },
-        "time_units": {
+        "ponderation_theory_minutes": {
           "anyOf": [
             {
-              "maxLength": 16,
-              "type": "string"
+              "minimum": 0,
+              "type": "integer"
             },
             {
               "type": "null"
             }
           ],
           "default": null,
-          "title": "Time Units"
+          "title": "Ponderation Theory Minutes"
         },
-        "ponderation_theory": {
+        "ponderation_practice_minutes": {
           "anyOf": [
             {
-              "type": "number"
-            },
-            {
-              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,8}|(?=[\\d.]{1,11}0*$)\\d{0,8}\\.\\d{0,2}0*$)",
-              "type": "string"
+              "minimum": 0,
+              "type": "integer"
             },
             {
               "type": "null"
             }
           ],
           "default": null,
-          "title": "Ponderation Theory"
+          "title": "Ponderation Practice Minutes"
         },
-        "ponderation_practice": {
+        "ponderation_individual_minutes": {
           "anyOf": [
             {
-              "type": "number"
-            },
-            {
-              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,8}|(?=[\\d.]{1,11}0*$)\\d{0,8}\\.\\d{0,2}0*$)",
-              "type": "string"
+              "minimum": 0,
+              "type": "integer"
             },
             {
               "type": "null"
             }
           ],
           "default": null,
-          "title": "Ponderation Practice"
-        },
-        "ponderation_individual": {
-          "anyOf": [
-            {
-              "type": "number"
-            },
-            {
-              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,8}|(?=[\\d.]{1,11}0*$)\\d{0,8}\\.\\d{0,2}0*$)",
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Ponderation Individual"
+          "title": "Ponderation Individual Minutes"
         },
         "credits": {
           "anyOf": [
@@ -772,37 +706,31 @@
           "default": null,
           "title": "Credits"
         },
-        "classification_general_seconds": {
+        "classification_general_minutes": {
           "anyOf": [
             {
-              "type": "number"
-            },
-            {
-              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-              "type": "string"
+              "minimum": 0,
+              "type": "integer"
             },
             {
               "type": "null"
             }
           ],
           "default": null,
-          "title": "Classification General Seconds"
+          "title": "Classification General Minutes"
         },
-        "classification_specific_seconds": {
+        "classification_specific_minutes": {
           "anyOf": [
             {
-              "type": "number"
-            },
-            {
-              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-              "type": "string"
+              "minimum": 0,
+              "type": "integer"
             },
             {
               "type": "null"
             }
           ],
           "default": null,
-          "title": "Classification Specific Seconds"
+          "title": "Classification Specific Minutes"
         }
       },
       "title": "ProgramMetaSnapshot",
@@ -1017,34 +945,18 @@
           "default": null,
           "title": "Task Classification"
         },
-        "time_required": {
+        "time_required_minutes": {
           "anyOf": [
             {
-              "type": "number"
-            },
-            {
-              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,8}|(?=[\\d.]{1,11}0*$)\\d{0,8}\\.\\d{0,2}0*$)",
-              "type": "string"
+              "minimum": 0,
+              "type": "integer"
             },
             {
               "type": "null"
             }
           ],
           "default": null,
-          "title": "Time Required"
-        },
-        "time_units": {
-          "anyOf": [
-            {
-              "maxLength": 16,
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Time Units"
+          "title": "Time Required Minutes"
         },
         "represents_workflow": {
           "default": false,
@@ -1145,8 +1057,8 @@
       "type": "string"
     },
     "schema_version": {
-      "const": 1,
-      "default": 1,
+      "const": 2,
+      "default": 2,
       "title": "Schema Version",
       "type": "integer"
     },

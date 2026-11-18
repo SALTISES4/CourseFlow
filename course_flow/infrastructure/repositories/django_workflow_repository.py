@@ -1,5 +1,3 @@
-from datetime import timedelta
-from decimal import Decimal
 from typing import Any
 from uuid import UUID
 
@@ -18,14 +16,6 @@ _GRAPH_SELECT_RELATED = (
 )
 
 
-def _optional_float(value) -> float | None:
-    return float(value) if value is not None else None
-
-
-def _duration_hours(value: timedelta | None) -> float | None:
-    return value.total_seconds() / 3600 if value is not None else None
-
-
 def _automatic_flag(value: str) -> bool:
     return value.strip().lower() in {"automatic", "enabled", "true", "1", "on"}
 
@@ -39,17 +29,16 @@ def _overview_metadata(
     result: dict[str, Any] = {
         "code": "",
         "calculate_time_automatically": False,
-        "time": None,
-        "time_units": None,
+        "time_minutes": None,
         "calculate_ponderation_automatically": False,
-        "theory_time": None,
-        "practical_time": None,
-        "individual_time": None,
+        "theory_time_minutes": None,
+        "practical_time_minutes": None,
+        "individual_time_minutes": None,
         "calculate_credits_automatically": False,
         "credits": None,
         "calculate_classification_automatically": False,
-        "general_time": None,
-        "specific_time": None,
+        "general_time_minutes": None,
+        "specific_time_minutes": None,
     }
 
     if workflow.workflow_type == WorkflowType.ACTIVITY:
@@ -57,8 +46,7 @@ def _overview_metadata(
         if meta is not None:
             result.update(
                 calculate_time_automatically=meta.calculate_time,
-                time=_optional_float(meta.time_required),
-                time_units=meta.time_units,
+                time_minutes=meta.time_required_minutes,
             )
     elif workflow.workflow_type == WorkflowType.COURSE:
         meta = getattr(workflow, "coursemeta", None)
@@ -66,11 +54,10 @@ def _overview_metadata(
             result.update(
                 code=meta.code,
                 calculate_time_automatically=meta.calculate_time,
-                time=_optional_float(meta.time_required),
-                time_units=meta.time_units,
-                theory_time=_optional_float(meta.ponderation_theory),
-                practical_time=_optional_float(meta.ponderation_practice),
-                individual_time=_optional_float(meta.ponderation_individual),
+                time_minutes=meta.time_required_minutes,
+                theory_time_minutes=meta.ponderation_theory_minutes,
+                practical_time_minutes=meta.ponderation_practice_minutes,
+                individual_time_minutes=meta.ponderation_individual_minutes,
                 credits=meta.credits,
             )
     elif workflow.workflow_type == WorkflowType.PROGRAM:
@@ -79,21 +66,20 @@ def _overview_metadata(
             result.update(
                 code=meta.code,
                 calculate_time_automatically=_automatic_flag(meta.calculate_time),
-                time=_optional_float(meta.time_required),
-                time_units=meta.time_units,
+                time_minutes=meta.time_required_minutes,
                 calculate_ponderation_automatically=_automatic_flag(
                     meta.calculate_ponderation
                 ),
-                theory_time=_optional_float(meta.ponderation_theory),
-                practical_time=_optional_float(meta.ponderation_practice),
-                individual_time=_optional_float(meta.ponderation_individual),
+                theory_time_minutes=meta.ponderation_theory_minutes,
+                practical_time_minutes=meta.ponderation_practice_minutes,
+                individual_time_minutes=meta.ponderation_individual_minutes,
                 calculate_credits_automatically=_automatic_flag(meta.calculate_credits),
                 credits=meta.credits,
                 calculate_classification_automatically=_automatic_flag(
                     meta.calculate_classification
                 ),
-                general_time=_duration_hours(meta.classification_general_time),
-                specific_time=_duration_hours(meta.classification_specific_time),
+                general_time_minutes=meta.classification_general_minutes,
+                specific_time_minutes=meta.classification_specific_minutes,
             )
 
     if not calculate:
@@ -106,13 +92,17 @@ def _overview_metadata(
     calculated_workflow_ids.add(workflow.id)
 
     if result["calculate_time_automatically"]:
-        result["time"] = _sum_effective_node_value(
-            workflow, "time", calculated_workflow_ids
+        result["time_minutes"] = _sum_effective_node_value(
+            workflow, "time_minutes", calculated_workflow_ids
         )
 
     if workflow.workflow_type == WorkflowType.PROGRAM:
         if result["calculate_ponderation_automatically"]:
-            for key in ("theory_time", "practical_time", "individual_time"):
+            for key in (
+                "theory_time_minutes",
+                "practical_time_minutes",
+                "individual_time_minutes",
+            ):
                 result[key] = _sum_effective_node_value(
                     workflow, key, calculated_workflow_ids
                 )
@@ -121,18 +111,18 @@ def _overview_metadata(
                 _sum_effective_node_value(workflow, "credits", calculated_workflow_ids)
             )
         if result["calculate_classification_automatically"]:
-            general_time = 0.0
-            specific_time = 0.0
+            general_time_minutes = 0
+            specific_time_minutes = 0
             for values, is_specific in _effective_node_values(
                 workflow, calculated_workflow_ids
             ):
-                time = float(values.get("time") or 0)
+                time_minutes = int(values.get("time_minutes") or 0)
                 if is_specific:
-                    specific_time += time
+                    specific_time_minutes += time_minutes
                 else:
-                    general_time += time
-            result["general_time"] = general_time
-            result["specific_time"] = specific_time
+                    general_time_minutes += time_minutes
+            result["general_time_minutes"] = general_time_minutes
+            result["specific_time_minutes"] = specific_time_minutes
 
     calculated_workflow_ids.remove(workflow.id)
     return result
@@ -164,13 +154,13 @@ def _local_node_overview_values(node: Node) -> tuple[dict[str, Any], bool]:
     if node.node_type == NodeType.TASK:
         meta = getattr(node, "taskmeta", None)
         return (
-            {"time": _optional_float(meta.time_required) if meta else None},
+            {"time_minutes": meta.time_required_minutes if meta else None},
             False,
         )
     if node.node_type == NodeType.ACTIVITY:
         meta = getattr(node, "activitymeta", None)
         return (
-            {"time": _optional_float(meta.time_required) if meta else None},
+            {"time_minutes": meta.time_required_minutes if meta else None},
             False,
         )
     if node.node_type == NodeType.COURSE:
@@ -179,10 +169,10 @@ def _local_node_overview_values(node: Node) -> tuple[dict[str, Any], bool]:
             return {}, False
         return (
             {
-                "time": _optional_float(meta.time_required),
-                "theory_time": _optional_float(meta.ponderation_theory),
-                "practical_time": _optional_float(meta.ponderation_practice),
-                "individual_time": _optional_float(meta.ponderation_individual),
+                "time_minutes": meta.time_required_minutes,
+                "theory_time_minutes": meta.ponderation_theory_minutes,
+                "practical_time_minutes": meta.ponderation_practice_minutes,
+                "individual_time_minutes": meta.ponderation_individual_minutes,
                 "credits": meta.credits,
             },
             _specific_classification(meta.classification),
@@ -209,21 +199,13 @@ def _effective_node_values(workflow: Workflow, calculated_workflow_ids: set[int]
 
 def _sum_effective_node_value(
     workflow: Workflow, key: str, calculated_workflow_ids: set[int]
-) -> float:
+) -> int:
     return sum(
-        float(values.get(key) or 0)
+        int(values.get(key) or 0)
         for values, _is_specific in _effective_node_values(
             workflow, calculated_workflow_ids
         )
     )
-
-
-def _decimal(value: float | None) -> Decimal | None:
-    return Decimal(str(value)) if value is not None else None
-
-
-def _hours(value: float | None) -> timedelta | None:
-    return timedelta(hours=value) if value is not None else None
 
 
 def _identity(value):
@@ -248,19 +230,17 @@ def _update_overview_metadata(
         meta = workflow.activitymeta
         field_map = {
             "calculate_time_automatically": ("calculate_time", bool),
-            "time": ("time_required", _decimal),
-            "time_units": ("time_units", _identity),
+            "time_minutes": ("time_required_minutes", _identity),
         }
     elif workflow.workflow_type == WorkflowType.COURSE:
         meta = workflow.coursemeta
         field_map = {
             "code": ("code", _string),
             "calculate_time_automatically": ("calculate_time", bool),
-            "time": ("time_required", _decimal),
-            "time_units": ("time_units", _identity),
-            "theory_time": ("ponderation_theory", _decimal),
-            "practical_time": ("ponderation_practice", _decimal),
-            "individual_time": ("ponderation_individual", _decimal),
+            "time_minutes": ("time_required_minutes", _identity),
+            "theory_time_minutes": ("ponderation_theory_minutes", _identity),
+            "practical_time_minutes": ("ponderation_practice_minutes", _identity),
+            "individual_time_minutes": ("ponderation_individual_minutes", _identity),
             "credits": ("credits", _identity),
         }
     elif workflow.workflow_type == WorkflowType.PROGRAM:
@@ -271,15 +251,14 @@ def _update_overview_metadata(
                 "calculate_time",
                 _automatic_value,
             ),
-            "time": ("time_required", _decimal),
-            "time_units": ("time_units", _identity),
+            "time_minutes": ("time_required_minutes", _identity),
             "calculate_ponderation_automatically": (
                 "calculate_ponderation",
                 _automatic_value,
             ),
-            "theory_time": ("ponderation_theory", _decimal),
-            "practical_time": ("ponderation_practice", _decimal),
-            "individual_time": ("ponderation_individual", _decimal),
+            "theory_time_minutes": ("ponderation_theory_minutes", _identity),
+            "practical_time_minutes": ("ponderation_practice_minutes", _identity),
+            "individual_time_minutes": ("ponderation_individual_minutes", _identity),
             "calculate_credits_automatically": (
                 "calculate_credits",
                 _automatic_value,
@@ -289,8 +268,8 @@ def _update_overview_metadata(
                 "calculate_classification",
                 _automatic_value,
             ),
-            "general_time": ("classification_general_time", _hours),
-            "specific_time": ("classification_specific_time", _hours),
+            "general_time_minutes": ("classification_general_minutes", _identity),
+            "specific_time_minutes": ("classification_specific_minutes", _identity),
         }
     else:
         return

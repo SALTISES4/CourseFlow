@@ -7,7 +7,7 @@ from pydantic import Field
 from course_flow.api.common.schemas import CamelSchema
 from course_flow.api.schemas.auth import UserSummaryOut
 from course_flow.api.schemas.permissions import PermissionContextOut
-from course_flow.core.enum import TimeUnit, WorkflowType
+from course_flow.core.enum import WorkflowType
 
 
 class WorkflowTypeIn(str, Enum):
@@ -43,33 +43,31 @@ class WorkflowCopyIn(CamelSchema):
 class WorkflowOverviewMetadataIn(CamelSchema):
     code: str | None = Field(default=None, max_length=255)
     calculate_time_automatically: bool | None = None
-    time: float | None = Field(default=None, ge=0)
-    time_units: TimeUnit | None = None
+    time_minutes: int | None = Field(default=None, ge=0)
     calculate_ponderation_automatically: bool | None = None
-    theory_time: float | None = Field(default=None, ge=0)
-    practical_time: float | None = Field(default=None, ge=0)
-    individual_time: float | None = Field(default=None, ge=0)
+    theory_time_minutes: int | None = Field(default=None, ge=0)
+    practical_time_minutes: int | None = Field(default=None, ge=0)
+    individual_time_minutes: int | None = Field(default=None, ge=0)
     calculate_credits_automatically: bool | None = None
     credits: int | None = Field(default=None, ge=0)
     calculate_classification_automatically: bool | None = None
-    general_time: float | None = Field(default=None, ge=0)
-    specific_time: float | None = Field(default=None, ge=0)
+    general_time_minutes: int | None = Field(default=None, ge=0)
+    specific_time_minutes: int | None = Field(default=None, ge=0)
 
 
 class WorkflowOverviewMetadataOut(CamelSchema):
     code: str = ""
     calculate_time_automatically: bool = False
-    time: float | None = None
-    time_units: TimeUnit | None = None
+    time_minutes: int | None = None
     calculate_ponderation_automatically: bool = False
-    theory_time: float | None = None
-    practical_time: float | None = None
-    individual_time: float | None = None
+    theory_time_minutes: int | None = None
+    practical_time_minutes: int | None = None
+    individual_time_minutes: int | None = None
     calculate_credits_automatically: bool = False
     credits: int | None = None
     calculate_classification_automatically: bool = False
-    general_time: float | None = None
-    specific_time: float | None = None
+    general_time_minutes: int | None = None
+    specific_time_minutes: int | None = None
 
 
 class WorkflowUpdateIn(CamelSchema):

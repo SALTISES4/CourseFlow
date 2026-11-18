@@ -5,11 +5,7 @@ from django.test import Client
 from django.utils import timezone
 
 from course_flow.core.auth import generate_raw_token, hash_token
-from course_flow.core.enum import (
-    ContextClassification,
-    TaskClassification,
-    TimeUnit,
-)
+from course_flow.core.enum import ContextClassification, TaskClassification
 from course_flow.core.models import Authtoken
 
 
@@ -50,4 +46,4 @@ def test_reference_data_returns_semantic_codes_without_presentation_labels(
     assert body["activityTaskClassifications"][1]["value"] == (
         TaskClassification.GATHER_INFORMATION
     )
-    assert body["timeUnits"][2]["value"] == TimeUnit.HOURS
+    assert "timeUnits" not in body

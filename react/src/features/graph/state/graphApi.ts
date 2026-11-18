@@ -42,8 +42,7 @@ import type {
   GraphViewOut,
   SectionOut,
   SectionOutResp,
-  TaskClassification,
-  TimeUnit
+  TaskClassification
 } from '@cf/api/gen/types.gen'
 
 import type {
@@ -254,12 +253,11 @@ function mapNodeMetaFromApi(node: {
   description?: string
   contextClassification?: ContextClassification | null
   taskClassification?: TaskClassification | null
-  timeRequired?: number | null
-  timeUnits?: TimeUnit | null
+  timeRequiredMinutes?: number | null
   representsWorkflow?: boolean
-  ponderationTheory?: number | null
-  ponderationPractice?: number | null
-  ponderationIndividual?: number | null
+  ponderationTheoryMinutes?: number | null
+  ponderationPracticeMinutes?: number | null
+  ponderationIndividualMinutes?: number | null
   credits?: number | null
   specificEducation?: boolean
   tagIds?: number[]
@@ -270,12 +268,11 @@ function mapNodeMetaFromApi(node: {
   | 'description'
   | 'contextClassification'
   | 'taskClassification'
-  | 'timeRequired'
-  | 'timeUnits'
+  | 'timeRequiredMinutes'
   | 'representsWorkflow'
-  | 'ponderationTheory'
-  | 'ponderationPractice'
-  | 'ponderationIndividual'
+  | 'ponderationTheoryMinutes'
+  | 'ponderationPracticeMinutes'
+  | 'ponderationIndividualMinutes'
   | 'credits'
   | 'specificEducation'
   | 'tagIds'
@@ -286,12 +283,11 @@ function mapNodeMetaFromApi(node: {
     description: node.description ?? '',
     contextClassification: node.contextClassification ?? null,
     taskClassification: node.taskClassification ?? null,
-    timeRequired: node.timeRequired ?? null,
-    timeUnits: node.timeUnits ?? null,
+    timeRequiredMinutes: node.timeRequiredMinutes ?? null,
     representsWorkflow: node.representsWorkflow ?? false,
-    ponderationTheory: node.ponderationTheory ?? null,
-    ponderationPractice: node.ponderationPractice ?? null,
-    ponderationIndividual: node.ponderationIndividual ?? null,
+    ponderationTheoryMinutes: node.ponderationTheoryMinutes ?? null,
+    ponderationPracticeMinutes: node.ponderationPracticeMinutes ?? null,
+    ponderationIndividualMinutes: node.ponderationIndividualMinutes ?? null,
     credits: node.credits ?? null,
     specificEducation: node.specificEducation ?? false,
     tagIds: node.tagIds ?? []
@@ -541,20 +537,20 @@ export const changeNodeMetaCommand = async (
   if (meta.taskClassification !== undefined) {
     body.taskClassification = meta.taskClassification
   }
-  if (meta.timeRequired !== undefined) {
-    body.timeRequired = meta.timeRequired
+  if (meta.timeRequiredMinutes !== undefined) {
+    body.timeRequiredMinutes = meta.timeRequiredMinutes
   }
   if (meta.representsWorkflow !== undefined) {
     body.representsWorkflow = meta.representsWorkflow
   }
-  if (meta.ponderationTheory !== undefined) {
-    body.ponderationTheory = meta.ponderationTheory
+  if (meta.ponderationTheoryMinutes !== undefined) {
+    body.ponderationTheoryMinutes = meta.ponderationTheoryMinutes
   }
-  if (meta.ponderationPractice !== undefined) {
-    body.ponderationPractice = meta.ponderationPractice
+  if (meta.ponderationPracticeMinutes !== undefined) {
+    body.ponderationPracticeMinutes = meta.ponderationPracticeMinutes
   }
-  if (meta.ponderationIndividual !== undefined) {
-    body.ponderationIndividual = meta.ponderationIndividual
+  if (meta.ponderationIndividualMinutes !== undefined) {
+    body.ponderationIndividualMinutes = meta.ponderationIndividualMinutes
   }
   if (meta.credits !== undefined) {
     body.credits = meta.credits

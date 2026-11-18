@@ -1,16 +1,16 @@
 import TextField from '@mui/material/TextField'
-import { ChangeEvent, FocusEvent, useEffect, useRef, useState } from 'react'
+import { FocusEvent, useEffect, useRef, useState } from 'react'
+import { NumberFormatValues, PatternFormat } from 'react-number-format'
 
-type DurationValue = number | null | undefined
-
-type ParsedHours = {
-  valid: boolean
-  value: number | null
-}
+import {
+  DurationMinutes,
+  formatDurationInput,
+  parseDurationInput
+} from './duration'
 
 type Props = {
   label: string
-  value: DurationValue
+  value: DurationMinutes
   disabled?: boolean
   readOnly?: boolean
   fullWidth?: boolean
@@ -18,28 +18,9 @@ type Props = {
   onValueCommit?: (value: number | null) => void
 }
 
-export const formatHoursDuration = (value: DurationValue): string => {
-  const hours = value ?? 0
-  return `${hours} ${hours === 1 ? 'hour' : 'hours'}`
-}
-
-export const parseHoursDuration = (value: string): ParsedHours => {
-  const normalized = value.trim()
-  if (normalized === '') {
-    return { valid: true, value: null }
-  }
-
-  const match = normalized.match(/^(\d+(?:\.\d+)?)\s*(?:hours?)?$/i)
-  if (!match) {
-    return { valid: false, value: null }
-  }
-
-  return { valid: true, value: Number(match[1]) }
-}
-
 /**
- * A single hours-duration field. The API stores a number of hours, while the
- * user-facing value includes its unit (for example, "2 hours").
+ * Fixed-width duration editor. It deliberately does not use a clock/time value:
+ * `123:45` means a duration of 123 hours and 45 minutes.
  */
 const DurationTextField = ({
   label,
@@ -50,52 +31,63 @@ const DurationTextField = ({
   onValueChange,
   onValueCommit
 }: Props) => {
-  const [draft, setDraft] = useState(() => formatHoursDuration(value))
+  const [draft, setDraft] = useState(() => formatDurationInput(value))
+  const draftRef = useRef(draft)
   const focused = useRef(false)
 
   useEffect(() => {
     if (!focused.current) {
-      setDraft(formatHoursDuration(value))
+      const nextDraft = formatDurationInput(value)
+      draftRef.current = nextDraft
+      setDraft(nextDraft)
     }
   }, [value])
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const nextDraft = event.target.value
+  const handleValueChange = ({ value: nextDraft }: NumberFormatValues) => {
+    draftRef.current = nextDraft
     setDraft(nextDraft)
-
-    const parsed = parseHoursDuration(nextDraft)
+    const parsed = parseDurationInput(nextDraft)
     if (parsed.valid) {
       onValueChange?.(parsed.value)
     }
   }
 
-  const handleBlur = (event: FocusEvent<HTMLInputElement>) => {
+  const handleBlur = (_event: FocusEvent<HTMLInputElement>) => {
     focused.current = false
-    const parsed = parseHoursDuration(event.target.value)
+    const parsed = parseDurationInput(draftRef.current)
     if (!parsed.valid) {
-      setDraft(formatHoursDuration(value))
+      const restored = formatDurationInput(value)
+      draftRef.current = restored
+      setDraft(restored)
       return
     }
-
-    setDraft(formatHoursDuration(parsed.value))
     onValueChange?.(parsed.value)
     onValueCommit?.(parsed.value)
   }
 
   return (
-    <TextField
+    <PatternFormat
+      customInput={TextField}
       label={label}
       variant="outlined"
       size="small"
       fullWidth={fullWidth}
+      format="###:##"
+      mask="_"
+      allowEmptyFormatting
+      placeholder="hhh:mm"
       value={draft}
+      valueIsNumericString
       disabled={disabled}
-      inputProps={{ inputMode: 'decimal' }}
+      inputProps={{ inputMode: 'numeric' }}
       InputProps={{ readOnly }}
+      isAllowed={({ value: digits }) =>
+        digits.length < 4 || Number(digits.charAt(3)) <= 5
+      }
       onFocus={() => {
         focused.current = true
       }}
-      onChange={handleChange}
+      onValueChange={handleValueChange}
       onBlur={handleBlur}
     />
   )

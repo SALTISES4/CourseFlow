@@ -106,15 +106,15 @@ const MetadataFields = ({
     values.calculateClassificationAutomatically
   )
   const ponderationTotal =
-    (values.theoryTime ?? 0) +
-    (values.practicalTime ?? 0) +
-    (values.individualTime ?? 0)
+    (values.theoryTimeMinutes ?? 0) +
+    (values.practicalTimeMinutes ?? 0) +
+    (values.individualTimeMinutes ?? 0)
   const classificationTotal =
-    (values.generalTime ?? 0) + (values.specificTime ?? 0)
+    (values.generalTimeMinutes ?? 0) + (values.specificTimeMinutes ?? 0)
   const hasPonderationMismatch =
-    isCourseOrProgram && ponderationTotal !== (values.time ?? 0)
+    isCourseOrProgram && ponderationTotal !== (values.timeMinutes ?? 0)
   const hasClassificationMismatch =
-    isProgram && classificationTotal !== (values.time ?? 0)
+    isProgram && classificationTotal !== (values.timeMinutes ?? 0)
 
   return (
     <Grid
@@ -130,7 +130,7 @@ const MetadataFields = ({
           <SC.InfoBlockTitle>{t('metadata.time')}</SC.InfoBlockTitle>
           <SC.InfoBlockContent>
             <Stack direction="row" spacing={2}>
-              {durationField(t('metadata.time'), 'time', timeAutomatic)}
+              {durationField(t('metadata.time'), 'timeMinutes', timeAutomatic)}
               <FormControlLabel
                 label={t('metadata.calculateTime')}
                 control={
@@ -197,21 +197,21 @@ const MetadataFields = ({
                 <Grid item xs={12} md={4}>
                   {durationField(
                     t('metadata.theory'),
-                    'theoryTime',
+                    'theoryTimeMinutes',
                     ponderationAutomatic
                   )}
                 </Grid>
                 <Grid item xs={12} md={4}>
                   {durationField(
                     t('metadata.practical'),
-                    'practicalTime',
+                    'practicalTimeMinutes',
                     ponderationAutomatic
                   )}
                 </Grid>
                 <Grid item xs={12} md={4}>
                   {durationField(
                     t('metadata.individual'),
-                    'individualTime',
+                    'individualTimeMinutes',
                     ponderationAutomatic
                   )}
                 </Grid>
@@ -252,7 +252,7 @@ const MetadataFields = ({
                 <Grid item xs={12} md={6}>
                   {durationField(
                     t('metadata.generalTime'),
-                    'generalTime',
+                    'generalTimeMinutes',
                     classificationAutomatic,
                     true
                   )}
@@ -260,7 +260,7 @@ const MetadataFields = ({
                 <Grid item xs={12} md={6}>
                   {durationField(
                     t('metadata.specificTime'),
-                    'specificTime',
+                    'specificTimeMinutes',
                     classificationAutomatic,
                     true
                   )}

@@ -4,7 +4,6 @@ import {
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import { WorkflowPermission } from '@cf/api/gen/types.gen'
 import DurationTextField from '@cf/components/common/DurationTextField'
-import TimeDurationField from '@cf/components/common/UIPrimitives/TimeDurationInput'
 import WysiwygField from '@cf/components/common/UIPrimitives/WysiwygInput'
 import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import type { NodeEntity } from '@cf/features/graph/state/model/types'
@@ -183,15 +182,13 @@ const EditNodeForm = ({
       title: editableTitle,
       description: node.description,
       ponderation: {
-        theory: String(node.ponderationTheory ?? ''),
-        practice: String(node.ponderationPractice ?? ''),
-        individual: String(node.ponderationIndividual ?? ''),
-        generalEdu: '0',
-        specificEdu: '0'
+        theoryMinutes: node.ponderationTheoryMinutes ?? undefined,
+        practiceMinutes: node.ponderationPracticeMinutes ?? undefined,
+        individualMinutes: node.ponderationIndividualMinutes ?? undefined
       },
       contextType: node.contextClassification ?? '',
       taskType: node.taskClassification ?? '',
-      timeRequired: node.timeRequired ?? undefined,
+      timeRequiredMinutes: node.timeRequiredMinutes ?? undefined,
       tags: node.tagIds ?? [],
       credits: node.credits ?? '',
       specificEducation: node.specificEducation
@@ -214,7 +211,7 @@ const EditNodeForm = ({
             meta.title = data.title
           }
           meta.description = data.description
-          meta.timeRequired = toNullableNumber(data.timeRequired)
+          meta.timeRequiredMinutes = toNullableNumber(data.timeRequiredMinutes)
 
           if (isCourseParent || isActivityParent) {
             meta.contextClassification = data.contextType || null
@@ -224,12 +221,14 @@ const EditNodeForm = ({
           }
           if (isProgramParent) {
             meta.credits = toNullableNumber(data.credits)
-            meta.ponderationTheory = toNullableNumber(data.ponderation?.theory)
-            meta.ponderationPractice = toNullableNumber(
-              data.ponderation?.practice
+            meta.ponderationTheoryMinutes = toNullableNumber(
+              data.ponderation?.theoryMinutes
             )
-            meta.ponderationIndividual = toNullableNumber(
-              data.ponderation?.individual
+            meta.ponderationPracticeMinutes = toNullableNumber(
+              data.ponderation?.practiceMinutes
+            )
+            meta.ponderationIndividualMinutes = toNullableNumber(
+              data.ponderation?.individualMinutes
             )
             meta.specificEducation = Boolean(data.specificEducation)
           }
@@ -363,11 +362,11 @@ const EditNodeForm = ({
             parentWorkflowType={parentWorkflowType ?? 'course'}
             showTime={isCourseParent || isProgramParent}
             showProgramFields={isProgramParent}
-            time={linkedMetadata?.time}
+            timeMinutes={linkedMetadata?.timeMinutes}
             credits={linkedMetadata?.credits}
-            ponderationTheory={linkedMetadata?.theoryTime}
-            ponderationPractice={linkedMetadata?.practicalTime}
-            ponderationIndividual={linkedMetadata?.individualTime}
+            ponderationTheoryMinutes={linkedMetadata?.theoryTimeMinutes}
+            ponderationPracticeMinutes={linkedMetadata?.practicalTimeMinutes}
+            ponderationIndividualMinutes={linkedMetadata?.individualTimeMinutes}
           />
         )}
 
@@ -448,7 +447,7 @@ const EditNodeForm = ({
 
           {showEditableFields && (
             <Controller
-              name="timeRequired"
+              name="timeRequiredMinutes"
               control={control}
               render={({ field }) => (
                 <DurationTextField
@@ -487,33 +486,51 @@ const EditNodeForm = ({
             </Typography>
             <Grid container rowSpacing={2} columnSpacing={1} sx={{ mb: 3 }}>
               <Grid item xs={6}>
-                <TextField
-                  label={t('edit.theoryHours')}
-                  variant="outlined"
-                  size="small"
-                  type="number"
-                  {...register('ponderation.theory')}
-                  InputProps={{ readOnly: !canEdit }}
+                <Controller
+                  name="ponderation.theoryMinutes"
+                  control={control}
+                  render={({ field }) => (
+                    <DurationTextField
+                      label={t('edit.theoryHours')}
+                      value={field.value}
+                      readOnly={!canEdit}
+                      fullWidth
+                      onValueChange={field.onChange}
+                      onValueCommit={field.onBlur}
+                    />
+                  )}
                 />
               </Grid>
               <Grid item xs={6}>
-                <TextField
-                  label={t('edit.practiceHours')}
-                  variant="outlined"
-                  size="small"
-                  type="number"
-                  {...register('ponderation.practice')}
-                  InputProps={{ readOnly: !canEdit }}
+                <Controller
+                  name="ponderation.practiceMinutes"
+                  control={control}
+                  render={({ field }) => (
+                    <DurationTextField
+                      label={t('edit.practiceHours')}
+                      value={field.value}
+                      readOnly={!canEdit}
+                      fullWidth
+                      onValueChange={field.onChange}
+                      onValueCommit={field.onBlur}
+                    />
+                  )}
                 />
               </Grid>
               <Grid item xs={6}>
-                <TextField
-                  label={t('edit.individualHours')}
-                  variant="outlined"
-                  size="small"
-                  type="number"
-                  {...register('ponderation.individual')}
-                  InputProps={{ readOnly: !canEdit }}
+                <Controller
+                  name="ponderation.individualMinutes"
+                  control={control}
+                  render={({ field }) => (
+                    <DurationTextField
+                      label={t('edit.individualHours')}
+                      value={field.value}
+                      readOnly={!canEdit}
+                      fullWidth
+                      onValueChange={field.onChange}
+                      onValueCommit={field.onBlur}
+                    />
+                  )}
                 />
               </Grid>
             </Grid>

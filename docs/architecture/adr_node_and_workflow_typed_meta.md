@@ -43,7 +43,7 @@ Typed meta tables use a **workflow XOR node** check constraint where both sides 
 **Activitymeta** and **taskmeta** (node rows) store API-facing fields previously on `Node`:
 
 - `context_classification`, `task_classification` (activity only)
-- `time_required`, `time_units`
+- `time_required_minutes` (canonical non-negative integer minutes; no unit column)
 - `represents_workflow`
 
 **Coursemeta** (node rows) keeps course-layer fields (`classification`, `code`). Activity-layer fields are not stored on course-type nodes.

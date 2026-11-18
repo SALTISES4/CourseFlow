@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from datetime import timedelta
-from decimal import Decimal
 from uuid import UUID
 
 from django.db.models import Q
@@ -69,7 +67,8 @@ class DjangoProjectSnapshotExporter:
                 "activitymeta",
                 "coursemeta",
                 "programmeta",
-            ).order_by("uuid")
+            )
+            .order_by("uuid")
         )
         workflow_ids = {workflow.id for workflow in workflows}
         workflow_refs = {workflow.id: str(workflow.uuid) for workflow in workflows}
@@ -127,7 +126,9 @@ class DjangoProjectSnapshotExporter:
             project=project_snapshot,
         )
 
-    def _export_workflow(self, workflow, *, workflow_refs, tag_refs) -> WorkflowSnapshot:
+    def _export_workflow(
+        self, workflow, *, workflow_refs, tag_refs
+    ) -> WorkflowSnapshot:
         graph = workflow.graph
         sections = list(graph.sections.order_by("position", "id"))
         channels = list(graph.channels.order_by("position", "id"))
@@ -161,9 +162,7 @@ class DjangoProjectSnapshotExporter:
         }
 
         referenced_tag_ids = {
-            tag.id
-            for entity in (*nodes, *outcomes)
-            for tag in entity.tags.all()
+            tag.id for entity in (*nodes, *outcomes) for tag in entity.tags.all()
         }
         unknown_tag_ids = referenced_tag_ids - set(tag_refs)
         if unknown_tag_ids:
@@ -246,9 +245,7 @@ class DjangoProjectSnapshotExporter:
                         title_copy_count=outcome.title_copy_count,
                         description=outcome.description,
                         code=outcome.code,
-                        tag_refs=tuple(
-                            tag_refs[tag.id] for tag in outcome.tags.all()
-                        ),
+                        tag_refs=tuple(tag_refs[tag.id] for tag in outcome.tags.all()),
                     )
                     for outcome in outcomes
                 ),
@@ -304,8 +301,7 @@ class DjangoProjectSnapshotExporter:
                 calculate_time=meta.calculate_time,
                 context_classification=meta.context_classification,
                 task_classification=meta.task_classification,
-                time_required=meta.time_required,
-                time_units=meta.time_units,
+                time_required_minutes=meta.time_required_minutes,
                 represents_workflow=meta.represents_workflow,
                 context=meta.context,
                 classification=meta.classification,
@@ -314,11 +310,10 @@ class DjangoProjectSnapshotExporter:
             meta = workflow.coursemeta
             return CourseMetaSnapshot(
                 calculate_time=meta.calculate_time,
-                time_required=meta.time_required,
-                time_units=meta.time_units,
-                ponderation_theory=meta.ponderation_theory,
-                ponderation_practice=meta.ponderation_practice,
-                ponderation_individual=meta.ponderation_individual,
+                time_required_minutes=meta.time_required_minutes,
+                ponderation_theory_minutes=meta.ponderation_theory_minutes,
+                ponderation_practice_minutes=meta.ponderation_practice_minutes,
+                ponderation_individual_minutes=meta.ponderation_individual_minutes,
                 credits=meta.credits,
                 specific_education=meta.specific_education,
                 classification=meta.classification,
@@ -332,18 +327,13 @@ class DjangoProjectSnapshotExporter:
                 calculate_credits=meta.calculate_credits,
                 calculate_ponderation=meta.calculate_ponderation,
                 calculate_classification=meta.calculate_classification,
-                time_required=meta.time_required,
-                time_units=meta.time_units,
-                ponderation_theory=meta.ponderation_theory,
-                ponderation_practice=meta.ponderation_practice,
-                ponderation_individual=meta.ponderation_individual,
+                time_required_minutes=meta.time_required_minutes,
+                ponderation_theory_minutes=meta.ponderation_theory_minutes,
+                ponderation_practice_minutes=meta.ponderation_practice_minutes,
+                ponderation_individual_minutes=meta.ponderation_individual_minutes,
                 credits=meta.credits,
-                classification_general_seconds=_duration_seconds(
-                    meta.classification_general_time
-                ),
-                classification_specific_seconds=_duration_seconds(
-                    meta.classification_specific_time
-                ),
+                classification_general_minutes=meta.classification_general_minutes,
+                classification_specific_minutes=meta.classification_specific_minutes,
             )
         raise ProjectSnapshotExportError(
             f"unsupported root workflow type {workflow.workflow_type!r}"
@@ -357,8 +347,7 @@ class DjangoProjectSnapshotExporter:
                 calculate_time=meta.calculate_time,
                 context_classification=meta.context_classification,
                 task_classification=meta.task_classification,
-                time_required=meta.time_required,
-                time_units=meta.time_units,
+                time_required_minutes=meta.time_required_minutes,
                 represents_workflow=meta.represents_workflow,
                 context=meta.context,
                 classification=meta.classification,
@@ -367,11 +356,10 @@ class DjangoProjectSnapshotExporter:
             meta = node.coursemeta
             return CourseMetaSnapshot(
                 calculate_time=meta.calculate_time,
-                time_required=meta.time_required,
-                time_units=meta.time_units,
-                ponderation_theory=meta.ponderation_theory,
-                ponderation_practice=meta.ponderation_practice,
-                ponderation_individual=meta.ponderation_individual,
+                time_required_minutes=meta.time_required_minutes,
+                ponderation_theory_minutes=meta.ponderation_theory_minutes,
+                ponderation_practice_minutes=meta.ponderation_practice_minutes,
+                ponderation_individual_minutes=meta.ponderation_individual_minutes,
                 credits=meta.credits,
                 specific_education=meta.specific_education,
                 classification=meta.classification,
@@ -382,8 +370,7 @@ class DjangoProjectSnapshotExporter:
             return TaskMetaSnapshot(
                 context_classification=meta.context_classification,
                 task_classification=meta.task_classification,
-                time_required=meta.time_required,
-                time_units=meta.time_units,
+                time_required_minutes=meta.time_required_minutes,
                 represents_workflow=meta.represents_workflow,
                 context=meta.context,
             )
@@ -421,13 +408,6 @@ class DjangoProjectSnapshotExporter:
             ExclusionSnapshot(kind=kind, count=count, reason=reasons[kind])
             for kind, count in counts.items()
         )
-
-
-def _duration_seconds(value: timedelta | None) -> Decimal | None:
-    if value is None:
-        return None
-    whole_seconds = value.days * 86400 + value.seconds
-    return Decimal(whole_seconds) + (Decimal(value.microseconds) / Decimal(1_000_000))
 
 
 def _order_outcomes(outcomes) -> list:

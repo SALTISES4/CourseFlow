@@ -73,12 +73,11 @@ export interface NodeEntity {
   description: string
   contextClassification: ContextClassification | null
   taskClassification: TaskClassification | null
-  timeRequired: number | null
-  timeUnits: TimeUnit | null
+  timeRequiredMinutes: number | null
   representsWorkflow: boolean
-  ponderationTheory: number | null
-  ponderationPractice: number | null
-  ponderationIndividual: number | null
+  ponderationTheoryMinutes: number | null
+  ponderationPracticeMinutes: number | null
+  ponderationIndividualMinutes: number | null
   credits: number | null
   specificEducation: boolean
   tagIds: number[]
@@ -410,12 +409,11 @@ export interface NodeMetaPatch {
   description?: string
   contextClassification?: ContextClassification | null
   taskClassification?: TaskClassification | null
-  timeRequired?: number | null
-  timeUnits?: TimeUnit | null
+  timeRequiredMinutes?: number | null
   representsWorkflow?: boolean
-  ponderationTheory?: number | null
-  ponderationPractice?: number | null
-  ponderationIndividual?: number | null
+  ponderationTheoryMinutes?: number | null
+  ponderationPracticeMinutes?: number | null
+  ponderationIndividualMinutes?: number | null
   credits?: number | null
   specificEducation?: boolean
   tagIds?: number[]
@@ -483,6 +481,5 @@ export interface MoveOutcomeInput {
 }
 import type {
   ContextClassification,
-  TaskClassification,
-  TimeUnit
+  TaskClassification
 } from '@cf/api/gen/types.gen'

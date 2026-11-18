@@ -1,5 +1,5 @@
 import WysiwygField from '@cf/components/common/UIPrimitives/WysiwygInput'
-import { formatHoursDuration } from '@cfComponents/DurationTextField'
+import { formatDurationHours } from '@cfComponents/duration'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { useTranslation } from 'react-i18next'
@@ -11,11 +11,11 @@ type Props = {
   parentWorkflowType: string
   showTime?: boolean
   showProgramFields?: boolean
-  time?: number | null
+  timeMinutes?: number | null
   credits?: number | null
-  ponderationTheory?: number | null
-  ponderationPractice?: number | null
-  ponderationIndividual?: number | null
+  ponderationTheoryMinutes?: number | null
+  ponderationPracticeMinutes?: number | null
+  ponderationIndividualMinutes?: number | null
 }
 
 /**
@@ -28,13 +28,13 @@ const LinkedWorkflowMirrorFields = ({
   parentWorkflowType,
   showTime = false,
   showProgramFields = false,
-  time,
+  timeMinutes,
   credits,
-  ponderationTheory,
-  ponderationPractice,
-  ponderationIndividual
+  ponderationTheoryMinutes,
+  ponderationPracticeMinutes,
+  ponderationIndividualMinutes
 }: Props) => {
-  const { t } = useTranslation('workflow')
+  const { t, i18n } = useTranslation('workflow')
 
   return (
     <Stack spacing={2}>
@@ -55,7 +55,7 @@ const LinkedWorkflowMirrorFields = ({
           label={t('edit.time')}
           variant="outlined"
           size="small"
-          value={formatHoursDuration(time)}
+          value={formatDurationHours(timeMinutes, i18n.language)}
           placeholder="—"
           InputProps={{ readOnly: true }}
         />
@@ -74,7 +74,7 @@ const LinkedWorkflowMirrorFields = ({
             label={t('edit.theoryHours')}
             variant="outlined"
             size="small"
-            value={formatHoursDuration(ponderationTheory)}
+            value={formatDurationHours(ponderationTheoryMinutes, i18n.language)}
             placeholder="—"
             InputProps={{ readOnly: true }}
           />
@@ -82,7 +82,10 @@ const LinkedWorkflowMirrorFields = ({
             label={t('edit.practiceHours')}
             variant="outlined"
             size="small"
-            value={formatHoursDuration(ponderationPractice)}
+            value={formatDurationHours(
+              ponderationPracticeMinutes,
+              i18n.language
+            )}
             placeholder="—"
             InputProps={{ readOnly: true }}
           />
@@ -90,7 +93,10 @@ const LinkedWorkflowMirrorFields = ({
             label={t('edit.individualHours')}
             variant="outlined"
             size="small"
-            value={formatHoursDuration(ponderationIndividual)}
+            value={formatDurationHours(
+              ponderationIndividualMinutes,
+              i18n.language
+            )}
             placeholder="—"
             InputProps={{ readOnly: true }}
           />

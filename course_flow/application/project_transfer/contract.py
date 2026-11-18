@@ -13,21 +13,18 @@ import json
 import re
 from collections.abc import Hashable, Iterable
 from datetime import datetime
-from decimal import Decimal
 from typing import Annotated, Literal, TypeVar
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 SNAPSHOT_KIND = "courseflow.project"
-SNAPSHOT_SCHEMA_VERSION = 1
+SNAPSHOT_SCHEMA_VERSION = 2
 
 Reference = Annotated[str, Field(min_length=1, max_length=255)]
 Sha256 = Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
 ShortText = Annotated[str, Field(max_length=200)]
 PositiveSmallInteger = Annotated[int, Field(ge=0, le=32767)]
 NonNegativeInteger = Annotated[int, Field(ge=0)]
-StoredDecimal = Annotated[Decimal, Field(max_digits=10, decimal_places=2)]
-OptionalStoredDecimal = StoredDecimal | None
 UniqueValue = TypeVar("UniqueValue", bound=Hashable)
 
 
@@ -74,8 +71,7 @@ class ActivityMetaSnapshot(SnapshotModel):
     calculate_time: bool = False
     context_classification: Annotated[str | None, Field(max_length=64)] = None
     task_classification: Annotated[str | None, Field(max_length=64)] = None
-    time_required: OptionalStoredDecimal = None
-    time_units: Annotated[str | None, Field(max_length=16)] = None
+    time_required_minutes: NonNegativeInteger | None = None
     represents_workflow: bool = False
     context: Annotated[str, Field(max_length=1024)] = ""
     classification: Annotated[str, Field(max_length=255)] = ""
@@ -84,11 +80,10 @@ class ActivityMetaSnapshot(SnapshotModel):
 class CourseMetaSnapshot(SnapshotModel):
     kind: Literal["course"] = "course"
     calculate_time: bool = False
-    time_required: OptionalStoredDecimal = None
-    time_units: Annotated[str | None, Field(max_length=16)] = None
-    ponderation_theory: OptionalStoredDecimal = None
-    ponderation_practice: OptionalStoredDecimal = None
-    ponderation_individual: OptionalStoredDecimal = None
+    time_required_minutes: NonNegativeInteger | None = None
+    ponderation_theory_minutes: NonNegativeInteger | None = None
+    ponderation_practice_minutes: NonNegativeInteger | None = None
+    ponderation_individual_minutes: NonNegativeInteger | None = None
     credits: Annotated[int | None, Field(ge=0)] = None
     specific_education: bool = False
     classification: Annotated[str, Field(max_length=255)] = ""
@@ -102,22 +97,20 @@ class ProgramMetaSnapshot(SnapshotModel):
     calculate_credits: str = ""
     calculate_ponderation: str = ""
     calculate_classification: str = ""
-    time_required: OptionalStoredDecimal = None
-    time_units: Annotated[str | None, Field(max_length=16)] = None
-    ponderation_theory: OptionalStoredDecimal = None
-    ponderation_practice: OptionalStoredDecimal = None
-    ponderation_individual: OptionalStoredDecimal = None
+    time_required_minutes: NonNegativeInteger | None = None
+    ponderation_theory_minutes: NonNegativeInteger | None = None
+    ponderation_practice_minutes: NonNegativeInteger | None = None
+    ponderation_individual_minutes: NonNegativeInteger | None = None
     credits: Annotated[int | None, Field(ge=0)] = None
-    classification_general_seconds: Decimal | None = None
-    classification_specific_seconds: Decimal | None = None
+    classification_general_minutes: NonNegativeInteger | None = None
+    classification_specific_minutes: NonNegativeInteger | None = None
 
 
 class TaskMetaSnapshot(SnapshotModel):
     kind: Literal["task"] = "task"
     context_classification: Annotated[str | None, Field(max_length=64)] = None
     task_classification: Annotated[str | None, Field(max_length=64)] = None
-    time_required: OptionalStoredDecimal = None
-    time_units: Annotated[str | None, Field(max_length=16)] = None
+    time_required_minutes: NonNegativeInteger | None = None
     represents_workflow: bool = False
     context: Annotated[str, Field(max_length=1024)] = ""
 
@@ -232,7 +225,7 @@ class ProjectSnapshot(SnapshotModel):
 
 class ProjectSnapshotBundle(SnapshotModel):
     kind: Literal["courseflow.project"] = SNAPSHOT_KIND
-    schema_version: Literal[1] = SNAPSHOT_SCHEMA_VERSION
+    schema_version: Literal[2] = SNAPSHOT_SCHEMA_VERSION
     source: SourceSnapshot
     project: ProjectSnapshot
 
@@ -401,7 +394,10 @@ def _validate_project(project: ProjectSnapshot) -> None:
         outcomes_by_ref = {outcome.ref: outcome for outcome in graph.outcomes}
         sibling_positions: list[str] = []
         for outcome in graph.outcomes:
-            if outcome.parent_ref is not None and outcome.parent_ref not in outcome_refs:
+            if (
+                outcome.parent_ref is not None
+                and outcome.parent_ref not in outcome_refs
+            ):
                 raise ProjectSnapshotContractError(
                     f"outcome {outcome.ref!r} references unknown parent"
                 )
@@ -424,7 +420,10 @@ def _validate_project(project: ProjectSnapshot) -> None:
         _require_acyclic_outcomes(outcomes_by_ref, workflow_ref=workflow.ref)
 
         for edge in graph.edges:
-            if edge.source_node_ref not in node_refs or edge.target_node_ref not in node_refs:
+            if (
+                edge.source_node_ref not in node_refs
+                or edge.target_node_ref not in node_refs
+            ):
                 raise ProjectSnapshotContractError(
                     f"edge {edge.ref!r} references a node outside workflow {workflow.ref!r}"
                 )

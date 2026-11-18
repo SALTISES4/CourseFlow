@@ -494,8 +494,6 @@ export {
   type TaskReferenceOptionOut,
   type ThreadCommentCountOut,
   type ThreadCommentsBulkDeleteOut,
-  TimeUnit,
-  type TimeUnitReferenceOptionOut,
   type UnlinkNodeOutcomeData,
   type UnlinkNodeOutcomeResponse,
   type UnlinkNodeOutcomeResponses,

@@ -5,11 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 import referenceEn from './locales/en-CA/reference'
 
-type ReferenceGroup =
-  | 'discipline'
-  | 'context'
-  | 'taskClassification'
-  | 'timeUnit'
+type ReferenceGroup = 'discipline' | 'context' | 'taskClassification'
 type ReferenceCode<Group extends ReferenceGroup> =
   keyof (typeof referenceEn)[Group]
 type ReferenceTranslationKey = {
@@ -58,17 +54,11 @@ export function useReferenceLabels() {
     (code: string) => translateCode(t, 'taskClassification', code),
     [t]
   )
-  const timeUnitLabel = useCallback(
-    (code: string) => translateCode(t, 'timeUnit', code),
-    [t]
-  )
-
   return {
     locale,
     collator,
     disciplineLabel,
     contextLabel,
-    taskClassificationLabel,
-    timeUnitLabel
+    taskClassificationLabel
   }
 }

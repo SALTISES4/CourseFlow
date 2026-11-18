@@ -22,8 +22,7 @@ export type NodeMetaPatch = {
   title?: string | null;
   contextClassification?: number | null;
   taskClassification?: number | null;
-  timeRequired?: number | null;
-  timeUnits?: number | null;
+  timeRequiredMinutes?: number | null;
 };
 
 type NodeResource = {
@@ -33,8 +32,7 @@ type NodeResource = {
   linkedWorkflowUuid?: string | null;
   contextClassification?: number | null;
   taskClassification?: number | null;
-  timeRequired?: number | null;
-  timeUnits?: number | null;
+  timeRequiredMinutes?: number | null;
 };
 
 type GraphViewForNodeSetup = {

@@ -57,6 +57,7 @@ const TableHeader = ({
                 <Styled.HeaderLegendWrap key={column.labelKey}>
                   <Styled.TableLegend
                     className={`legend-extra ${column.className}`}
+                    data-test-id={column.headerTestId}
                   >
                     {t(column.labelKey)}
                   </Styled.TableLegend>
@@ -65,7 +66,10 @@ const TableHeader = ({
             </>
           ) : (
             <Styled.HeaderLegendWrap sx={{ marginLeft: 2 }}>
-              <Styled.TableLegend className={`legend-extra ${group.className}`}>
+              <Styled.TableLegend
+                className={`legend-extra ${group.className}`}
+                data-test-id={group.headerTestId}
+              >
                 {t(group.labelKey)}
               </Styled.TableLegend>
             </Styled.HeaderLegendWrap>

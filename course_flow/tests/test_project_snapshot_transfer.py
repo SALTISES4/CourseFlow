@@ -38,9 +38,9 @@ _SNAPSHOT_PATH = (
     _REPOSITORY_ROOT
     / "course_flow"
     / "project_snapshots"
-    / "project_for_templates.v1.json"
+    / "project_for_templates.v2.json"
 )
-_SCHEMA_PATH = _REPOSITORY_ROOT / "docs" / "schemas" / "project_snapshot_v1.schema.json"
+_SCHEMA_PATH = _REPOSITORY_ROOT / "docs" / "schemas" / "project_snapshot_v2.schema.json"
 
 
 def _load_snapshot() -> ProjectSnapshotBundle:
@@ -84,13 +84,15 @@ def test_checked_in_project_snapshot_is_valid_and_complete():
     assert snapshot.project.title == "Project for templates"
     assert snapshot.project.is_template is False
     assert len(snapshot.project.workflows) == 7
-    assert sum(len(workflow.graph.nodes) for workflow in snapshot.project.workflows) == 190
+    assert (
+        sum(len(workflow.graph.nodes) for workflow in snapshot.project.workflows) == 190
+    )
     assert (
         sum(len(workflow.graph.outcomes) for workflow in snapshot.project.workflows)
         == 79
     )
     assert snapshot.source.fingerprint_sha256 == (
-        "a74f3fc11af7f2863a3303b05348129d19807c2af3f300e4a1b3e923ee7a6be0"
+        "657198a4b1d702cf4d290e720dc5b650dca671c2163c09bffdf0be35260914ca"
     )
     assert {entry.kind: entry.count for entry in snapshot.source.exclusions} == {
         "comments": 0,
@@ -262,6 +264,9 @@ def test_regenerated_import_remaps_project_scoped_relationships():
         source_node=imported_first,
         target_node=imported_second,
     ).exists()
-    assert Horizontaloutcome.objects.filter(
-        outcomes__graph=imported_main.graph
-    ).distinct().count() == 1
+    assert (
+        Horizontaloutcome.objects.filter(outcomes__graph=imported_main.graph)
+        .distinct()
+        .count()
+        == 1
+    )

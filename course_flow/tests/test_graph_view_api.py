@@ -26,13 +26,17 @@ def client() -> Client:
 @pytest.fixture
 def user():
     user_model = get_user_model()
-    return user_model.objects.create_user(email="graph-owner@example.com", password="password123")
+    return user_model.objects.create_user(
+        email="graph-owner@example.com", password="password123"
+    )
 
 
 @pytest.fixture
 def other_user():
     user_model = get_user_model()
-    return user_model.objects.create_user(email="graph-other@example.com", password="password123")
+    return user_model.objects.create_user(
+        email="graph-other@example.com", password="password123"
+    )
 
 
 def _auth_header(raw_token: str) -> dict[str, str]:
@@ -142,7 +146,13 @@ def test_graph_view_uses_uuid_references_not_nested_entities(client: Client, use
     for node in body["nodes"]:
         assert isinstance(node, dict)
         assert "uuid" in node
-        for key in ("sectionUuid", "channelUuid", "sectionRow", "workflowUuid", "threadUuid"):
+        for key in (
+            "sectionUuid",
+            "channelUuid",
+            "sectionRow",
+            "workflowUuid",
+            "threadUuid",
+        ):
             assert key in node
         assert "titleCopyCount" in node
         assert "outcomeUuids" in node
@@ -163,7 +173,9 @@ def test_graph_view_requires_auth(client: Client, user):
 
 
 @pytest.mark.django_db
-def test_graph_view_thread_comment_counts_use_thread_id_resolution(client: Client, user):
+def test_graph_view_thread_comment_counts_use_thread_id_resolution(
+    client: Client, user
+):
     """
     Regression: comment aggregates filter by thread_id after resolving thread UUIDs.
     """
@@ -171,7 +183,9 @@ def test_graph_view_thread_comment_counts_use_thread_id_resolution(client: Clien
     workflow_uuid, graph_uuid = _create_workflow(client, raw_token)
     wf = Graph.objects.select_related("workflow").get(uuid=graph_uuid)
     thread = Thread.objects.create()
-    section = Section.objects.create(graph=wf, title="With thread", position=0, thread=thread)
+    section = Section.objects.create(
+        graph=wf, title="With thread", position=0, thread=thread
+    )
     Comment.objects.create(author=user, thread=thread, body="one")
     Comment.objects.create(author=user, thread=thread, body="two")
 
@@ -180,7 +194,9 @@ def test_graph_view_thread_comment_counts_use_thread_id_resolution(client: Clien
         **_auth_header(raw_token),
     ).json()
 
-    counts_by_thread = {row["threadUuid"]: row["commentCount"] for row in body["threadCommentCounts"]}
+    counts_by_thread = {
+        row["threadUuid"]: row["commentCount"] for row in body["threadCommentCounts"]
+    }
     assert counts_by_thread[str(thread.uuid)] == 2
     assert any(s["uuid"] == str(section.uuid) for s in body["sections"])
 
@@ -249,14 +265,12 @@ def test_graph_view_program_course_node_typed_meta_shape(client: Client, user):
     assert node["nodeType"] == "course"
     assert node["contextClassification"] is None
     assert node["taskClassification"] is None
-    assert node["timeRequired"] is None
+    assert node["timeRequiredMinutes"] is None
     assert node["representsWorkflow"] is False
 
 
 @pytest.mark.django_db
-def test_graph_view_denies_non_contributor(
-    client: Client, user, other_user
-):
+def test_graph_view_denies_non_contributor(client: Client, user, other_user):
     raw_owner = _issue_token_for(user)
     workflow_uuid, _graph_uuid = _create_workflow(client, raw_owner)
 

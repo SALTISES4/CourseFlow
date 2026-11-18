@@ -73,16 +73,6 @@ const reference = {
     distributed_problem_solving: 'Distributed Problem Solving',
     peer_assessment: 'Peer Assessment'
   },
-  timeUnit: {
-    seconds: 'Seconds',
-    minutes: 'Minutes',
-    hours: 'Hours',
-    days: 'Days',
-    sections: 'Sections',
-    months: 'Months',
-    years: 'Years',
-    credits: 'Credits'
-  },
   unknown: 'Unknown ({{code}})'
 } as const
 

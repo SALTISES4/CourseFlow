@@ -150,15 +150,14 @@ test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
     const contextLabel = ACTIVITY_CONTEXT_OPTIONS[1]!;
     const taskLabel = ACTIVITY_TASK_TYPE_OPTIONS[1]!;
     const title = `E2E Canvas Meta ${Date.now()}`;
-    const timeDisplay = '2 hours';
+    const timeDisplay = '2.0 hours';
 
     try {
       await patchNodeMetaViaApi(page, nodeUuid, {
         title,
         contextClassification: 'individual_work',
         taskClassification: 'gather_information',
-        timeRequired: 2,
-        timeUnits: 'hours',
+        timeRequiredMinutes: 120,
       });
       await page.reload();
 
@@ -173,13 +172,12 @@ test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
         title: '',
         contextClassification: 'none',
         taskClassification: 'none',
-        timeRequired: 0,
-        timeUnits: null,
+        timeRequiredMinutes: 0,
       });
     }
   });
 
-  test('FR-WF-NODE-001: one-hour node time uses the singular unit', async ({
+  test('FR-WF-NODE-001: one-hour node time uses one decimal place', async ({
     page,
     workflow,
   }) => {
@@ -188,16 +186,14 @@ test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
 
     try {
       await patchNodeMetaViaApi(page, nodeUuid, {
-        timeRequired: 1,
-        timeUnits: 'hours',
+        timeRequiredMinutes: 60,
       });
       await page.reload();
 
-      await expect(workflowNodeMetaTimeTag(page, nodeUuid)).toHaveText('1 hour');
+      await expect(workflowNodeMetaTimeTag(page, nodeUuid)).toHaveText('1.0 hours');
     } finally {
       await patchNodeMetaViaApi(page, nodeUuid, {
-        timeRequired: 0,
-        timeUnits: null,
+        timeRequiredMinutes: 0,
       });
     }
   });
@@ -217,8 +213,7 @@ test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
         title: '',
         contextClassification: 'none',
         taskClassification: 'none',
-        timeRequired: 0,
-        timeUnits: null,
+        timeRequiredMinutes: 0,
       });
       await page.reload();
 
@@ -245,8 +240,7 @@ test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
         title: '',
         contextClassification: 'none',
         taskClassification: 'none',
-        timeRequired: 0,
-        timeUnits: null,
+        timeRequiredMinutes: 0,
       });
     }
   });
@@ -259,12 +253,11 @@ test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
     const nodeUuid = await firstWorkflowNodeUuid(page);
 
     try {
-      // Solo (1) + Gather Information (1); duration 2 with unit index 1 (non-zero unit required).
+      // Solo + Gather Information with a non-zero canonical-minute duration.
       await patchNodeMetaViaApi(page, nodeUuid, {
         contextClassification: 'individual_work',
         taskClassification: 'gather_information',
-        timeRequired: 2,
-        timeUnits: 'seconds',
+        timeRequiredMinutes: 10,
       });
       await page.reload();
 
@@ -285,8 +278,7 @@ test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
       await patchNodeMetaViaApi(page, nodeUuid, {
         contextClassification: 'none',
         taskClassification: 'none',
-        timeRequired: 0,
-        timeUnits: null,
+        timeRequiredMinutes: 0,
       });
     }
   });
@@ -301,8 +293,7 @@ test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
     await patchNodeMetaViaApi(page, nodeUuid, {
       contextClassification: 'none',
       taskClassification: 'none',
-      timeRequired: 0,
-      timeUnits: null,
+      timeRequiredMinutes: 0,
     });
     await page.reload();
 
@@ -322,8 +313,7 @@ test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
       await patchNodeMetaViaApi(page, nodeUuid, {
         contextClassification: 'individual_work',
         taskClassification: 'none',
-        timeRequired: 0,
-        timeUnits: null,
+        timeRequiredMinutes: 0,
       });
       await page.reload();
 
@@ -335,8 +325,7 @@ test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
       await patchNodeMetaViaApi(page, nodeUuid, {
         contextClassification: 'none',
         taskClassification: 'none',
-        timeRequired: 0,
-        timeUnits: null,
+        timeRequiredMinutes: 0,
       });
     }
   });
@@ -356,8 +345,7 @@ test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
       await patchNodeMetaViaApi(page, nodeUuid, {
         contextClassification: 'formative',
         taskClassification: 'none',
-        timeRequired: 3,
-        timeUnits: 'seconds',
+        timeRequiredMinutes: 180,
       });
       await page.reload();
 
@@ -380,8 +368,7 @@ test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
     } finally {
       await patchNodeMetaViaApi(page, nodeUuid, {
         contextClassification: 'none',
-        timeRequired: 0,
-        timeUnits: null,
+        timeRequiredMinutes: 0,
       });
       await linkNodeWorkflowViaApi(page, nodeUuid, activityUuid);
     }
@@ -404,8 +391,7 @@ test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
     try {
       await linkNodeWorkflowViaApi(page, nodeUuid, courseUuid);
       await patchNodeMetaViaApi(page, nodeUuid, {
-        timeRequired: 4,
-        timeUnits: 'seconds',
+        timeRequiredMinutes: 240,
       });
       await page.reload();
 
@@ -416,8 +402,7 @@ test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
       await expect(workflowNodeMetaTimeTag(page, nodeUuid)).toBeVisible();
     } finally {
       await patchNodeMetaViaApi(page, nodeUuid, {
-        timeRequired: 0,
-        timeUnits: null,
+        timeRequiredMinutes: 0,
       });
       await linkNodeWorkflowViaApi(page, nodeUuid, null);
     }

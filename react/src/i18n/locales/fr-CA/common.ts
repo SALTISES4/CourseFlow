@@ -28,7 +28,6 @@ const commonFr = {
     sort: 'Trier',
     untitled: 'Sans titre'
   },
-  duration: { days: 'Jours', hours: 'Heures' },
   navigation: {
     home: 'Accueil',
     myLibrary: 'Ma bibliothèque',

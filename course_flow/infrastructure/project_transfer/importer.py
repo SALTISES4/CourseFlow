@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from datetime import timedelta
-from decimal import Decimal
 from uuid import UUID, uuid4
 
 from django.db import transaction
@@ -299,12 +297,6 @@ class DjangoProjectSnapshotWriter:
             meta = Coursemeta.objects.get(workflow=workflow)
         else:
             meta = Programmeta.objects.get(workflow=workflow)
-            values["classification_general_time"] = _seconds_to_timedelta(
-                values.pop("classification_general_seconds")
-            )
-            values["classification_specific_time"] = _seconds_to_timedelta(
-                values.pop("classification_specific_seconds")
-            )
         for field, value in values.items():
             setattr(meta, field, value)
         meta.save(update_fields=list(values))
@@ -361,10 +353,3 @@ def _parse_uuid(ref: str) -> UUID:
         raise ProjectSnapshotImportError(
             f"identity policy 'preserve' requires UUID references; got {ref!r}"
         ) from exc
-
-
-def _seconds_to_timedelta(value: Decimal | None) -> timedelta | None:
-    if value is None:
-        return None
-    microseconds = int(value * Decimal(1_000_000))
-    return timedelta(microseconds=microseconds)

@@ -44,7 +44,7 @@ export const zSuccessOut = z.object({
 /**
  * AccountRole
  *
- * Canonical Django ``auth.Group`` names for account-level roles.
+ * Canonical Django auth.Group names for account-level roles.
  */
 export const zAccountRole = z.enum(['admin', 'teacher', 'student'])
 
@@ -138,7 +138,7 @@ export const zPermissionContextOut = z.object({
 /**
  * WorkflowType
  *
- * Root graph workflow semantic layer (``task`` is not a valid root type).
+ * Root graph workflow semantic layer (task is not a valid root type).
  */
 export const zWorkflowType = z.enum(['program', 'course', 'activity', 'task'])
 
@@ -319,38 +319,21 @@ export const zProjectUpdateIn = z.object({
 })
 
 /**
- * TimeUnit
- *
- * Stable API/database values for legacy duration-unit fields.
- */
-export const zTimeUnit = z.enum([
-  'seconds',
-  'minutes',
-  'hours',
-  'days',
-  'sections',
-  'months',
-  'years',
-  'credits'
-])
-
-/**
  * WorkflowOverviewMetadataOut
  */
 export const zWorkflowOverviewMetadataOut = z.object({
   code: z.string().optional().default(''),
   calculateTimeAutomatically: z.boolean().optional().default(false),
-  time: z.number().nullish(),
-  timeUnits: zTimeUnit.nullish(),
+  timeMinutes: z.number().int().nullish(),
   calculatePonderationAutomatically: z.boolean().optional().default(false),
-  theoryTime: z.number().nullish(),
-  practicalTime: z.number().nullish(),
-  individualTime: z.number().nullish(),
+  theoryTimeMinutes: z.number().int().nullish(),
+  practicalTimeMinutes: z.number().int().nullish(),
+  individualTimeMinutes: z.number().int().nullish(),
   calculateCreditsAutomatically: z.boolean().optional().default(false),
   credits: z.number().int().nullish(),
   calculateClassificationAutomatically: z.boolean().optional().default(false),
-  generalTime: z.number().nullish(),
-  specificTime: z.number().nullish()
+  generalTimeMinutes: z.number().int().nullish(),
+  specificTimeMinutes: z.number().int().nullish()
 })
 
 /**
@@ -378,14 +361,14 @@ export const zWorkflowDetailOut = z.object({
 /**
  * WorkflowTypeIn
  *
- * Allowed root graph workflow types (``task`` is only valid on grid nodes).
+ * Allowed root graph workflow types (task is only valid on grid nodes).
  */
 export const zWorkflowTypeIn = z.enum(['program', 'course', 'activity'])
 
 /**
  * WorkflowCreateIn
  *
- * Create a root ``Workflow`` and its backing ``Graph`` row (1:1 ORM).
+ * Create a root Workflow and its backing Graph row (1:1 ORM).
  */
 export const zWorkflowCreateIn = z.object({
   projectUuid: z.string().uuid().nullish(),
@@ -449,17 +432,16 @@ export const zWorkflowDetailOutResp = z.object({
 export const zWorkflowOverviewMetadataIn = z.object({
   code: z.string().max(255).nullish(),
   calculateTimeAutomatically: z.boolean().nullish(),
-  time: z.number().gte(0).nullish(),
-  timeUnits: zTimeUnit.nullish(),
+  timeMinutes: z.number().int().gte(0).nullish(),
   calculatePonderationAutomatically: z.boolean().nullish(),
-  theoryTime: z.number().gte(0).nullish(),
-  practicalTime: z.number().gte(0).nullish(),
-  individualTime: z.number().gte(0).nullish(),
+  theoryTimeMinutes: z.number().int().gte(0).nullish(),
+  practicalTimeMinutes: z.number().int().gte(0).nullish(),
+  individualTimeMinutes: z.number().int().gte(0).nullish(),
   calculateCreditsAutomatically: z.boolean().nullish(),
   credits: z.number().int().gte(0).nullish(),
   calculateClassificationAutomatically: z.boolean().nullish(),
-  generalTime: z.number().gte(0).nullish(),
-  specificTime: z.number().gte(0).nullish()
+  generalTimeMinutes: z.number().int().gte(0).nullish(),
+  specificTimeMinutes: z.number().int().gte(0).nullish()
 })
 
 /**
@@ -541,7 +523,7 @@ export const zContextClassification = z.enum([
 /**
  * EdgeGraphOut
  *
- * Endpoints are node UUIDs; ``id`` distinguishes multiple edges between the same pair.
+ * Endpoints are node UUIDs; id distinguishes multiple edges between the same pair.
  */
 export const zEdgeGraphOut = z.object({
   id: z.number().int(),
@@ -557,7 +539,8 @@ export const zEdgeGraphOut = z.object({
 /**
  * GraphMetaOut
  *
- * Graph UUID/revision plus root ``Workflow`` fields (graph row has no title/author/project).
+ * Graph UUID/revision plus root Workflow fields (graph row has no
+ * title/author/project).
  */
 export const zGraphMetaOut = z.object({
   uuid: z.string().uuid(),
@@ -648,12 +631,11 @@ export const zNodeGraphOut = z.object({
   description: z.string().optional().default(''),
   contextClassification: zContextClassification.nullish(),
   taskClassification: zTaskClassification.nullish(),
-  timeRequired: z.number().nullish(),
-  timeUnits: zTimeUnit.nullish(),
+  timeRequiredMinutes: z.number().int().nullish(),
   representsWorkflow: z.boolean().optional().default(false),
-  ponderationTheory: z.number().nullish(),
-  ponderationPractice: z.number().nullish(),
-  ponderationIndividual: z.number().nullish(),
+  ponderationTheoryMinutes: z.number().int().nullish(),
+  ponderationPracticeMinutes: z.number().int().nullish(),
+  ponderationIndividualMinutes: z.number().int().nullish(),
   credits: z.number().int().nullish(),
   specificEducation: z.boolean().optional().default(false),
   tagIds: z.array(z.number().int()).optional(),
@@ -773,7 +755,7 @@ export const zGraphChannelsDeltaOut = z.object({
 /**
  * GraphEdgeMutationOut
  *
- * Edge row; ``id`` is the integer PK (``cf_edge`` has no UUID column).
+ * Edge row; id is the integer PK (cf_edge has no UUID column).
  */
 export const zGraphEdgeMutationOut = z.object({
   id: z.number().int(),
@@ -816,12 +798,11 @@ export const zGraphNodeMutationOut = z.object({
   description: z.string().optional().default(''),
   contextClassification: zContextClassification.nullish(),
   taskClassification: zTaskClassification.nullish(),
-  timeRequired: z.number().nullish(),
-  timeUnits: zTimeUnit.nullish(),
+  timeRequiredMinutes: z.number().int().nullish(),
   representsWorkflow: z.boolean().optional().default(false),
-  ponderationTheory: z.number().nullish(),
-  ponderationPractice: z.number().nullish(),
-  ponderationIndividual: z.number().nullish(),
+  ponderationTheoryMinutes: z.number().int().nullish(),
+  ponderationPracticeMinutes: z.number().int().nullish(),
+  ponderationIndividualMinutes: z.number().int().nullish(),
   credits: z.number().int().nullish(),
   specificEducation: z.boolean().optional().default(false),
   tagIds: z.array(z.number().int()).optional(),
@@ -936,7 +917,7 @@ export const zGraphMutationEnvelopeOut = z.object({
 /**
  * GraphChannelInsertBelowIn
  *
- * Insert below ``channel_uuid``, or append at end when ``channel_uuid`` is omitted.
+ * Insert below channel_uuid, or append at end when channel_uuid is omitted.
  */
 export const zGraphChannelInsertBelowIn = z.object({
   channelUuid: z.string().uuid().nullish(),
@@ -993,7 +974,7 @@ export const zGraphSectionCreateIn = z.object({
 /**
  * GraphSectionInsertBelowIn
  *
- * Insert a new section directly below ``section_uuid``; optionally duplicate title.
+ * Insert a new section directly below section_uuid; optionally duplicate title.
  */
 export const zGraphSectionInsertBelowIn = z.object({
   sectionUuid: z.string().uuid(),
@@ -1012,7 +993,8 @@ export const zGraphReorderSectionsIn = z.object({
 /**
  * GraphNodeCreateIn
  *
- * Placement is required on ``Node`` (ORM); optional ``workflow_uuid`` selects a workflow on this graph.
+ * Placement is required on Node (ORM); optional workflow_uuid selects a workflow on
+ * this graph.
  */
 export const zGraphNodeCreateIn = z.object({
   sectionUuid: z.string().uuid(),
@@ -1024,7 +1006,7 @@ export const zGraphNodeCreateIn = z.object({
 /**
  * GraphNodeInsertBelowIn
  *
- * Insert a node below ``node_uuid``; backend computes grid reflow.
+ * Insert a node below node_uuid; backend computes grid reflow.
  */
 export const zGraphNodeInsertBelowIn = z.object({
   nodeUuid: z.string().uuid(),
@@ -1125,7 +1107,8 @@ export const zSectionPatchIn = z.object({
 /**
  * GraphNodePatchIn
  *
- * Partial update; do not send ``null`` for FK fields (ORM requires section, channel, workflow).
+ * Partial update; do not send null for FK fields (ORM requires section, channel,
+ * workflow).
  */
 export const zGraphNodePatchIn = z.object({
   sectionUuid: z.string().uuid().nullish(),
@@ -1144,19 +1127,18 @@ export const zGraphNodeLinkOutcomeIn = z.object({
 /**
  * GraphNodeMetaPatchIn
  *
- * Editable node metadata (grid placement and ``node_type`` are not patchable here).
+ * Editable node metadata (grid placement and node_type are not patchable here).
  */
 export const zGraphNodeMetaPatchIn = z.object({
   title: z.string().nullish(),
   description: z.string().nullish(),
   contextClassification: zContextClassification.nullish(),
   taskClassification: zTaskClassification.nullish(),
-  timeRequired: z.number().nullish(),
-  timeUnits: zTimeUnit.nullish(),
+  timeRequiredMinutes: z.number().int().gte(0).nullish(),
   representsWorkflow: z.boolean().nullish(),
-  ponderationTheory: z.number().nullish(),
-  ponderationPractice: z.number().nullish(),
-  ponderationIndividual: z.number().nullish(),
+  ponderationTheoryMinutes: z.number().int().gte(0).nullish(),
+  ponderationPracticeMinutes: z.number().int().gte(0).nullish(),
+  ponderationIndividualMinutes: z.number().int().gte(0).nullish(),
   credits: z.number().int().gte(0).nullish(),
   specificEducation: z.boolean().nullish(),
   tagIds: z.array(z.number().int()).nullish()
@@ -1165,7 +1147,8 @@ export const zGraphNodeMetaPatchIn = z.object({
 /**
  * GraphNodeLinkWorkflowIn
  *
- * Set or clear the node's symbolic link to a library workflow (parent ``workflow`` unchanged).
+ * Set or clear the node's symbolic link to a library workflow (parent workflow
+ * unchanged).
  */
 export const zGraphNodeLinkWorkflowIn = z.object({
   workflowUuid: z.string().uuid().nullish()
@@ -1446,7 +1429,7 @@ export const zNotificationItemOut = z.object({
 /**
  * NotificationListMetaOut
  *
- * List metadata for a paginated inbox (``page`` and ``current_page`` are 1-based).
+ * List metadata for a paginated inbox (page and current_page are 1-based).
  */
 export const zNotificationListMetaOut = z.object({
   total: z.number().int(),
@@ -1674,21 +1657,13 @@ export const zTaskReferenceOptionOut = z.object({
 })
 
 /**
- * TimeUnitReferenceOptionOut
- */
-export const zTimeUnitReferenceOptionOut = z.object({
-  value: zTimeUnit
-})
-
-/**
  * ReferenceDataOut
  */
 export const zReferenceDataOut = z.object({
   disciplines: z.array(zDisciplineReferenceOptionOut).optional(),
   activityContexts: z.array(zContextReferenceOptionOut).optional(),
   courseContexts: z.array(zContextReferenceOptionOut).optional(),
-  activityTaskClassifications: z.array(zTaskReferenceOptionOut).optional(),
-  timeUnits: z.array(zTimeUnitReferenceOptionOut).optional()
+  activityTaskClassifications: z.array(zTaskReferenceOptionOut).optional()
 })
 
 /**

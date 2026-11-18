@@ -8,7 +8,7 @@ export type NodeForm = {
   description?: string
   contextType?: ContextClassification | ''
   taskType?: TaskClassification | ''
-  timeRequired?: number
+  timeRequiredMinutes?: number
   tags?: number[]
   credits?: number | string
   linkedWorkflow?: LinkedWorkflowType
@@ -30,11 +30,9 @@ export type NodeForm = {
 // }
 
 type PonderationType = {
-  theory: string
-  practice: string
-  individual: string
-  generalEdu: string
-  specificEdu: string
+  theoryMinutes?: number
+  practiceMinutes?: number
+  individualMinutes?: number
 }
 
 export type LinkedWorkflowType = {

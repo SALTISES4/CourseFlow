@@ -14,8 +14,7 @@ _ACTIVITY_LAYER_PATCH_KEYS = frozenset(
     {
         "context_classification",
         "task_classification",
-        "time_required",
-        "time_units",
+        "time_required_minutes",
         "represents_workflow",
     }
 )
@@ -24,8 +23,7 @@ _TASK_LAYER_PATCH_KEYS = frozenset(
     {
         "context_classification",
         "task_classification",
-        "time_required",
-        "time_units",
+        "time_required_minutes",
         "represents_workflow",
     }
 )
@@ -35,11 +33,10 @@ _COURSE_LAYER_PATCH_KEYS = frozenset(
     {
         "classification",
         "code",
-        "time_required",
-        "time_units",
-        "ponderation_theory",
-        "ponderation_practice",
-        "ponderation_individual",
+        "time_required_minutes",
+        "ponderation_theory_minutes",
+        "ponderation_practice_minutes",
+        "ponderation_individual_minutes",
         "credits",
         "specific_education",
     }
@@ -50,7 +47,9 @@ def typed_meta_patch_keys() -> frozenset[str]:
     """
     Keys that may be routed to typed meta (union of all node layers).
     """
-    return _ACTIVITY_LAYER_PATCH_KEYS | _TASK_LAYER_PATCH_KEYS | _COURSE_LAYER_PATCH_KEYS
+    return (
+        _ACTIVITY_LAYER_PATCH_KEYS | _TASK_LAYER_PATCH_KEYS | _COURSE_LAYER_PATCH_KEYS
+    )
 
 
 def _empty_graph_meta_fields() -> dict[str, Any]:
@@ -60,62 +59,53 @@ def _empty_graph_meta_fields() -> dict[str, Any]:
     return {
         "context_classification": None,
         "task_classification": None,
-        "time_required": None,
-        "time_units": None,
+        "time_required_minutes": None,
         "represents_workflow": False,
-        "ponderation_theory": None,
-        "ponderation_practice": None,
-        "ponderation_individual": None,
+        "ponderation_theory_minutes": None,
+        "ponderation_practice_minutes": None,
+        "ponderation_individual_minutes": None,
         "credits": None,
         "specific_education": False,
     }
 
 
 def _graph_fields_from_activity_meta(meta: Activitymeta) -> dict[str, Any]:
-    time_required = meta.time_required
     return {
         "context_classification": meta.context_classification,
         "task_classification": meta.task_classification,
-        "time_required": float(time_required) if time_required is not None else None,
-        "time_units": meta.time_units,
+        "time_required_minutes": meta.time_required_minutes,
         "represents_workflow": bool(meta.represents_workflow),
-        "ponderation_theory": None,
-        "ponderation_practice": None,
-        "ponderation_individual": None,
+        "ponderation_theory_minutes": None,
+        "ponderation_practice_minutes": None,
+        "ponderation_individual_minutes": None,
         "credits": None,
         "specific_education": False,
     }
 
 
 def _graph_fields_from_task_meta(meta: Taskmeta) -> dict[str, Any]:
-    time_required = meta.time_required
     return {
         "context_classification": meta.context_classification,
         "task_classification": meta.task_classification,
-        "time_required": float(time_required) if time_required is not None else None,
-        "time_units": meta.time_units,
+        "time_required_minutes": meta.time_required_minutes,
         "represents_workflow": bool(meta.represents_workflow),
-        "ponderation_theory": None,
-        "ponderation_practice": None,
-        "ponderation_individual": None,
+        "ponderation_theory_minutes": None,
+        "ponderation_practice_minutes": None,
+        "ponderation_individual_minutes": None,
         "credits": None,
         "specific_education": False,
     }
 
 
 def _graph_fields_from_course_meta(meta: Coursemeta) -> dict[str, Any]:
-    def optional_float(value: Any) -> float | None:
-        return float(value) if value is not None else None
-
     return {
         "context_classification": None,
         "task_classification": None,
-        "time_required": optional_float(meta.time_required),
-        "time_units": meta.time_units,
+        "time_required_minutes": meta.time_required_minutes,
         "represents_workflow": False,
-        "ponderation_theory": optional_float(meta.ponderation_theory),
-        "ponderation_practice": optional_float(meta.ponderation_practice),
-        "ponderation_individual": optional_float(meta.ponderation_individual),
+        "ponderation_theory_minutes": meta.ponderation_theory_minutes,
+        "ponderation_practice_minutes": meta.ponderation_practice_minutes,
+        "ponderation_individual_minutes": meta.ponderation_individual_minutes,
         "credits": meta.credits,
         "specific_education": bool(meta.specific_education),
     }
@@ -167,11 +157,10 @@ def patch_node_typed_meta(node: Node, patch: dict[str, Any]) -> list[str]:
             meta.code = patch["code"]
             update_fields.append("code")
         for field in (
-            "time_required",
-            "time_units",
-            "ponderation_theory",
-            "ponderation_practice",
-            "ponderation_individual",
+            "time_required_minutes",
+            "ponderation_theory_minutes",
+            "ponderation_practice_minutes",
+            "ponderation_individual_minutes",
             "credits",
             "specific_education",
         ):
@@ -188,9 +177,7 @@ def patch_node_typed_meta(node: Node, patch: dict[str, Any]) -> list[str]:
     return update_fields
 
 
-def _apply_activity_layer_patch(
-    meta: Activitymeta, patch: dict[str, Any]
-) -> list[str]:
+def _apply_activity_layer_patch(meta: Activitymeta, patch: dict[str, Any]) -> list[str]:
     update_fields: list[str] = []
     if "context_classification" in patch:
         meta.context_classification = patch["context_classification"]
@@ -198,12 +185,9 @@ def _apply_activity_layer_patch(
     if "task_classification" in patch:
         meta.task_classification = patch["task_classification"]
         update_fields.append("task_classification")
-    if "time_required" in patch:
-        meta.time_required = patch["time_required"]
-        update_fields.append("time_required")
-    if "time_units" in patch:
-        meta.time_units = patch["time_units"]
-        update_fields.append("time_units")
+    if "time_required_minutes" in patch:
+        meta.time_required_minutes = patch["time_required_minutes"]
+        update_fields.append("time_required_minutes")
     if "represents_workflow" in patch and patch["represents_workflow"] is not None:
         meta.represents_workflow = patch["represents_workflow"]
         update_fields.append("represents_workflow")
@@ -218,12 +202,9 @@ def _apply_task_layer_patch(meta: Taskmeta, patch: dict[str, Any]) -> list[str]:
     if "task_classification" in patch:
         meta.task_classification = patch["task_classification"]
         update_fields.append("task_classification")
-    if "time_required" in patch:
-        meta.time_required = patch["time_required"]
-        update_fields.append("time_required")
-    if "time_units" in patch:
-        meta.time_units = patch["time_units"]
-        update_fields.append("time_units")
+    if "time_required_minutes" in patch:
+        meta.time_required_minutes = patch["time_required_minutes"]
+        update_fields.append("time_required_minutes")
     if "represents_workflow" in patch and patch["represents_workflow"] is not None:
         meta.represents_workflow = patch["represents_workflow"]
         update_fields.append("represents_workflow")
@@ -244,40 +225,41 @@ def copy_node_typed_meta(*, source: Node, target: Node) -> None:
 
     node_type = NodeType(source.node_type)
 
-    if node_type == NodeType.COURSE and isinstance(src, Coursemeta) and isinstance(
-        dst, Coursemeta
+    if (
+        node_type == NodeType.COURSE
+        and isinstance(src, Coursemeta)
+        and isinstance(dst, Coursemeta)
     ):
         dst.classification = src.classification
         dst.code = src.code
-        dst.time_required = src.time_required
-        dst.time_units = src.time_units
-        dst.ponderation_theory = src.ponderation_theory
-        dst.ponderation_practice = src.ponderation_practice
-        dst.ponderation_individual = src.ponderation_individual
+        dst.time_required_minutes = src.time_required_minutes
+        dst.ponderation_theory_minutes = src.ponderation_theory_minutes
+        dst.ponderation_practice_minutes = src.ponderation_practice_minutes
+        dst.ponderation_individual_minutes = src.ponderation_individual_minutes
         dst.credits = src.credits
         dst.specific_education = src.specific_education
         dst.save(
             update_fields=[
                 "classification",
                 "code",
-                "time_required",
-                "time_units",
-                "ponderation_theory",
-                "ponderation_practice",
-                "ponderation_individual",
+                "time_required_minutes",
+                "ponderation_theory_minutes",
+                "ponderation_practice_minutes",
+                "ponderation_individual_minutes",
                 "credits",
                 "specific_education",
             ]
         )
         return
 
-    if node_type == NodeType.ACTIVITY and isinstance(src, Activitymeta) and isinstance(
-        dst, Activitymeta
+    if (
+        node_type == NodeType.ACTIVITY
+        and isinstance(src, Activitymeta)
+        and isinstance(dst, Activitymeta)
     ):
         dst.context_classification = src.context_classification
         dst.task_classification = src.task_classification
-        dst.time_required = src.time_required
-        dst.time_units = src.time_units
+        dst.time_required_minutes = src.time_required_minutes
         dst.represents_workflow = src.represents_workflow
         dst.context = src.context
         dst.classification = src.classification
@@ -285,8 +267,7 @@ def copy_node_typed_meta(*, source: Node, target: Node) -> None:
             update_fields=[
                 "context_classification",
                 "task_classification",
-                "time_required",
-                "time_units",
+                "time_required_minutes",
                 "represents_workflow",
                 "context",
                 "classification",
@@ -294,21 +275,21 @@ def copy_node_typed_meta(*, source: Node, target: Node) -> None:
         )
         return
 
-    if node_type == NodeType.TASK and isinstance(src, Taskmeta) and isinstance(
-        dst, Taskmeta
+    if (
+        node_type == NodeType.TASK
+        and isinstance(src, Taskmeta)
+        and isinstance(dst, Taskmeta)
     ):
         dst.context_classification = src.context_classification
         dst.task_classification = src.task_classification
-        dst.time_required = src.time_required
-        dst.time_units = src.time_units
+        dst.time_required_minutes = src.time_required_minutes
         dst.represents_workflow = src.represents_workflow
         dst.context = src.context
         dst.save(
             update_fields=[
                 "context_classification",
                 "task_classification",
-                "time_required",
-                "time_units",
+                "time_required_minutes",
                 "represents_workflow",
                 "context",
             ]
@@ -326,7 +307,9 @@ def _get_typed_meta(node: Node) -> Activitymeta | Coursemeta | Taskmeta | None:
     return None
 
 
-def _get_or_create_typed_meta(node: Node) -> Activitymeta | Coursemeta | Taskmeta | None:
+def _get_or_create_typed_meta(
+    node: Node,
+) -> Activitymeta | Coursemeta | Taskmeta | None:
     node_type = NodeType(node.node_type)
     if node_type == NodeType.COURSE:
         meta, _ = Coursemeta.objects.get_or_create(node=node)

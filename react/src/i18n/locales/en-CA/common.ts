@@ -25,7 +25,6 @@ const common = {
     sort: 'Sort',
     untitled: 'Untitled'
   },
-  duration: { days: 'Days', hours: 'Hours' },
   navigation: {
     home: 'Home',
     myLibrary: 'My library',

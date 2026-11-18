@@ -17,10 +17,7 @@ class NodeActivityMetaFields(models.Model):
 
     context_classification = models.CharField(max_length=64, null=True, blank=True)
     task_classification = models.CharField(max_length=64, null=True, blank=True)
-    time_required = models.DecimalField(
-        max_digits=10, decimal_places=2, null=True, blank=True
-    )
-    time_units = models.CharField(max_length=16, null=True, blank=True)
+    time_required_minutes = models.PositiveBigIntegerField(null=True, blank=True)
     represents_workflow = models.BooleanField(default=False)
 
     class Meta:
@@ -37,10 +34,7 @@ class NodeTaskMetaFields(models.Model):
 
     context_classification = models.CharField(max_length=64, null=True, blank=True)
     task_classification = models.CharField(max_length=64, null=True, blank=True)
-    time_required = models.DecimalField(
-        max_digits=10, decimal_places=2, null=True, blank=True
-    )
-    time_units = models.CharField(max_length=16, null=True, blank=True)
+    time_required_minutes = models.PositiveBigIntegerField(null=True, blank=True)
     represents_workflow = models.BooleanField(default=False)
 
     class Meta:

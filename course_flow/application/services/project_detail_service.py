@@ -43,8 +43,12 @@ class ProjectDetailService:
                         "calculate_credits": pm.calculate_credits,
                         "calculate_ponderation": pm.calculate_ponderation,
                         "calculate_classification": pm.calculate_classification,
-                        "classification_general_time": pm.classification_general_time,
-                        "classification_specific_time": pm.classification_specific_time,
+                        "classification_general_minutes": (
+                            pm.classification_general_minutes
+                        ),
+                        "classification_specific_minutes": (
+                            pm.classification_specific_minutes
+                        ),
                     }
             elif workflow.workflow_type == WorkflowType.COURSE:
                 cm = getattr(workflow, "coursemeta", None)
@@ -57,17 +61,13 @@ class ProjectDetailService:
             elif workflow.workflow_type == WorkflowType.ACTIVITY:
                 am = getattr(workflow, "activitymeta", None)
                 if am is not None:
-                    time_required = am.time_required
                     meta = {
                         "kind": "activity_meta",
                         "context": am.context,
                         "classification": am.classification,
                         "context_classification": am.context_classification,
                         "task_classification": am.task_classification,
-                        "time_required": (
-                            float(time_required) if time_required is not None else None
-                        ),
-                        "time_units": am.time_units,
+                        "time_required_minutes": am.time_required_minutes,
                     }
 
             graph_items.append(

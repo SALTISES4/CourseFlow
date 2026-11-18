@@ -1250,17 +1250,14 @@ locatorMappings:
   workflowFormFieldValidationMessage:
     strategy: null
     confidence: unresolved
-  workflowDurationDaysInput:
-    strategy: "{workflowDurationField} whole-number input with accessible label 'Days'"
-    confidence: inferred
   workflowDurationField:
-    strategy: "duration field group scoped to its hosting uiObject and identified by that hosting field's accessible name"
+    strategy: "duration field scoped to its hosting uiObject and identified by that hosting field's accessible name"
     confidence: inferred
-  workflowDurationHoursInput:
-    strategy: "{workflowDurationField} whole-number input with accessible label 'Hours'"
+  workflowDurationInput:
+    strategy: "{workflowDurationField} masked input with the hosting field's accessible label and ###:## format"
     confidence: inferred
   workflowDurationValidationMessage:
-    strategy: "validation message associated with {workflowDurationDaysInput} or {workflowDurationHoursInput}"
+    strategy: "validation message associated with {workflowDurationInput}"
     confidence: inferred
   workflowGeneratePublicLinkButton:
     strategy: "{workflowOverviewView} button with accessible name 'Generate public link'"

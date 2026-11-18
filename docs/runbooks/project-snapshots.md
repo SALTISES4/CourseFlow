@@ -17,7 +17,7 @@ transaction.
 uv run python manage.py cf_export_project_snapshot \
   193cfbb1-3abc-42f2-a80c-a5c068a80460 \
   --source-system courseflow-v2-uat \
-  --output course_flow/project_snapshots/project_for_templates.v1.json
+  --output course_flow/project_snapshots/project_for_templates.v2.json
 ```
 
 The command refuses to overwrite an existing file unless `--overwrite` is
@@ -56,7 +56,7 @@ The underlying management command is:
 
 ```bash
 uv run python manage.py cf_import_project_snapshot \
-  course_flow/project_snapshots/project_for_templates.v1.json \
+  course_flow/project_snapshots/project_for_templates.v2.json \
   --owner-email teacher@courseflow.com
 ```
 
@@ -84,7 +84,7 @@ locks, or public/user session state.
 2. migrate;
 3. create canonical E2E users and reference data;
 4. invoke `cf_import_project_snapshot` for
-   `course_flow/project_snapshots/project_for_templates.v1.json`, owned by
+   `course_flow/project_snapshots/project_for_templates.v2.json`, owned by
    `teacher@courseflow.com`.
 
 The UAT Compose overlay disables entrypoint migrations. This command is the
@@ -100,7 +100,7 @@ and a reviewed snapshot update.
 
 The application contract lives in
 `course_flow/application/project_transfer/contract.py`; its generated JSON Schema
-is `docs/schemas/project_snapshot_v1.schema.json`. A test requires the checked-in
+is `docs/schemas/project_snapshot_v2.schema.json`. A test requires the checked-in
 schema to exactly match the model.
 
 The future v1 extractor must be a separate source adapter that emits

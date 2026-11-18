@@ -4,11 +4,7 @@ Code-owned, read-only option catalogues exposed by the REST API.
 
 from __future__ import annotations
 
-from course_flow.core.enum import (
-    ContextClassification,
-    TaskClassification,
-    TimeUnit,
-)
+from course_flow.core.enum import ContextClassification, TaskClassification
 
 ACTIVITY_CONTEXT_OPTIONS = (
     ContextClassification.NONE,
@@ -45,5 +41,3 @@ ACTIVITY_TASK_OPTIONS = (
     TaskClassification.INSTRUCTOR_EVALUATION,
     TaskClassification.OTHER,
 )
-
-TIME_UNIT_OPTIONS = tuple(TimeUnit)

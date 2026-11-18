@@ -18,7 +18,7 @@ _PERSISTENT_PROJECT_SNAPSHOT = (
     Path(settings.BASE_DIR)
     / "course_flow"
     / "project_snapshots"
-    / "project_for_templates.v1.json"
+    / "project_for_templates.v2.json"
 )
 _PERSISTENT_PROJECT_OWNER_EMAIL = "teacher@courseflow.com"
 

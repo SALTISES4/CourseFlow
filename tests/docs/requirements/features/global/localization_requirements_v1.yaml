@@ -164,7 +164,7 @@ requirements:
     roleBehavior: {}
 
     acceptanceCriteria:
-      - every backend-supported discipline, context, task classification, and time unit has an English Canadian and French Canadian label
+      - every backend-supported discipline, context, and task classification has an English Canadian and French Canadian label
       - projectDisciplineField displays labels for the active locale and sorts them with that locale's collation rules
       - no discipline database row or reference API response is the source of an English/French presentation label
       - an unknown reference code does not crash rendering and is visibly marked as unavailable/unknown while remaining observable to developers

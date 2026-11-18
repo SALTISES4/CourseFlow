@@ -91,17 +91,16 @@ def test_activity_overview_metadata_round_trips_through_workflow_api():
     assert initial.json()["item"]["overviewMetadata"] == {
         "code": "",
         "calculateTimeAutomatically": False,
-        "time": None,
-        "timeUnits": None,
+        "timeMinutes": None,
         "calculatePonderationAutomatically": False,
-        "theoryTime": None,
-        "practicalTime": None,
-        "individualTime": None,
+        "theoryTimeMinutes": None,
+        "practicalTimeMinutes": None,
+        "individualTimeMinutes": None,
         "calculateCreditsAutomatically": False,
         "credits": None,
         "calculateClassificationAutomatically": False,
-        "generalTime": None,
-        "specificTime": None,
+        "generalTimeMinutes": None,
+        "specificTimeMinutes": None,
     }
 
     updated = client.patch(
@@ -109,7 +108,7 @@ def test_activity_overview_metadata_round_trips_through_workflow_api():
         data={
             "overviewMetadata": {
                 "calculateTimeAutomatically": False,
-                "time": 7.5,
+                "timeMinutes": 450,
             }
         },
         content_type="application/json",
@@ -120,11 +119,11 @@ def test_activity_overview_metadata_round_trips_through_workflow_api():
         updated.json()["item"]["overviewMetadata"]["calculateTimeAutomatically"]
         is False
     )
-    assert updated.json()["item"]["overviewMetadata"]["time"] == 7.5
+    assert updated.json()["item"]["overviewMetadata"]["timeMinutes"] == 450
 
     workflow.activitymeta.refresh_from_db()
     assert workflow.activitymeta.calculate_time is False
-    assert float(workflow.activitymeta.time_required) == 7.5
+    assert workflow.activitymeta.time_required_minutes == 450
 
 
 @pytest.mark.django_db
@@ -140,16 +139,16 @@ def test_program_overview_metadata_persists_each_program_section():
             "overviewMetadata": {
                 "code": "PROGRAM-01",
                 "calculateTimeAutomatically": False,
-                "time": 120,
+                "timeMinutes": 7200,
                 "calculatePonderationAutomatically": False,
-                "theoryTime": 40,
-                "practicalTime": 30,
-                "individualTime": 50,
+                "theoryTimeMinutes": 2400,
+                "practicalTimeMinutes": 1800,
+                "individualTimeMinutes": 3000,
                 "calculateCreditsAutomatically": False,
                 "credits": 12,
                 "calculateClassificationAutomatically": False,
-                "generalTime": 80,
-                "specificTime": 40,
+                "generalTimeMinutes": 4800,
+                "specificTimeMinutes": 2400,
             }
         },
         content_type="application/json",
@@ -160,17 +159,16 @@ def test_program_overview_metadata_persists_each_program_section():
     assert metadata == {
         "code": "PROGRAM-01",
         "calculateTimeAutomatically": False,
-        "time": 120.0,
-        "timeUnits": None,
+        "timeMinutes": 7200,
         "calculatePonderationAutomatically": False,
-        "theoryTime": 40.0,
-        "practicalTime": 30.0,
-        "individualTime": 50.0,
+        "theoryTimeMinutes": 2400,
+        "practicalTimeMinutes": 1800,
+        "individualTimeMinutes": 3000,
         "calculateCreditsAutomatically": False,
         "credits": 12,
         "calculateClassificationAutomatically": False,
-        "generalTime": 80.0,
-        "specificTime": 40.0,
+        "generalTimeMinutes": 4800,
+        "specificTimeMinutes": 2400,
     }
 
     persisted = client.get(f"/api/workflow/{workflow.uuid}", **headers)
@@ -199,18 +197,20 @@ def test_automatic_time_is_derived_from_current_node_values():
     workflow = _workflow(owner, WorkflowType.ACTIVITY)
     first = _node(workflow, NodeType.TASK, 0)
     second = _node(workflow, NodeType.TASK, 1)
-    first.taskmeta.time_required = 2
-    first.taskmeta.save(update_fields=["time_required"])
-    second.taskmeta.time_required = 3.5
-    second.taskmeta.save(update_fields=["time_required"])
+    first.taskmeta.time_required_minutes = 120
+    first.taskmeta.save(update_fields=["time_required_minutes"])
+    second.taskmeta.time_required_minutes = 210
+    second.taskmeta.save(update_fields=["time_required_minutes"])
     workflow.activitymeta.calculate_time = True
-    workflow.activitymeta.time_required = 99
-    workflow.activitymeta.save(update_fields=["calculate_time", "time_required"])
+    workflow.activitymeta.time_required_minutes = 5940
+    workflow.activitymeta.save(
+        update_fields=["calculate_time", "time_required_minutes"]
+    )
 
     response = Client().get(f"/api/workflow/{workflow.uuid}", **_auth(owner))
 
     assert response.status_code == 200, response.content
-    assert response.json()["item"]["overviewMetadata"]["time"] == 5.5
+    assert response.json()["item"]["overviewMetadata"]["timeMinutes"] == 330
 
 
 @pytest.mark.django_db
@@ -223,19 +223,19 @@ def test_program_automatic_fields_use_local_and_linked_course_metadata():
     linked_node.linked_workflow = linked_course
     linked_node.save(update_fields=["linked_workflow"])
 
-    local_node.coursemeta.time_required = 2
+    local_node.coursemeta.time_required_minutes = 120
     local_node.coursemeta.credits = 3
-    local_node.coursemeta.ponderation_theory = 1
-    local_node.coursemeta.ponderation_practice = 0.5
-    local_node.coursemeta.ponderation_individual = 0.5
+    local_node.coursemeta.ponderation_theory_minutes = 60
+    local_node.coursemeta.ponderation_practice_minutes = 30
+    local_node.coursemeta.ponderation_individual_minutes = 30
     local_node.coursemeta.classification = "specific education"
     local_node.coursemeta.save()
 
-    linked_course.coursemeta.time_required = 4
+    linked_course.coursemeta.time_required_minutes = 240
     linked_course.coursemeta.credits = 5
-    linked_course.coursemeta.ponderation_theory = 2
-    linked_course.coursemeta.ponderation_practice = 1
-    linked_course.coursemeta.ponderation_individual = 1
+    linked_course.coursemeta.ponderation_theory_minutes = 120
+    linked_course.coursemeta.ponderation_practice_minutes = 60
+    linked_course.coursemeta.ponderation_individual_minutes = 60
     linked_course.coursemeta.classification = "general"
     linked_course.coursemeta.save()
 
@@ -249,13 +249,13 @@ def test_program_automatic_fields_use_local_and_linked_course_metadata():
 
     assert response.status_code == 200, response.content
     metadata = response.json()["item"]["overviewMetadata"]
-    assert metadata["time"] == 6
+    assert metadata["timeMinutes"] == 360
     assert metadata["credits"] == 8
-    assert metadata["theoryTime"] == 3
-    assert metadata["practicalTime"] == 1.5
-    assert metadata["individualTime"] == 1.5
-    assert metadata["generalTime"] == 4
-    assert metadata["specificTime"] == 2
+    assert metadata["theoryTimeMinutes"] == 180
+    assert metadata["practicalTimeMinutes"] == 90
+    assert metadata["individualTimeMinutes"] == 90
+    assert metadata["generalTimeMinutes"] == 240
+    assert metadata["specificTimeMinutes"] == 120
 
 
 @pytest.mark.django_db
