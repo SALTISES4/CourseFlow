@@ -76,6 +76,9 @@ const commonFr = {
     english: 'Anglais',
     french: 'Français'
   },
+  duration: {
+    placeholder: 'hhh:mm'
+  },
   errors: {
     unexpected: 'Une erreur est survenue. Veuillez réessayer.',
     requestFailed: 'La demande n’a pas pu être traitée.',

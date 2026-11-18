@@ -1,5 +1,6 @@
 import TextField from '@mui/material/TextField'
 import { FocusEvent, useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { NumberFormatValues, PatternFormat } from 'react-number-format'
 
 import {
@@ -31,6 +32,7 @@ const DurationTextField = ({
   onValueChange,
   onValueCommit
 }: Props) => {
+  const { t } = useTranslation('common')
   const [draft, setDraft] = useState(() => formatDurationInput(value))
   const draftRef = useRef(draft)
   const focused = useRef(false)
@@ -75,7 +77,7 @@ const DurationTextField = ({
       format="###:##"
       mask="_"
       allowEmptyFormatting
-      placeholder="hhh:mm"
+      placeholder={t('duration.placeholder')}
       value={draft}
       valueIsNumericString
       disabled={disabled}

@@ -73,6 +73,9 @@ const common = {
     english: 'English',
     french: 'French'
   },
+  duration: {
+    placeholder: 'hhh:mm'
+  },
   errors: {
     unexpected: 'Something went wrong. Please try again.',
     requestFailed: 'The request could not be completed.',
