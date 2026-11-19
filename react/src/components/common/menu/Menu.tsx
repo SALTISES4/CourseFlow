@@ -139,14 +139,12 @@ const SimpleMenu = ({
   id,
   uuid: menuId,
   menuItems,
-  header,
-  closeOnItemAction = false
+  header
 }: {
   id?: string
   uuid?: string
   menuItems: MenuItemType[]
   header: MenuItemType
-  closeOnItemAction?: boolean
 }) => {
   const resolvedMenuId = id ?? menuId ?? 'menu'
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -157,24 +155,6 @@ const SimpleMenu = ({
   const handleClose = () => {
     setAnchorEl(null)
   }
-
-  const buttons = menuItems.map((item, el) => {
-    const action = () => {
-      if (item.action && !item.persistent) {
-        handleClose()
-      }
-
-      item.action?.()
-    }
-
-    return (
-      <ListMenuItem
-        key={item.uuid ?? item.id ?? el}
-        {...item}
-        action={action}
-      />
-    )
-  })
 
   return (
     <>
@@ -198,7 +178,7 @@ const SimpleMenu = ({
             key={item.uuid ?? item.id ?? index}
             {...item}
             action={
-              closeOnItemAction && item.action
+              item.action && !item.persistent
                 ? (event: MouseEvent<HTMLElement>) => {
                     item.action(event)
                     handleClose()

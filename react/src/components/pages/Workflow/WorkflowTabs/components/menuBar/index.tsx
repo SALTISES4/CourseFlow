@@ -386,14 +386,7 @@ const JumpToMenu = ({ sectionIds }: { sectionIds: string[] }) => {
     show: true
   }
 
-  return (
-    <SimpleMenu
-      id="jump-to-menu"
-      menuItems={menuItems}
-      header={header}
-      closeOnItemAction
-    />
-  )
+  return <SimpleMenu id="jump-to-menu" menuItems={menuItems} header={header} />
 }
 
 export { JumpToMenu, ActionMenu, ExpandCollapseMenu }
