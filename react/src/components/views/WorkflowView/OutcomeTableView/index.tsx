@@ -1,4 +1,6 @@
+import { TagListItemOut } from '@cf/api/gen'
 import { selectOutcomeTable } from '@cf/features/graph/state/selectors/outcomeTable.selectors'
+import { useGraphProjectTags } from '@cf/features/graph/useGraphProjectTags'
 import { RootState } from '@cf/redux/store'
 import Alert from '@cfComponents/UIPrimitives/Alert'
 import { OuterContentWrap } from '@cfMUI/helper'
@@ -17,6 +19,16 @@ import { OuterScrollableWrap } from '../GraphView/styles'
 
 export type WorkflowType = WorkflowPageData['workflowType']
 
+export type ProjectTagsMap = Record<string, TagListItemOut>
+
+function generateProjectTagsMap(projectTags: TagListItemOut[]): ProjectTagsMap {
+  const tags: ProjectTagsMap = {}
+  for (const tag of projectTags) {
+    tags[tag.id] = tag
+  }
+  return tags
+}
+
 const OutcomeTableView = ({
   workflow,
   publicView = false
@@ -25,6 +37,9 @@ const OutcomeTableView = ({
   publicView?: boolean
 }) => {
   const { t } = useTranslation('workflow')
+  const { data: projectTags = [] } = useGraphProjectTags(workflow.graphUuid)
+  const projectTagsMap = generateProjectTagsMap(projectTags)
+
   const viewType = useSelector(
     (state: RootState) => state.graph.outcomeTableUi.viewType
   )
@@ -61,14 +76,18 @@ const OutcomeTableView = ({
         {publicView && <PresentationControls graphUuid={workflow.graphUuid} />}
         {viewType === 'matrix' && (
           <Styled.TableWrap className="view-matrix">
-            <TableHeaderMatrix workflowType={workflowType} table={table} />
+            <TableHeaderMatrix
+              workflowType={workflowType}
+              table={table}
+              projectTagsMap={projectTagsMap}
+            />
             <TableBodyMatrix workflowType={workflowType} table={table} />
           </Styled.TableWrap>
         )}
         {viewType === 'normal' && (
           <Styled.TableWrap className="view-normal">
             <TablheHeaderNormal table={table} />
-            <TableBodyNormal table={table} />
+            <TableBodyNormal table={table} projectTagsMap={projectTagsMap} />
           </Styled.TableWrap>
         )}
       </OuterContentWrap>

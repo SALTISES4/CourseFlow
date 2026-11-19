@@ -1,3 +1,4 @@
+import { TagListItemOut } from '@cf/api/gen'
 import {
   OutcomeTable,
   selectIsOutcomeExpanded
@@ -10,15 +11,17 @@ import { Fragment, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { type WorkflowType } from '..'
+import { type ProjectTagsMap, type WorkflowType } from '..'
 import * as Styled from '../styles'
 
 const TableHeader = ({
   table,
-  workflowType
+  workflowType,
+  projectTagsMap
 }: {
   table: OutcomeTable
   workflowType: WorkflowType
+  projectTagsMap: ProjectTagsMap
 }) => {
   const { t } = useTranslation('workflow')
   const extraColumns = table.extraColumns[workflowType]
@@ -26,25 +29,31 @@ const TableHeader = ({
   return (
     <Styled.TableHeader>
       <Styled.HeaderLegendWrap />
-      {table.tagGroups.map((group, index) => (
-        <Fragment key={group.uuid}>
-          {group.title && (
-            <Styled.HeaderLegendWrap
-              tagLabel
-              className={index === 0 ? 'tag-offset' : ''}
-            >
-              <Styled.TableLegend>{t(group.title as any)}</Styled.TableLegend>
-            </Styled.HeaderLegendWrap>
-          )}
-          {group.outcomes.map((outcomeUuid) => (
-            <TableHeaderOutcome
-              key={outcomeUuid}
-              table={table}
-              uuid={outcomeUuid}
-            />
-          ))}
-        </Fragment>
-      ))}
+      {table.tagGroups.map((group, index) => {
+        const found = projectTagsMap[group.uuid]
+        const groupTitle = found ? found.label : group.title
+
+        return (
+          <Fragment key={group.uuid}>
+            {groupTitle && (
+              <Styled.HeaderLegendWrap
+                tagLabel
+                className={index === 0 ? 'tag-offset' : ''}
+              >
+                <Styled.TableLegend>{t(groupTitle as any)}</Styled.TableLegend>
+              </Styled.HeaderLegendWrap>
+            )}
+            {group.outcomes.map((outcomeUuid) => (
+              <TableHeaderOutcome
+                key={outcomeUuid}
+                table={table}
+                projectTagsMap={projectTagsMap}
+                uuid={outcomeUuid}
+              />
+            ))}
+          </Fragment>
+        )
+      })}
 
       {extraColumns.map((group) => (
         <Fragment key={group.labelKey}>
@@ -82,10 +91,12 @@ const TableHeader = ({
 
 const TableHeaderOutcome = ({
   table,
-  uuid
+  uuid,
+  projectTagsMap
 }: {
   table: OutcomeTable
   uuid: string
+  projectTagsMap: ProjectTagsMap
 }) => {
   const dispatch = useDispatch<AppDispatch>()
   const outcome = table.outcomeTree.outcomes[uuid]
@@ -119,7 +130,12 @@ const TableHeaderOutcome = ({
       </Styled.HeaderLegendWrap>
       {expanded &&
         outcome.children.map((childUuid) => (
-          <TableHeaderOutcome key={childUuid} table={table} uuid={childUuid} />
+          <TableHeaderOutcome
+            key={childUuid}
+            table={table}
+            uuid={childUuid}
+            projectTagsMap={projectTagsMap}
+          />
         ))}
     </>
   )

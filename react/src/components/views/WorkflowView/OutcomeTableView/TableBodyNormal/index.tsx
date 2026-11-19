@@ -14,29 +14,43 @@ import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 
+import { type ProjectTagsMap } from '..'
 import Checkmark, { OutcomeCheckmarkStatus } from '../Checkmark'
 import * as Styled from '../styles'
 
-const TableBody = ({ table }: { table: OutcomeTable }) => {
+const TableBody = ({
+  table,
+  projectTagsMap
+}: {
+  table: OutcomeTable
+  projectTagsMap: ProjectTagsMap
+}) => {
   const { t } = useTranslation('workflow')
   return (
     <Styled.TableBody>
-      {table.tagGroups.map((group) => (
-        <Styled.TagGroup key={group.uuid}>
-          {group.title && (
-            <Styled.BodyRow className="tag-header-row">
-              <Styled.BodyLegendWrap>
-                <Styled.TableLegend>{t(group.title as any)}</Styled.TableLegend>
-              </Styled.BodyLegendWrap>
-              <Styled.BodyLegendWrap />
-            </Styled.BodyRow>
-          )}
+      {table.tagGroups.map((group) => {
+        const found = projectTagsMap[group.uuid]
+        const groupTitle = found ? found.label : group.title
 
-          {group.outcomes.map((outcomeUuid) => (
-            <TagGroupRow key={outcomeUuid} table={table} uuid={outcomeUuid} />
-          ))}
-        </Styled.TagGroup>
-      ))}
+        return (
+          <Styled.TagGroup key={group.uuid}>
+            {groupTitle && (
+              <Styled.BodyRow className="tag-header-row">
+                <Styled.BodyLegendWrap>
+                  <Styled.TableLegend>
+                    {t(groupTitle as any)}
+                  </Styled.TableLegend>
+                </Styled.BodyLegendWrap>
+                <Styled.BodyLegendWrap />
+              </Styled.BodyRow>
+            )}
+
+            {group.outcomes.map((outcomeUuid) => (
+              <TagGroupRow key={outcomeUuid} table={table} uuid={outcomeUuid} />
+            ))}
+          </Styled.TagGroup>
+        )
+      })}
     </Styled.TableBody>
   )
 }
