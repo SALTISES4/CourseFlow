@@ -8,7 +8,6 @@ const CELL_HEIGHT = 50
 
 export const TableWrap = styled(Box)(({ theme }) => ({
   fontSize: '14px',
-
   '.bg-light': {
     backgroundColor: '#EEF2FD'
   },
@@ -19,6 +18,12 @@ export const TableWrap = styled(Box)(({ theme }) => ({
   '&.view-normal': {
     '.body-row:last-child > div:last-child': {
       borderBottom: `1px solid ${theme.palette.divider}`
+    },
+    '.table-body': {
+      marginTop: theme.spacing(2),
+      '& > *:first-child .tag-header-row': {
+        marginTop: theme.spacing(-2)
+      }
     }
   },
 
@@ -106,7 +111,7 @@ export const HeaderLegendWrap = styled(Box, {
   }
 }))
 
-export const TableBody = styled(Box)(() => ({
+export const TableBody = styled(Box, { target: 'table-body' })(({ theme }) => ({
   width: 'fit-content'
 }))
 
@@ -154,8 +159,6 @@ export const TableLegend = styled('span', {
 // tag group header / full row body splitter
 export const TagGroup = styled(Box)(({ theme }) => ({
   '& .body-row:first-child': {
-    marginTop: theme.spacing(0.5),
-    marginBottom: theme.spacing(0.5),
     border: 0,
     '& .legend-wrap': {
       '&:first-child': {
