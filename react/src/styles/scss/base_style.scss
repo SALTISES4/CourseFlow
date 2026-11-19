@@ -1209,6 +1209,28 @@ h3.big-space {
   }
 }
 
+// fix scroll regions for workflow/outcome table layouts
+.body-wrapper:has(.workflow-scrollable) {
+
+  .body-wrapper,
+  .workflow-wrapper,
+  .workflow-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .body-wrapper {
+    overflow: hidden;
+  }
+
+  .workflow-wrapper,
+  .workflow-container {
+    width: 100%;
+    flex-grow: 1;
+    min-height: 0;
+  }
+}
+
 .body-wrapper.printing {
   top: 0px;
   left: 0px;

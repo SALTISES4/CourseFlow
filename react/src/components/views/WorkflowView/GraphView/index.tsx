@@ -4,6 +4,7 @@ import {
   monitorForElements
 } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import { WorkflowPermission } from '@cf/api/gen/types.gen'
+import { StyledActions } from '@cf/components/common/filters/FilterMultiselect/styles'
 import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import type { NodeDropPayload } from '@cf/features/graph/state/resolveNodeDropRow'
 import { selectGraphBoard } from '@cf/features/graph/state/selectors/graphBoard.selectors'
@@ -33,7 +34,7 @@ import ColumnsHeader from './components/ColumnsHeader'
 import LineSVG from './components/LineSVG'
 import Section from './components/Section'
 import { createGraphLayoutSignature } from './layoutSignature'
-import { GraphViewWrap, SectionsWrapper } from './styles'
+import { GraphViewWrap, OuterScrollableWrap, SectionsWrapper } from './styles'
 import {
   CellReorderCallbackFn,
   ColumnReorderCallbackFn,
@@ -249,50 +250,52 @@ const GraphView = ({
   )
 
   return (
-    <GraphViewWrap dragging={dragging} data-test-id="workflow-view">
-      <ColumnsHeader board={graphBoard} onReorder={onColumnReorder} />
-      <SectionsWrapper data-test-id="sections-block" ref={sectionsWrapperRef}>
-        {graphBoard.sections.map((section, index) => (
-          <Section
-            // Maybe this should be called CFSection since Section is used everywhere from MUI
-            key={`section_${section.uuid}`}
-            index={index}
-            sectionId={section.uuid}
-            sectionRows={section.rows}
-            boardId={graphBoard.uuid}
-            columnIds={graphBoard.columns.ids}
-            columnColors={graphBoard.columns.colors}
-            condensed={
-              state.collapseAllForDrag ||
-              collapsedSectionUuids.includes(section.uuid)
-            }
-            onSectionCollapse={onSectionCollapse}
-            onSectionDragStart={onSectionDragStart}
-            onSectionDragEnd={onSectionDragEnd}
-            onSectionInsert={onSectionInsert}
-            onSectionReorder={onSectionReorder}
-            onNodeDrop={onNodeDrop}
+    <OuterScrollableWrap>
+      <GraphViewWrap dragging={dragging} data-test-id="workflow-view">
+        <ColumnsHeader board={graphBoard} onReorder={onColumnReorder} />
+        <SectionsWrapper data-test-id="sections-block" ref={sectionsWrapperRef}>
+          {graphBoard.sections.map((section, index) => (
+            <Section
+              // Maybe this should be called CFSection since Section is used everywhere from MUI
+              key={`section_${section.uuid}`}
+              index={index}
+              sectionId={section.uuid}
+              sectionRows={section.rows}
+              boardId={graphBoard.uuid}
+              columnIds={graphBoard.columns.ids}
+              columnColors={graphBoard.columns.colors}
+              condensed={
+                state.collapseAllForDrag ||
+                collapsedSectionUuids.includes(section.uuid)
+              }
+              onSectionCollapse={onSectionCollapse}
+              onSectionDragStart={onSectionDragStart}
+              onSectionDragEnd={onSectionDragEnd}
+              onSectionInsert={onSectionInsert}
+              onSectionReorder={onSectionReorder}
+              onNodeDrop={onNodeDrop}
+              layoutRevision={state.layoutRevision}
+            />
+          ))}
+          <LineSVG
+            graphUuid={graphUuid}
             layoutRevision={state.layoutRevision}
+            condensed={
+              state.collapseAllForDrag
+                ? graphBoard.sections.length
+                : collapsedSectionUuids.length
+            }
           />
-        ))}
-        <LineSVG
-          graphUuid={graphUuid}
-          layoutRevision={state.layoutRevision}
-          condensed={
-            state.collapseAllForDrag
-              ? graphBoard.sections.length
-              : collapsedSectionUuids.length
-          }
-        />
-      </SectionsWrapper>
+        </SectionsWrapper>
 
-      {!publicView && (
-        <>
-          <DeleteNodeCategoryDialog />
-          <DeleteSectionDialog />
-        </>
-      )}
-    </GraphViewWrap>
+        {!publicView && (
+          <>
+            <DeleteNodeCategoryDialog />
+            <DeleteSectionDialog />
+          </>
+        )}
+      </GraphViewWrap>
+    </OuterScrollableWrap>
   )
 }
 

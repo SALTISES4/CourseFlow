@@ -13,6 +13,7 @@ import TableBodyMatrix from './TableBodyMatrix'
 import TableBodyNormal from './TableBodyNormal'
 import TableHeaderMatrix from './TableHeaderMatrix'
 import TablheHeaderNormal from './TableHeaderNormal'
+import { OuterScrollableWrap } from '../GraphView/styles'
 
 export type WorkflowType = WorkflowPageData['workflowType']
 
@@ -52,21 +53,26 @@ const OutcomeTableView = ({
   }
 
   return (
-    <OuterContentWrap sx={{ pt: 4 }} data-test-id="workflow-outcome-table-view">
-      {publicView && <PresentationControls graphUuid={workflow.graphUuid} />}
-      {viewType === 'matrix' && (
-        <Styled.TableWrap className="view-matrix">
-          <TableHeaderMatrix workflowType={workflowType} table={table} />
-          <TableBodyMatrix workflowType={workflowType} table={table} />
-        </Styled.TableWrap>
-      )}
-      {viewType === 'normal' && (
-        <Styled.TableWrap className="view-normal">
-          <TablheHeaderNormal table={table} />
-          <TableBodyNormal table={table} />
-        </Styled.TableWrap>
-      )}
-    </OuterContentWrap>
+    <OuterScrollableWrap sx={{ mt: 4 }}>
+      <OuterContentWrap
+        sx={{ p: 0 }}
+        data-test-id="workflow-outcome-table-view"
+      >
+        {publicView && <PresentationControls graphUuid={workflow.graphUuid} />}
+        {viewType === 'matrix' && (
+          <Styled.TableWrap className="view-matrix">
+            <TableHeaderMatrix workflowType={workflowType} table={table} />
+            <TableBodyMatrix workflowType={workflowType} table={table} />
+          </Styled.TableWrap>
+        )}
+        {viewType === 'normal' && (
+          <Styled.TableWrap className="view-normal">
+            <TablheHeaderNormal table={table} />
+            <TableBodyNormal table={table} />
+          </Styled.TableWrap>
+        )}
+      </OuterContentWrap>
+    </OuterScrollableWrap>
   )
 }
 
