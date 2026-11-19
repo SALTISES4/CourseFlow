@@ -8,6 +8,7 @@ export const WysiwygWrap = styled(Box, {
   ({ theme, readOnly, noBorder }) => ({
     position: 'relative',
     '& .ql-container': {
+      fontFamily: 'inherit',
       fontSize: readOnly ? '16px' : '14px',
       ...(noBorder && {
         border: '0 !important'
