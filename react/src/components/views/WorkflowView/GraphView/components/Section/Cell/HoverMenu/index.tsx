@@ -127,7 +127,7 @@ const HoverMenu = ({ nodeId, graphUuid, nodeRef, threadUuid }: PropsType) => {
     <>
       <NodeHoverMenu
         show={hovering}
-        sx={{ top: '-1em', right: '-1.5em' }}
+        sx={{ top: '0.5em', right: '0.5em' }}
         items={[
           {
             label: t('graph.insertNodeBelow'),
