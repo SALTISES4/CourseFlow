@@ -102,6 +102,7 @@ const workflowFr = {
     insertChild: 'Insérer un enfant'
   },
   outcomeTable: {
+    grandTotal: 'Total général',
     gridLabel: 'Affectations du tableau des résultats',
     presentationControlsLabel: 'Options d’affichage du tableau des résultats',
     assignmentCellLabel: '{{outcome}} — {{node}}',
