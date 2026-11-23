@@ -2,13 +2,13 @@ import {
   OutcomeTable,
   selectIsOutcomeExpanded
 } from '@cf/features/graph/state/selectors/outcomeTable.selectors'
-import { formatDurationHoursNumber } from '@cfComponents/duration'
 import {
   linkNodeOutcome,
   unlinkNodeOutcome
 } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { displaySystemTitle } from '@cf/i18n/systemTitles'
 import { AppDispatch, RootState } from '@cf/redux/store'
+import { formatDurationHoursNumber } from '@cfComponents/duration'
 import { NodeTitle } from '@cfViews/WorkflowView/GraphView/components/Section/Cell/CellNode/useNodeTitle'
 import { Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -124,7 +124,12 @@ const TableBody = ({
     )
   })
 
-  return <Styled.TableBody>{groups}</Styled.TableBody>
+  return (
+    <Styled.TableBody>
+      {groups}
+      <GrandTotalRow table={table} workflowType={workflowType} />
+    </Styled.TableBody>
+  )
 }
 
 const CheckmarkGroup = ({
@@ -264,6 +269,110 @@ const SectionHeaderRow = ({
         )
       )}
     </Styled.BodyRow>
+  )
+}
+
+const GrandTotalRow = ({
+  table,
+  workflowType
+}: {
+  table: OutcomeTable
+  workflowType: WorkflowType
+}) => {
+  const { t } = useTranslation('workflow')
+  const extraColumns = table.extraColumns[workflowType]
+
+  return (
+    <Styled.BodyRow className="section-header-row">
+      <Styled.BodyLegendWrap>
+        <Styled.TableLegend sx={{ background: '#E5E9F4' }}>
+          {t('outcomeTable.grandTotal')}
+        </Styled.TableLegend>
+      </Styled.BodyLegendWrap>
+      {table.tagGroups.map((group, groupIndex) => (
+        <Styled.CheckmarkGroup key={group.uuid}>
+          {group.title && (
+            <Styled.TagBarEmptyCell
+              className={groupIndex === 0 ? 'tag-offset' : ''}
+            />
+          )}
+          <Styled.CheckmarkGroup className="checkmarks-group bg-dark">
+            {group.outcomes.map((outcomeUuid) => (
+              <GrandTotalEmptyCellGroup
+                key={outcomeUuid}
+                outcomeUuid={outcomeUuid}
+                groupIndex={groupIndex}
+                table={table}
+              />
+            ))}
+          </Styled.CheckmarkGroup>
+        </Styled.CheckmarkGroup>
+      ))}
+
+      {extraColumns.map((group) =>
+        'columns' in group ? (
+          <Fragment key={group.labelKey}>
+            <Styled.TagBarEmptyCell />
+            <Styled.CheckmarkGroup className="checkmarks-group bg-dark">
+              {group.columns.map((column) => (
+                <Styled.TableCell
+                  key={column.labelKey}
+                  data-test-id={column.sectionTestId}
+                >
+                  {table.entities.sections.reduce((acc, section) => {
+                    const val = column.values[section.uuid] ?? 0
+                    return acc + val
+                  }, 0)}
+                </Styled.TableCell>
+              ))}
+            </Styled.CheckmarkGroup>
+          </Fragment>
+        ) : (
+          <Styled.CheckmarkGroup
+            key={group.labelKey}
+            className={`checkmarks-group ${group.className}`}
+            sx={{ marginLeft: 2 }}
+          >
+            <Styled.TableCell data-test-id={group.sectionTestId}>
+              {table.entities.sections.reduce((acc, section) => {
+                const val = group.values[section.uuid] ?? 0
+                return acc + val
+              }, 0)}
+            </Styled.TableCell>
+          </Styled.CheckmarkGroup>
+        )
+      )}
+    </Styled.BodyRow>
+  )
+}
+
+const GrandTotalEmptyCellGroup = ({
+  outcomeUuid,
+  groupIndex,
+  table
+}: {
+  outcomeUuid: string
+  groupIndex: number
+  table: OutcomeTable
+}) => {
+  const outcome = table.outcomeTree.outcomes[outcomeUuid]
+  const expanded = useSelector((state: RootState) =>
+    selectIsOutcomeExpanded(state, outcome.uuid)
+  )
+
+  return (
+    <>
+      <Styled.TableCell />
+      {expanded &&
+        outcome.children.map((childUuid) => (
+          <GrandTotalEmptyCellGroup
+            key={childUuid}
+            outcomeUuid={childUuid}
+            groupIndex={groupIndex}
+            table={table}
+          />
+        ))}
+    </>
   )
 }
 

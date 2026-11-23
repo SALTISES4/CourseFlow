@@ -101,6 +101,7 @@ const workflow = {
     insertChild: 'Insert child'
   },
   outcomeTable: {
+    grandTotal: 'Grand total',
     gridLabel: 'Outcome table assignments',
     presentationControlsLabel: 'Outcome table display options',
     assignmentCellLabel: '{{outcome}} — {{node}}',

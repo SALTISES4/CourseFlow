@@ -1,4 +1,3 @@
-import { TagListItemOut } from '@cf/api/gen'
 import {
   OutcomeTable,
   selectIsOutcomeExpanded
