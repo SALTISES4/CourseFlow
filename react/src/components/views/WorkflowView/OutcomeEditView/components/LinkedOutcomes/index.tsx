@@ -4,8 +4,8 @@ import type { OutcomeEntity } from '@cf/features/graph/state/model/types'
 import {
   getPrefixPath,
   selectOutcomeChildrenById,
-  selectOutcomeEntities,
-  selectOutcomeLevel
+  selectOutcomeLevel,
+  selectTopLevelSortedOutcomesFromUuids
 } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import { unlinkNodeOutcome } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import type { AppDispatch, RootState } from '@cf/redux/store'
@@ -144,20 +144,9 @@ const LinkedOutcomes = ({
   )
   const wrapRef = useRef<HTMLDivElement>(null)
   const badgeRef = useRef<HTMLSpanElement>(null)
-  const outcomeEntities = useSelector(selectOutcomeEntities)
   const assignedOutcomeUuids = useMemo(() => new Set(outcomes), [outcomes])
-  const topLevelOutcomes = useMemo(
-    () =>
-      outcomes
-        .map((uuid) => outcomeEntities[uuid])
-        .filter(
-          (outcome): outcome is OutcomeEntity =>
-            Boolean(outcome) &&
-            (!outcome.parentUuid ||
-              !assignedOutcomeUuids.has(outcome.parentUuid))
-        )
-        .sort((left, right) => left.order - right.order),
-    [assignedOutcomeUuids, outcomeEntities, outcomes]
+  const topLevelOutcomes = useSelector((state: RootState) =>
+    selectTopLevelSortedOutcomesFromUuids(state, graphUuid, outcomes)
   )
 
   const showPopover = useCallback((value: boolean) => {

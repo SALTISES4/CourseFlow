@@ -1,5 +1,4 @@
 import type { TagListItemOut } from '@cf/api/gen/types.gen'
-import { OutcomeCheckmarkStatus } from '@cf/components/views/WorkflowView/OutcomeTableView/Checkmark'
 import { createSelector } from 'reselect'
 
 import type { GraphState } from '../graphState'
@@ -29,6 +28,39 @@ export const selectRootOutcomes = createSelector(
       .filter((o) => o.graphUuid === graphUuid && o.parentUuid === null)
       .sort((a, b) => a.order - b.order)
 )
+
+// selects root level outcomes form the list of provided uuids
+// and sorts them according to the correct order (parent -> child) and positioning
+export const selectTopLevelSortedOutcomesFromUuids = createSelector(
+  [
+    (_: StateWithGraph, graphUuid: GraphUuid) => graphUuid,
+    (_: StateWithGraph, _graphUuid: GraphUuid, outcomeUuids: string[]) =>
+      outcomeUuids,
+    (state: StateWithGraph) => state,
+    selectOutcomeEntities
+  ],
+  (graphUuid, outcomeUuids, state, outcomeEntities) => {
+    const assignedOutcomeUuids = new Set(outcomeUuids)
+
+    return outcomeUuids
+      .map((uuid) => ({
+        outcome: outcomeEntities[uuid],
+        order: padRight(
+          getPrefixPath(state, graphUuid, uuid).replaceAll('.', '')
+        )
+      }))
+      .filter(
+        ({ outcome }) =>
+          outcome &&
+          (!outcome.parentUuid || !assignedOutcomeUuids.has(outcome.parentUuid))
+      )
+      .sort((left, right) => left.order - right.order)
+      .map(({ outcome }) => outcome)
+  }
+)
+
+const padRight = (value: string, digits = 3): number =>
+  Number(String(value.trim()).padEnd(digits, '0'))
 
 export const selectOutcomeChildren = createSelector(
   [
