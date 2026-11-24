@@ -435,6 +435,7 @@ class LibraryService:
                     project_is_archived=None,
                     edit_lock_holder_name=self._edit_lock_holder_name(
                         project,
+                        user=user,
                         can_edit=permissions.allows(ProjectPermission.EDIT_PROJECT),
                         active_lock_cutoff=active_lock_cutoff,
                     ),
@@ -476,6 +477,7 @@ class LibraryService:
                     project_is_archived=proj.is_archived,
                     edit_lock_holder_name=self._edit_lock_holder_name(
                         workflow,
+                        user=user,
                         can_edit=permissions.allows(WorkflowPermission.EDIT_ATTRIBUTES),
                         active_lock_cutoff=active_lock_cutoff,
                     ),
@@ -496,6 +498,7 @@ class LibraryService:
         cls,
         resource: Project | Workflow,
         *,
+        user: User | None,
         can_edit: bool,
         active_lock_cutoff: datetime,
     ) -> str | None:
@@ -504,7 +507,13 @@ class LibraryService:
         edit_lock = getattr(resource, "edit_lock", None)
         if edit_lock is None or edit_lock.expires_at <= active_lock_cutoff:
             return None
-        return cls._owner_name(edit_lock.holder)
+
+        locked_by = cls._owner_name(edit_lock.holder)
+
+        if locked_by == cls._owner_name(user):
+            return None
+
+        return locked_by
 
     def _permission_payload(self, context: PermissionContext) -> PermissionContextOut:
         return permission_context_out(context)
