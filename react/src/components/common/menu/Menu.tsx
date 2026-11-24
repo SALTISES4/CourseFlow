@@ -7,7 +7,7 @@ import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import Popover from '@mui/material/Popover'
 import Stack from '@mui/material/Stack'
-import { styled } from '@mui/material/styles'
+import { SxProps, styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { MouseEvent, ReactElement, ReactNode, useState } from 'react'
 
@@ -34,6 +34,7 @@ type BaseMenuItemType = {
   icon?: ReactElement
   separator?: boolean | 'top' | 'bottom'
   showIconInList?: boolean
+  sx?: SxProps
 }
 
 type IconButtonMenuItemType = BaseMenuItemType & {
@@ -101,15 +102,24 @@ export const ListMenuItem = (props: MenuItemType) => {
     return null
   }
 
-  const { id, uuid, title, action, disabled, separator, showIconInList, icon } =
-    props
+  const {
+    id,
+    uuid,
+    title,
+    action,
+    disabled,
+    separator,
+    showIconInList,
+    sx,
+    icon
+  } = props
   const content = props.content
 
   const contentChooser = (content?: string | ReactElement) => {
     if (typeof content === 'string') {
       return (
         <>
-          {showIconInList && icon} <Typography>{content}</Typography>
+          {showIconInList && icon} <Typography sx={sx}>{content}</Typography>
         </>
       )
     }
@@ -126,6 +136,7 @@ export const ListMenuItem = (props: MenuItemType) => {
         disabled={disabled}
         onClick={action}
         title={title}
+        sx={sx}
       >
         {contentChooser(content)}
       </MenuItem>
