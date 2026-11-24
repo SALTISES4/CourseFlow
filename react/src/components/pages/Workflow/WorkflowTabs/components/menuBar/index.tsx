@@ -239,7 +239,7 @@ const ExpandCollapseMenu = ({
             uuid: 'expand-all-sections',
             content: t('menu.expandSections'),
             action: () => dispatch(graphUiActions.setCollapsedSectionUuids([])),
-            icon: <UnfoldMoreIcon />,
+            icon: <UnfoldMoreIcon sx={{ color: 'action.active' }} />,
             showIconInList: true,
             show: true
           },
@@ -248,7 +248,7 @@ const ExpandCollapseMenu = ({
             content: t('menu.collapseSections'),
             action: () =>
               dispatch(graphUiActions.setCollapsedSectionUuids(sectionIds)),
-            icon: <UnfoldLessIcon />,
+            icon: <UnfoldLessIcon sx={{ color: 'action.active' }} />,
             showIconInList: true,
             show: true
           }
@@ -259,7 +259,7 @@ const ExpandCollapseMenu = ({
               uuid: 'expand-all-outcomes',
               content: t('menu.expandOutcomes'),
               action: onOutcomeExpand(true),
-              icon: <UnfoldMoreIcon />,
+              icon: <UnfoldMoreIcon sx={{ color: 'action.active' }} />,
               showIconInList: true,
               show: true
             },
@@ -267,7 +267,7 @@ const ExpandCollapseMenu = ({
               uuid: 'collapse-all-outcomes',
               content: t('menu.collapseOutcomes'),
               action: onOutcomeExpand(false),
-              icon: <UnfoldLessIcon />,
+              icon: <UnfoldLessIcon sx={{ color: 'action.active' }} />,
               showIconInList: true,
               show: true
             }
@@ -282,7 +282,7 @@ const ExpandCollapseMenu = ({
                     graphOutcomes.map((outcome) => outcome.uuid)
                   )
                 ),
-              icon: <UnfoldMoreIcon />,
+              icon: <UnfoldMoreIcon sx={{ color: 'action.active' }} />,
               showIconInList: true,
               show: true
             },
@@ -291,7 +291,7 @@ const ExpandCollapseMenu = ({
               content: t('menu.collapseOutcomes'),
               action: () =>
                 dispatch(outcomeUiActions.setExpandedOutcomeUuids([])),
-              icon: <UnfoldLessIcon />,
+              icon: <UnfoldLessIcon sx={{ color: 'action.active' }} />,
               showIconInList: true,
               show: true
             }
