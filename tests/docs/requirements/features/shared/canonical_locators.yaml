@@ -540,8 +540,8 @@ locatorMappings:
     strategy: "[data-test-id=\"main-nav\"]"
     confidence: confirmed
   mainNavigationPanel:
-    strategy: "{mainNavigation} expanded navigation panel"
-    confidence: inferred
+    strategy: "[data-test-id=\"main-nav-panel\"] within {mainNavigation}"
+    confidence: confirmed
   markAllAsReadLink:
     strategy: "{notificationsPage} Link text 'Mark all as read'"
     confidence: inferred

@@ -12,9 +12,9 @@ export function mainNavigation(page: Page): Locator {
   return page.locator('[data-test-id="main-nav"]');
 }
 
-/** Visible sidebar panel (alias for mainNavigation root). */
+/** canonical: mainNavigationPanel — expanded inner panel */
 export function mainNavigationPanel(page: Page): Locator {
-  return mainNavigation(page);
+  return mainNavigation(page).locator('[data-test-id="main-nav-panel"]');
 }
 
 export function mainNavigationScrollRegion(page: Page): Locator {

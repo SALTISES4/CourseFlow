@@ -123,6 +123,7 @@ const Sidebar = () => {
       </SC.Collapse>
 
       <SC.SidebarInner
+        data-test-id="main-nav-panel"
         aria-hidden={collapsed}
         {...(collapsed ? { inert: '' } : {})}
       >

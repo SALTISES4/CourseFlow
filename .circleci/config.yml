@@ -281,7 +281,7 @@ jobs:
       API_BASE_URL:
         type: string
     machine:
-      image: ubuntu-2404:current
+      image: ubuntu-2404:2026.11.1
     working_directory: ~/repo
     environment:
       AWS_REGION: << parameters.AWS_REGION >>
