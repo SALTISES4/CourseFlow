@@ -107,6 +107,27 @@ def test_private_non_contributor_is_denied_then_gets_public_read_only_access(
 
 
 @pytest.mark.django_db
+def test_published_template_exposes_copy_permission_to_public_user(
+    client,
+    project,
+    users,
+):
+    project.is_published = True
+    project.is_template = True
+    project.save(update_fields=["is_published", "is_template"])
+
+    response = client.get(
+        f"/api/project/{project.uuid}",
+        **_auth_header(users["outsider"]),
+    )
+
+    assert response.status_code == 200, response.content
+    permissions = response.json()["item"]["permissions"]
+    assert permissions["resourceRole"] == "public"
+    assert permissions["actions"] == ["copy_project", "view"]
+
+
+@pytest.mark.django_db
 def test_editor_can_edit_publish_manage_members_and_create_workflow(
     client,
     project,

@@ -45,6 +45,8 @@ const project = {
     addPlaceholder: 'Add new tag'
   },
   messages: {
+    copied: 'Your project has been successfully copied',
+    copyFailed: 'We encountered an issue and your project was not copied',
     created: 'Your project has been successfully created',
     createFailed: 'We encountered an issue and your project was not created',
     updated: 'Your project has been successfully updated',
@@ -58,6 +60,14 @@ const project = {
   errors: {
     notFound: 'Project does not exist',
     loadFailed: 'The project could not be loaded.'
+  },
+  copyDialog: {
+    title: 'Copy project',
+    titleSuffix: ' (copy)',
+    includeArchivedWorkflows: 'Include archived workflows',
+    includeArchivedWorkflowsHelp:
+      'Archived workflows included in the copy will remain archived.',
+    submit: 'Copy project'
   },
   exportDialog: {
     title: 'Export {{projectType}}',

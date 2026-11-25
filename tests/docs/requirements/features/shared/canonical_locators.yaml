@@ -161,6 +161,33 @@ locatorMappings:
   contributorRoleDropdown:
     strategy: "{projectMetadataPermissionsPanel} role dropdown on a contributor entry with assignable options 'Editor', 'Commenter', and 'Viewer' (current role disabled) and 'Remove contributor'"
     confidence: inferred
+  copyProjectCancelButton:
+    strategy: "[data-test-id=\"copy-project-cancel-button\"]"
+    confidence: implemented
+  copyProjectDialog:
+    strategy: "[data-test-id=\"copy-project-dialog\"]"
+    confidence: implemented
+  copyProjectDialogTitle:
+    strategy: "[data-test-id=\"copy-project-dialog-title\"]"
+    confidence: implemented
+  copyProjectForm:
+    strategy: "[data-test-id=\"copy-project-form\"]"
+    confidence: implemented
+  copyProjectIncludeArchivedCheckbox:
+    strategy: "[data-test-id=\"copy-project-include-archived-checkbox\"]"
+    confidence: implemented
+  copyProjectIncludeArchivedHelp:
+    strategy: "[data-test-id=\"copy-project-include-archived-help\"]"
+    confidence: implemented
+  copyProjectMenuItem:
+    strategy: "#copy-project-button"
+    confidence: implemented
+  copyProjectSubmitButton:
+    strategy: "[data-test-id=\"copy-project-submit-button\"]"
+    confidence: implemented
+  copyProjectTitleField:
+    strategy: "[data-test-id=\"copy-project-title-field\"]"
+    confidence: implemented
   copyWorkflowDialog:
     strategy: null
     confidence: unresolved
@@ -1206,8 +1233,14 @@ locatorMappings:
     strategy: "{workflowEditNodeForm} select with label 'Task'"
     confidence: inferred
   workflowEditNodeFormTimeField:
-    strategy: "{workflowEditNodeForm} duration field group with accessible name 'Time'"
-    confidence: inferred
+    strategy: "{workflowEditNodeForm} [data-test-id='workflow-edit-node-time'][role='group']"
+    confidence: confirmed
+  workflowEditNodeFormTimeHoursField:
+    strategy: "{workflowEditNodeFormTimeField} input with accessible name 'Hours'"
+    confidence: confirmed
+  workflowEditNodeFormTimeMinutesField:
+    strategy: "{workflowEditNodeFormTimeField} input with accessible name 'Minutes'"
+    confidence: confirmed
   workflowEditNodeFormTitleField:
     strategy: "{workflowEditNodeForm} [name='title']"
     confidence: inferred
@@ -1254,7 +1287,7 @@ locatorMappings:
     strategy: "duration field scoped to its hosting uiObject and identified by that hosting field's accessible name"
     confidence: inferred
   workflowDurationInput:
-    strategy: "{workflowDurationField} masked input with the hosting field's accessible label and ###:## format"
+    strategy: "hosting-specific input presentation within {workflowDurationField}; Time exposes Hours and Minutes inputs while unchanged Ponderation and Classification fields expose a masked ###:## input"
     confidence: inferred
   workflowDurationValidationMessage:
     strategy: "validation message associated with {workflowDurationInput}"
@@ -1344,8 +1377,14 @@ locatorMappings:
     strategy: "{workflowMetadataSection} duration field group with accessible name 'Theory'"
     confidence: inferred
   workflowMetadataFieldTime:
-    strategy: "{workflowMetadataSection} duration field group with accessible name 'Time'"
-    confidence: inferred
+    strategy: "{workflowMetadataSection} [data-test-id='workflow-overview-time'][role='group']"
+    confidence: confirmed
+  workflowMetadataFieldTimeHours:
+    strategy: "{workflowMetadataFieldTime} input with accessible name 'Hours'"
+    confidence: confirmed
+  workflowMetadataFieldTimeMinutes:
+    strategy: "{workflowMetadataFieldTime} input with accessible name 'Minutes'"
+    confidence: confirmed
   workflowMetadataPermissionsPanel:
     strategy: "{workflowOverviewView} contributors and permissions summary panel"
     confidence: inferred

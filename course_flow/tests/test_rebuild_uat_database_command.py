@@ -1,92 +1,141 @@
-"""
-Safety and orchestration tests for the destructive UAT database rebuild.
-"""
+"""Safety and orchestration tests for destructive environment database rebuilds."""
 
 from __future__ import annotations
 
 from contextlib import contextmanager
+from dataclasses import dataclass
 from types import SimpleNamespace
 
 import pytest
 from django.core.management import call_command as django_call_command
 from django.core.management.base import CommandError
 
-from course_flow.core.management.commands import cf_rebuild_uat_database
+from course_flow.core.management.commands import _rebuild_environment_database
 
 
-def test_rebuild_uat_database_refuses_non_uat_environment(monkeypatch):
+@dataclass(frozen=True)
+class RebuildTarget:
+    command_name: str
+    environment: str
+    allow_variable: str
+    host_variable: str
+    name_variable: str
+    confirmation_destination: str
+    confirmation_flag: str
+
+
+_REBUILD_TARGETS = (
+    pytest.param(
+        RebuildTarget(
+            command_name="cf_rebuild_uat_database",
+            environment="uat",
+            allow_variable="ALLOW_UAT_DATABASE_RESET",
+            host_variable="UAT_DATABASE_RESET_HOST",
+            name_variable="UAT_DATABASE_RESET_NAME",
+            confirmation_destination="confirm_uat_reset",
+            confirmation_flag="--confirm-uat-reset",
+        ),
+        id="uat",
+    ),
+    pytest.param(
+        RebuildTarget(
+            command_name="cf_rebuild_staging_database",
+            environment="staging",
+            allow_variable="ALLOW_STAGING_DATABASE_RESET",
+            host_variable="STAGING_DATABASE_RESET_HOST",
+            name_variable="STAGING_DATABASE_RESET_NAME",
+            confirmation_destination="confirm_staging_reset",
+            confirmation_flag="--confirm-staging-reset",
+        ),
+        id="staging",
+    ),
+)
+
+
+@pytest.mark.parametrize("target", _REBUILD_TARGETS)
+def test_rebuild_database_refuses_wrong_environment(monkeypatch, target):
     monkeypatch.setenv("ENV", "test")
-    monkeypatch.setenv("ALLOW_UAT_DATABASE_RESET", "true")
+    monkeypatch.setenv(target.allow_variable, "true")
 
-    with pytest.raises(CommandError, match="ENV=uat"):
+    with pytest.raises(CommandError, match=f"ENV={target.environment}"):
         django_call_command(
-            "cf_rebuild_uat_database",
-            confirm_uat_reset=True,
+            target.command_name,
+            **{target.confirmation_destination: True},
         )
 
 
-def test_rebuild_uat_database_requires_explicit_allow_flag(monkeypatch):
-    monkeypatch.setenv("ENV", "uat")
-    monkeypatch.delenv("ALLOW_UAT_DATABASE_RESET", raising=False)
+@pytest.mark.parametrize("target", _REBUILD_TARGETS)
+def test_rebuild_database_requires_explicit_allow_flag(monkeypatch, target):
+    monkeypatch.setenv("ENV", target.environment)
+    monkeypatch.delenv(target.allow_variable, raising=False)
 
-    with pytest.raises(CommandError, match="ALLOW_UAT_DATABASE_RESET=true"):
+    with pytest.raises(CommandError, match=f"{target.allow_variable}=true"):
         django_call_command(
-            "cf_rebuild_uat_database",
-            confirm_uat_reset=True,
+            target.command_name,
+            **{target.confirmation_destination: True},
         )
 
 
-def test_rebuild_uat_database_requires_confirmation(monkeypatch):
-    monkeypatch.setenv("ENV", "uat")
-    monkeypatch.setenv("ALLOW_UAT_DATABASE_RESET", "true")
+@pytest.mark.parametrize("target", _REBUILD_TARGETS)
+def test_rebuild_database_requires_confirmation(monkeypatch, target):
+    monkeypatch.setenv("ENV", target.environment)
+    monkeypatch.setenv(target.allow_variable, "true")
 
-    with pytest.raises(CommandError, match="--confirm-uat-reset"):
-        django_call_command("cf_rebuild_uat_database")
+    with pytest.raises(CommandError, match=target.confirmation_flag):
+        django_call_command(target.command_name)
 
 
-def test_rebuild_uat_database_refuses_compose_postgres(monkeypatch):
-    monkeypatch.setenv("ENV", "uat")
-    monkeypatch.setenv("ALLOW_UAT_DATABASE_RESET", "true")
+@pytest.mark.parametrize("target", _REBUILD_TARGETS)
+def test_rebuild_database_refuses_compose_postgres(monkeypatch, target):
+    monkeypatch.setenv("ENV", target.environment)
+    monkeypatch.setenv(target.allow_variable, "true")
     monkeypatch.setattr(
-        cf_rebuild_uat_database,
+        _rebuild_environment_database,
         "connection",
         SimpleNamespace(vendor="postgresql", settings_dict={"HOST": "postgres"}),
     )
 
     with pytest.raises(CommandError, match="local or Compose"):
         django_call_command(
-            "cf_rebuild_uat_database",
-            confirm_uat_reset=True,
+            target.command_name,
+            **{target.confirmation_destination: True},
         )
 
 
-def test_rebuild_uat_database_requires_matching_target_fingerprint(monkeypatch):
-    monkeypatch.setenv("ENV", "uat")
-    monkeypatch.setenv("ALLOW_UAT_DATABASE_RESET", "true")
-    monkeypatch.setenv("UAT_DATABASE_RESET_HOST", "expected-uat-postgres.example")
-    monkeypatch.setenv("UAT_DATABASE_RESET_NAME", "courseflow_uat")
+@pytest.mark.parametrize("target", _REBUILD_TARGETS)
+def test_rebuild_database_requires_matching_target_fingerprint(monkeypatch, target):
+    monkeypatch.setenv("ENV", target.environment)
+    monkeypatch.setenv(target.allow_variable, "true")
+    monkeypatch.setenv(
+        target.host_variable,
+        f"expected-{target.environment}-postgres.example",
+    )
+    monkeypatch.setenv(target.name_variable, f"courseflow_{target.environment}")
     monkeypatch.setattr(
-        cf_rebuild_uat_database,
+        _rebuild_environment_database,
         "connection",
         SimpleNamespace(
             vendor="postgresql",
             settings_dict={
                 "HOST": "different-postgres.example",
-                "NAME": "courseflow_uat",
+                "NAME": f"courseflow_{target.environment}",
             },
         ),
     )
 
     with pytest.raises(CommandError, match="reset target fingerprint"):
         django_call_command(
-            "cf_rebuild_uat_database",
-            confirm_uat_reset=True,
+            target.command_name,
+            **{target.confirmation_destination: True},
         )
 
 
-def test_rebuild_uat_database_drops_migrates_seeds_and_imports(monkeypatch):
+@pytest.mark.parametrize("target", _REBUILD_TARGETS)
+def test_rebuild_database_drops_migrates_seeds_and_imports(monkeypatch, target):
     statements: list[tuple[str, object | None]] = []
     nested_commands: list[tuple[str, tuple, dict]] = []
+    database_host = f"private-{target.environment}-postgres.example"
+    database_name = f"courseflow_{target.environment}"
 
     class FakeCursor:
         def __enter__(self):
@@ -104,8 +153,8 @@ def test_rebuild_uat_database_drops_migrates_seeds_and_imports(monkeypatch):
     fake_connection = SimpleNamespace(
         vendor="postgresql",
         settings_dict={
-            "HOST": "private-uat-postgres.example",
-            "NAME": "courseflow_uat",
+            "HOST": database_host,
+            "NAME": database_name,
         },
         ops=SimpleNamespace(quote_name=lambda name: f'"{name}"'),
         cursor=FakeCursor,
@@ -118,17 +167,25 @@ def test_rebuild_uat_database_drops_migrates_seeds_and_imports(monkeypatch):
     def fake_call_command(name, *args, **options):
         nested_commands.append((name, args, options))
 
-    monkeypatch.setenv("ENV", "uat")
-    monkeypatch.setenv("ALLOW_UAT_DATABASE_RESET", "true")
-    monkeypatch.setenv("UAT_DATABASE_RESET_HOST", "private-uat-postgres.example")
-    monkeypatch.setenv("UAT_DATABASE_RESET_NAME", "courseflow_uat")
-    monkeypatch.setattr(cf_rebuild_uat_database, "connection", fake_connection)
-    monkeypatch.setattr(cf_rebuild_uat_database.transaction, "atomic", fake_atomic)
-    monkeypatch.setattr(cf_rebuild_uat_database, "call_command", fake_call_command)
+    monkeypatch.setenv("ENV", target.environment)
+    monkeypatch.setenv(target.allow_variable, "true")
+    monkeypatch.setenv(target.host_variable, database_host)
+    monkeypatch.setenv(target.name_variable, database_name)
+    monkeypatch.setattr(_rebuild_environment_database, "connection", fake_connection)
+    monkeypatch.setattr(
+        _rebuild_environment_database.transaction,
+        "atomic",
+        fake_atomic,
+    )
+    monkeypatch.setattr(
+        _rebuild_environment_database,
+        "call_command",
+        fake_call_command,
+    )
 
     django_call_command(
-        "cf_rebuild_uat_database",
-        confirm_uat_reset=True,
+        target.command_name,
+        **{target.confirmation_destination: True},
         verbosity=0,
     )
 
@@ -149,7 +206,7 @@ def test_rebuild_uat_database_drops_migrates_seeds_and_imports(monkeypatch):
         ("cf_seed_e2e_data", (), {"clear_and_seed": True, "verbosity": 0}),
         (
             "cf_import_project_snapshot",
-            (str(cf_rebuild_uat_database._PERSISTENT_PROJECT_SNAPSHOT),),
+            (str(_rebuild_environment_database._PERSISTENT_PROJECT_SNAPSHOT),),
             {
                 "owner_email": "teacher@courseflow.com",
                 "verbosity": 0,

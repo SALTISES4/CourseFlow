@@ -2,8 +2,7 @@ import type { Locator, Page } from '@playwright/test';
 
 /**
  * Workflow Overview sub-view uiObjects — canonical_locators.yaml (workflowOverviewView, workflowMetadata*).
- * Switch and field labels match product copy in OverviewView / MetadataFields
- * (FR documents some switches as 'Auto-calculate'; product uses 'Calculate … automatically').
+ * Switch and field labels match product copy in OverviewView / MetadataFields.
  */
 
 export function workflowOverviewView(page: Page): Locator {
@@ -35,14 +34,26 @@ export function workflowMetadataFieldCode(page: Page): Locator {
 
 /** canonical: workflowMetadataSwitchCalculateTimeAutomatically */
 export function workflowMetadataSwitchCalculateTimeAutomatically(page: Page): Locator {
-  return workflowOverviewView(page).getByRole('checkbox', {
-    name: 'Calculate time automatically',
-  });
+  return workflowOverviewView(page)
+    .locator('[data-test-id="workflow-time-section"]')
+    .getByRole('checkbox', { name: 'Auto-calculate' });
 }
 
-/** canonical: workflowMetadataFieldTime — label 'Time' */
+export function workflowMetadataTimeGroup(page: Page): Locator {
+  return workflowOverviewView(page).locator('[data-test-id="workflow-overview-time"]');
+}
+
+export function workflowMetadataFieldTimeHours(page: Page): Locator {
+  return workflowMetadataTimeGroup(page).getByLabel(/^Hours$/i);
+}
+
+export function workflowMetadataFieldTimeMinutes(page: Page): Locator {
+  return workflowMetadataTimeGroup(page).getByLabel(/^Minutes$/i);
+}
+
+/** Backward-compatible alias for tests that only need one field from the Time control. */
 export function workflowMetadataFieldTime(page: Page): Locator {
-  return workflowOverviewView(page).getByLabel(/^Time$/i);
+  return workflowMetadataFieldTimeHours(page);
 }
 
 /** FR-WF-OV-004 — Ponderation section heading */
@@ -52,9 +63,9 @@ export function workflowMetadataPonderationSection(page: Page): Locator {
 
 /** canonical: workflowMetadataSwitchCalculatePonderationAutomatically */
 export function workflowMetadataSwitchCalculatePonderationAutomatically(page: Page): Locator {
-  return workflowOverviewView(page).getByRole('checkbox', {
-    name: 'Calculate ponderation automatically',
-  });
+  return workflowOverviewView(page)
+    .locator('[data-test-id="workflow-ponderation-section"]')
+    .getByRole('checkbox', { name: 'Auto-calculate' });
 }
 
 /** canonical: workflowMetadataFieldTheoryTime — label 'Theory' */
@@ -74,9 +85,9 @@ export function workflowMetadataFieldIndividualTime(page: Page): Locator {
 
 /** canonical: workflowMetadataSwitchCalculateCreditsAutomatically */
 export function workflowMetadataSwitchCalculateCreditsAutomatically(page: Page): Locator {
-  return workflowOverviewView(page).getByRole('checkbox', {
-    name: 'Calculate credits automatically',
-  });
+  return workflowOverviewView(page)
+    .locator('[data-test-id="workflow-credits-section"]')
+    .getByRole('checkbox', { name: 'Auto-calculate' });
 }
 
 /** canonical: workflowMetadataFieldCredits — label 'Credits' */
@@ -86,9 +97,9 @@ export function workflowMetadataFieldCredits(page: Page): Locator {
 
 /** canonical: workflowMetadataSwitchCalculateClassificationAutomatically */
 export function workflowMetadataSwitchCalculateClassificationAutomatically(page: Page): Locator {
-  return workflowOverviewView(page).getByRole('checkbox', {
-    name: 'Calculate classification automatically',
-  });
+  return workflowOverviewView(page)
+    .locator('[data-test-id="workflow-classification-section"]')
+    .getByRole('checkbox', { name: 'Auto-calculate' });
 }
 
 /** canonical: workflowMetadataFieldGeneralTime — label 'General time' */

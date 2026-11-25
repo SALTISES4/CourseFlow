@@ -4,12 +4,30 @@ Django settings for CourseFlow V2 (rebuild).
 
 import os
 from pathlib import Path
+from uuid import UUID
 
 from dotenv import load_dotenv
+
+from course_flow.template_catalog import (
+    CURATED_TEMPLATE_PROJECT_UUID,
+    E2E_TEMPLATE_PROJECT_UUID,
+)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 ENVIRONMENT = os.environ.get("ENV", "development").strip().lower()
+
+_default_template_project_uuid = (
+    E2E_TEMPLATE_PROJECT_UUID
+    if ENVIRONMENT == "development"
+    else CURATED_TEMPLATE_PROJECT_UUID
+)
+COURSEFLOW_TEMPLATE_PROJECT_UUID = UUID(
+    os.environ.get(
+        "COURSEFLOW_TEMPLATE_PROJECT_UUID",
+        str(_default_template_project_uuid),
+    )
+)
 
 
 def env_or_file(name: str, default: str = "") -> str:

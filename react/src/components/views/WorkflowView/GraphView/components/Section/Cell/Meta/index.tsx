@@ -1,5 +1,5 @@
 import { CFRoutes } from '@cf/router/appRoutes'
-import { formatDurationHours } from '@cfComponents/duration'
+import { formatDurationHoursMinutes } from '@cfComponents/duration'
 import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined'
 import TimerOutlinedIcon from '@mui/icons-material/TimerOutlined'
 import Link from '@mui/material/Link'
@@ -27,7 +27,7 @@ const Meta = ({
   taskType,
   timeMinutes
 }: PropsType) => {
-  const { t, i18n } = useTranslation('workflow')
+  const { t } = useTranslation('workflow')
   const contextIcon = getIcon('context', contextType)
   const taskIcon = getIcon('task', taskType)
   const hasTime = typeof timeMinutes === 'number' && timeMinutes > 0
@@ -79,7 +79,7 @@ const Meta = ({
           {hasTime && (
             <Styled.Tag>
               <TimerOutlinedIcon />
-              <span>{formatDurationHours(timeMinutes, i18n.language)}</span>
+              <span>{formatDurationHoursMinutes(timeMinutes)}</span>
             </Styled.Tag>
           )}
         </Styled.Footer>

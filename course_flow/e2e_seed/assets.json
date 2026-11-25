@@ -54,7 +54,7 @@
       "kind": "project",
       "builder": "generate_e2e_fixtures",
       "lifecycle": "immutable-source",
-      "purpose": "Published template project containing one canonical workflow of each type.",
+      "purpose": "Published template project containing active activity/course templates and an archived program negative-path fixture.",
       "provides": ["published", "template-project"]
     },
     {
@@ -134,8 +134,8 @@
       "kind": "workflow",
       "builder": "_seed_template_workflow",
       "lifecycle": "immutable-source",
-      "purpose": "Published program template copied by workflow-creation scenarios.",
-      "provides": ["program", "template"]
+      "purpose": "Archived program template retained for template-empty-state coverage.",
+      "provides": ["program", "template", "archived"]
     }
   ],
   "dependencies": []

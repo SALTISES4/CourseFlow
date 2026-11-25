@@ -8,6 +8,7 @@ import {
   workflowEditNodeFormContextField,
   workflowEditNodeFormTaskTypeField,
   workflowEditNodeFormTimeField,
+  workflowEditNodeFormTimeMinutesField,
   workflowEditNodeFormTitleField,
   workflowNodeBorder,
   workflowNodeContent,
@@ -166,6 +167,8 @@ export async function expectActivityNodeCanvasMatchesEditNodeForm(
     contextLabel: string;
     taskLabel: string;
     timeDisplay: string;
+    timeHours: string;
+    timeMinutes: string;
   },
 ): Promise<void> {
   await expect(workflowNodeTitle(page, nodeUuid)).toHaveText(expected.title);
@@ -178,5 +181,6 @@ export async function expectActivityNodeCanvasMatchesEditNodeForm(
   await expect(workflowEditNodeFormTitleField(page)).toHaveValue(expected.title);
   await expect(workflowEditNodeFormContextField(page)).toContainText(expected.contextLabel);
   await expect(workflowEditNodeFormTaskTypeField(page)).toContainText(expected.taskLabel);
-  await expect(workflowEditNodeFormTimeField(page)).toHaveValue(expected.timeDisplay);
+  await expect(workflowEditNodeFormTimeField(page)).toHaveValue(expected.timeHours);
+  await expect(workflowEditNodeFormTimeMinutesField(page)).toHaveValue(expected.timeMinutes);
 }

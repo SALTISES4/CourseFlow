@@ -428,7 +428,7 @@ requirements:
     mainFlow:
       - createWorkflowDialogTitle follows pattern 'Create {workflowType} from a template'
       - workflowTemplateSearchView list, search, ordering, cap, selection, and empty-results behavior per acceptanceCriteria in this FR; workflowCard conforms to card_content_requirements_v1.yaml
-      - at least one template workflowCard exists for each workflowType (activity, course, program)
+      - at least one template workflowCard exists for activity and course workflowType; until a program template is curated, program template mode displays workflowTemplateSearchEmptyState with copy 'No templates available'
       - createWorkflowSubmitButton remains disabled until a workflowCard is selected
       - when user returns to step 3 template mode from step 2, previously selected workflowCard and submit enablement are preserved
       - cancel per FR-WF-CREATE-STEPPER-001; step 3 previous-step behavior per acceptanceCriteria in this FR
@@ -447,6 +447,7 @@ requirements:
       - given more than four templates exist for selected workflowType, workflowTemplateSearchView shows the four most recently created workflowCard items with no pager
       - given user enters text in workflowTemplateSearchField, visible workflowCard template options match title search criteria within the selected workflowType
       - given template mode on step 3 and workflowTemplateSearchField text matches no template title within selected workflowType, workflowTemplateSearchEmptyState is shown, no workflowCard is visible, and createWorkflowSubmitButton is disabled
+      - given program template mode while the curated master project has no active program template, workflowTemplateSearchEmptyState shows 'No templates available', no workflowCard is visible, and createWorkflowSubmitButton is disabled
       - given workflowTemplateSearchEmptyState is shown, user cannot submit until user clears workflowTemplateSearchField and selects a visible workflowCard
       - given user clears workflowTemplateSearchField after a zero-match search, matching template workflowCard items reappear within selected workflowType
       - given template mode on step 3 and no selected workflowCard, createWorkflowSubmitButton is disabled

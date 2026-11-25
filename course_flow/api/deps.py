@@ -1,3 +1,6 @@
+from course_flow.application.project_transfer.service import (
+    ProjectImportService,
+)
 from course_flow.application.services.account_security_service import (
     AccountSecurityService,
 )
@@ -19,6 +22,9 @@ from course_flow.application.services.notification_service import (
 )
 from course_flow.application.services.password_recovery_service import (
     PasswordRecoveryService,
+)
+from course_flow.application.services.project_copy_service import (
+    ProjectCopyService,
 )
 from course_flow.application.services.project_detail_service import (
     ProjectDetailService,
@@ -42,6 +48,10 @@ from course_flow.application.services.workflow_copy_service import (
     WorkflowCopyService,
 )
 from course_flow.application.services.workflow_service import WorkflowService
+from course_flow.infrastructure.project_transfer import (
+    DjangoProjectSnapshotExporter,
+    DjangoProjectSnapshotWriter,
+)
 from course_flow.infrastructure.repositories.django_channel_repository import (
     DjangoChannelRepository,
 )
@@ -65,6 +75,11 @@ _project_detail_service = ProjectDetailService()
 _graph_view_service = GraphViewService()
 _graph_mutation_service = GraphMutationService()
 _project_service = ProjectService(DjangoProjectRepository())
+_project_copy_service = ProjectCopyService(
+    authorization=_authorization_service,
+    exporter=DjangoProjectSnapshotExporter(),
+    importer=ProjectImportService(DjangoProjectSnapshotWriter()),
+)
 _resource_lifecycle_service = ResourceLifecycleService()
 _project_relations_service = ProjectRelationsService()
 _workflow_service = WorkflowService(DjangoWorkflowRepository())
@@ -111,6 +126,10 @@ def get_graph_mutation_service() -> GraphMutationService:
 
 def get_project_service() -> ProjectService:
     return _project_service
+
+
+def get_project_copy_service() -> ProjectCopyService:
+    return _project_copy_service
 
 
 def get_resource_lifecycle_service() -> ResourceLifecycleService:

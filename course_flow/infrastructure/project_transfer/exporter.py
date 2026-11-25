@@ -50,6 +50,8 @@ class DjangoProjectSnapshotExporter:
         *,
         project_uuid: UUID,
         source_system: str,
+        include_archived_workflows: bool = True,
+        sever_unmapped_links: bool = False,
     ) -> ProjectSnapshotBundle:
         try:
             project = Project.objects.prefetch_related("disciplines", "tags").get(
@@ -60,15 +62,16 @@ class DjangoProjectSnapshotExporter:
                 f"project {project_uuid} does not exist"
             ) from exc
 
+        workflow_query = Workflow.objects.filter(project=project)
+        if not include_archived_workflows:
+            workflow_query = workflow_query.filter(is_archived=False)
         workflows = list(
-            Workflow.objects.filter(project=project)
-            .select_related(
+            workflow_query.select_related(
                 "graph",
                 "activitymeta",
                 "coursemeta",
                 "programmeta",
-            )
-            .order_by("uuid")
+            ).order_by("uuid")
         )
         workflow_ids = {workflow.id for workflow in workflows}
         workflow_refs = {workflow.id: str(workflow.uuid) for workflow in workflows}
@@ -77,7 +80,7 @@ class DjangoProjectSnapshotExporter:
             workflow_id__in=workflow_ids,
             linked_workflow__isnull=False,
         ).exclude(linked_workflow_id__in=workflow_ids)
-        if external_links.exists():
+        if external_links.exists() and not sever_unmapped_links:
             raise ProjectSnapshotExportError(
                 "project contains node links to workflows outside the export closure"
             )
@@ -95,6 +98,7 @@ class DjangoProjectSnapshotExporter:
                 workflow,
                 workflow_refs=workflow_refs,
                 tag_refs=tag_refs,
+                sever_unmapped_links=sever_unmapped_links,
             )
             for workflow in workflows
         )
@@ -127,7 +131,12 @@ class DjangoProjectSnapshotExporter:
         )
 
     def _export_workflow(
-        self, workflow, *, workflow_refs, tag_refs
+        self,
+        workflow,
+        *,
+        workflow_refs,
+        tag_refs,
+        sever_unmapped_links: bool,
     ) -> WorkflowSnapshot:
         graph = workflow.graph
         sections = list(graph.sections.order_by("position", "id"))
@@ -256,7 +265,7 @@ class DjangoProjectSnapshotExporter:
                         channel_ref=channel_refs[node.channel_id],
                         linked_workflow_ref=(
                             workflow_refs[node.linked_workflow_id]
-                            if node.linked_workflow_id is not None
+                            if node.linked_workflow_id in workflow_refs
                             else None
                         ),
                         section_row=node.section_row,

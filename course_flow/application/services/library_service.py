@@ -6,6 +6,7 @@ from datetime import datetime
 from enum import Enum
 from uuid import UUID
 
+from django.conf import settings
 from django.db.models import Count, Q, QuerySet
 from django.utils import timezone
 
@@ -197,8 +198,14 @@ class LibraryService:
         # Boolean filters are "only when true":
         # False/None means the filter is not applied.
         if filters.is_template:
-            project_qs = project_qs.filter(is_template=True)
-            workflow_graph_qs = workflow_graph_qs.filter(workflow__project__is_template=True)
+            project_qs = project_qs.filter(
+                uuid=settings.COURSEFLOW_TEMPLATE_PROJECT_UUID,
+                is_template=True,
+            )
+            workflow_graph_qs = workflow_graph_qs.filter(
+                workflow__project__uuid=settings.COURSEFLOW_TEMPLATE_PROJECT_UUID,
+                workflow__project__is_template=True,
+            )
 
         if keyword:
             project_qs = project_qs.filter(

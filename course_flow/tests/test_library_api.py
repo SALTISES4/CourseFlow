@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import timedelta
 
 import pytest
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test import Client
 from django.utils import timezone
@@ -581,7 +582,13 @@ def test_response_meta_includes_applied_filters_and_allowed_disciplines(client: 
     raw = _issue_token_for(user)
     d1 = Discipline.objects.get(code="biology")
     d2 = Discipline.objects.create(code="astronomy")
-    project = Project.objects.create(owner=user, title="Project", description="", is_template=True)
+    project = Project.objects.create(
+        uuid=settings.COURSEFLOW_TEMPLATE_PROJECT_UUID,
+        owner=user,
+        title="Project",
+        description="",
+        is_template=True,
+    )
     ProjectDiscipline.objects.create(project=project, discipline=d1)
     _graph_with_workflow(user, project=project, workflow_title="Workflow", workflow_type=WorkflowType.COURSE)
 
@@ -611,6 +618,53 @@ def test_response_meta_includes_applied_filters_and_allowed_disciplines(client: 
     allowed_disciplines = meta["allowed"]["disciplines"]
     assert allowed_disciplines == [{"code": d1.code}]
     assert d2.code not in {d["code"] for d in allowed_disciplines}
+
+
+@pytest.mark.django_db
+def test_template_filter_only_returns_configured_master_project(client: Client, user):
+    raw = _issue_token_for(user)
+    master = Project.objects.create(
+        uuid=settings.COURSEFLOW_TEMPLATE_PROJECT_UUID,
+        owner=user,
+        title="Master templates",
+        description="",
+        is_template=True,
+        is_published=True,
+    )
+    other = Project.objects.create(
+        owner=user,
+        title="Other template project",
+        description="",
+        is_template=True,
+        is_published=True,
+    )
+    _graph_with_workflow(
+        user,
+        project=master,
+        workflow_title="Master workflow",
+        workflow_type=WorkflowType.COURSE,
+    )
+    _graph_with_workflow(
+        user,
+        project=other,
+        workflow_title="Other workflow",
+        workflow_type=WorkflowType.COURSE,
+    )
+
+    body = _post_search(
+        client,
+        raw,
+        {
+            "scope": "published",
+            "filters": {
+                "contentType": "workflow",
+                "isTemplate": True,
+            },
+        },
+    )
+
+    assert body["meta"]["totalResults"] == 1
+    assert [item["title"] for item in body["items"]] == ["Master workflow"]
 
 
 @pytest.mark.django_db

@@ -4,12 +4,10 @@ Project, team, and user builders used by the E2E fixture orchestrator.
 
 from __future__ import annotations
 
-from django.contrib.auth import get_user_model
+from uuid import UUID, uuid4
 
 from course_flow.core.enum import AccountRole, Role
-from course_flow.core.models import Project, Team, TeamUser
-
-User = get_user_model()
+from course_flow.core.models import Project, Team, TeamUser, User
 
 
 def ensure_fixture_user(
@@ -47,8 +45,10 @@ def create_project(
     *,
     title: str,
     description: str,
+    uuid: UUID | None = None,
 ) -> Project:
     return Project.objects.create(
+        uuid=uuid or uuid4(),
         owner=owner,
         title=title,
         description=description,

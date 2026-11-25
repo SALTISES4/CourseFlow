@@ -30,15 +30,15 @@ const workflow = {
   },
   metadata: {
     time: 'Time',
-    calculateTime: 'Calculate time automatically',
+    calculateTime: 'Auto-calculate',
     credits: 'Credits',
-    calculateCredits: 'Calculate credits automatically',
+    calculateCredits: 'Auto-calculate',
     ponderation: 'Ponderation',
-    calculatePonderation: 'Calculate ponderation automatically',
+    calculatePonderation: 'Auto-calculate',
     ponderationMismatch:
       'The total ponderation hours do not match the {{workflowType}} time.',
     classification: 'Classification',
-    calculateClassification: 'Calculate classification automatically',
+    calculateClassification: 'Auto-calculate',
     classificationMismatch:
       'The total classification hours do not match the program time.',
     code: 'Code',

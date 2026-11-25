@@ -25,6 +25,7 @@ const library = {
     summary_one: 'Showing {{range}} of {{count}} result',
     summary_other: 'Showing {{range}} of {{count}} results',
     none: 'No results found',
+    noTemplates: 'No templates available',
     notFound: 'The content you were looking for was not found.',
     loadFailed: 'The library could not be loaded.',
     seeAll: '+ See all'

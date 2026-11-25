@@ -3,6 +3,7 @@ import {
   listProjectTagsOptions
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import { WorkflowPermission } from '@cf/api/gen/types.gen'
+import DurationHoursMinutesFields from '@cf/components/common/DurationHoursMinutesFields'
 import DurationTextField from '@cf/components/common/DurationTextField'
 import WysiwygField from '@cf/components/common/UIPrimitives/WysiwygInput'
 import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
@@ -450,11 +451,11 @@ const EditNodeForm = ({
               name="timeRequiredMinutes"
               control={control}
               render={({ field }) => (
-                <DurationTextField
-                  label={t('edit.time')}
+                <DurationHoursMinutesFields
+                  groupLabel={t('edit.time')}
                   value={field.value}
                   readOnly={!canEdit}
-                  fullWidth
+                  testId="workflow-edit-node-time"
                   onValueChange={field.onChange}
                   onValueCommit={field.onBlur}
                 />

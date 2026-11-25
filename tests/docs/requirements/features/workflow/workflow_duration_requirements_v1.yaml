@@ -1,7 +1,7 @@
 # Functional requirements: workflow duration fields
 # Status: Accepted
-# Version: 2.0
-# Source: product decisions recorded 2026-11-16.
+# Version: 3.0
+# Source: product decisions recorded 2026-11-16 and Figma-authoritative Time controls confirmed 2026-11-24.
 # Scope: all duration-valued workflow and node fields, including Time,
 #   Ponderation, Classification, linked-workflow mirrors, calculated totals,
 #   outcome tables, and compact graph-node metadata.
@@ -15,11 +15,13 @@ durationSemantics:
   precision: whole minutes
   persistedValueRule: A duration is stored and transported as one nullable, non-negative integer containing total minutes. No unit field is stored or exposed.
   calculationRule: Duration arithmetic, equality, copying, linking, and automatic totals operate on total integer minutes without presentation rounding.
-  inputRule: Editable duration forms use one masked pseudo-time input in hhh:mm form. This is a duration and must not use time-of-day types or 24-hour clock behaviour.
+  timeInputRule: Node-sidebar and Overview Time controls use separate Hours and Minutes numeric fields backed by one canonical minute value. They are duration controls and must not use time-of-day types or 24-hour clock behaviour.
+  otherDurationInputRule: Ponderation and Classification controls retain their hosting feature's hhh:mm masked input until an authoritative design changes those controls.
   inputRange:
-    hours: 000 through 999
-    minutes: 00 through 59
-  displayRule: Outside editable duration inputs, duration values are converted to hours and localized with exactly one fractional digit.
+    timeHours: any non-negative whole number whose conversion remains a safe integer
+    maskedHours: 000 through 999 for unchanged hhh:mm controls
+    minutes: 0 through 59
+  displayRule: Graph-node Time tags render exact canonical minutes as '[hours] H [minutes] M'. Outcome-table and other unchanged non-form duration surfaces remain localized decimal hours with exactly one fractional digit.
   requirednessRule: This shared contract does not make a hosting field required. Empty values persist as null unless the hosting calculation explicitly treats an empty contribution as zero.
 
 compatibilityConstraints:
@@ -30,11 +32,11 @@ compatibilityConstraints:
 
 uiObjectDefinitions:
   workflowDurationField:
-    meaning: One logical duration control identified by its hosting field label and containing exactly one workflowDurationInput.
+    meaning: One logical duration control identified by its hosting field label and backed by one canonical integer-minute value.
   workflowDurationInput:
-    meaning: A five-digit masked duration input presented as hhh:mm, where the separator is fixed and the value is not a time of day.
+    meaning: The input presentation chosen by the hosting feature; Time uses separate Hours and Minutes fields, while unchanged Ponderation and Classification fields use hhh:mm.
   workflowDurationValidationMessage:
-    meaning: Localized validation feedback associated with an incomplete or invalid masked duration.
+    meaning: Localized validation feedback associated with an invalid duration input.
 
 locatorMappings:
   workflowDurationField: "canonical_locators.yaml -> workflowDurationField"
@@ -43,7 +45,7 @@ locatorMappings:
 
 requirements:
   - id: FR-WF-DURATION-001
-    title: Duration forms accept exact hours and minutes through a masked pseudo-time input
+    title: Duration forms accept exact hours and minutes without unit selection
 
     designEvidence: []
     actors: [owner, editor, commenter, viewer, user]
@@ -57,21 +59,21 @@ requirements:
       - owner or editor changes an editable duration
 
     mainFlow:
-      - workflowDurationField contains exactly one workflowDurationInput and no unit selector
-      - workflowDurationInput renders in hhh:mm form
-      - the hours component accepts integers from 000 through 999
-      - the minutes component accepts integers from 00 through 59
-      - entering 001:30 produces a canonical value of 90 minutes
-      - entering 000:10 produces a canonical value of 10 minutes
-      - an incomplete mask or a minutes component greater than 59 is invalid and is not persisted
+      - a node-sidebar or Overview Time workflowDurationField contains separate Hours and Minutes inputs and no unit selector
+      - the Hours component accepts non-negative whole numbers and the Minutes component accepts whole numbers from 0 through 59
+      - an empty Hours or Minutes component contributes zero; clearing both components persists null
+      - entering Hours 1 and Minutes 30 produces a canonical value of 90 minutes
+      - entering Hours 0 and Minutes 10 produces a canonical value of 10 minutes
+      - a non-integer component or a Minutes component greater than 59 is invalid and is not persisted
+      - unchanged Ponderation and Classification workflowDurationFields retain their hosting hhh:mm masked presentation
       - clearing an optional duration persists null
       - read-only and disabled behaviour follows the hosting feature
 
     acceptanceCriteria:
-      - given an editable duration, entering 001:30 and leaving the field persists 90 minutes
-      - given an editable duration, entering 000:10 and leaving the field persists 10 minutes
-      - given an invalid or incomplete masked value, no replacement duration is persisted
-      - given an optional duration is cleared, null is persisted
+      - given an editable Time duration, entering Hours 1 and Minutes 30 and leaving the control persists 90 minutes
+      - given an editable Time duration, entering Hours 0 and Minutes 10 and leaving the control persists 10 minutes
+      - given an invalid Hours or Minutes value, no replacement duration is persisted
+      - given both components of an optional Time duration are cleared, null is persisted
       - no duration form renders a selectable time unit or a time-of-day control
 
     openQuestions: []
@@ -105,7 +107,7 @@ requirements:
     openQuestions: []
 
   - id: FR-WF-DURATION-003
-    title: Non-form duration displays show localized hours to one decimal place
+    title: Duration displays preserve exact minutes using their authoritative host format
 
     designEvidence: []
     actors: [owner, editor, commenter, viewer, user]
@@ -119,22 +121,30 @@ requirements:
       - active locale changes
 
     mainFlow:
-      - the system divides canonical minutes by 60 for presentation only
-      - the system renders exactly one fractional digit using the active locale
-      - compact node metadata and linked read-only fields include the localized hour unit
+      - compact graph-node Time metadata converts canonical minutes to whole Hours plus remainder Minutes and renders '[hours] H [minutes] M'
+      - linked read-only Time controls render separate Hours and Minutes inputs like editable Time controls
       - outcome-table cells whose headers identify hours render the localized numeric value with one fractional digit
+      - other unchanged non-form duration displays divide canonical minutes by 60 for presentation only and render exactly one fractional digit using the active locale
 
     acceptanceCriteria:
-      - 10 minutes displays as the localized equivalent of 0.2 hours
-      - 30 minutes displays as the localized equivalent of 0.5 hours
-      - 60 minutes displays as the localized equivalent of 1.0 hour
-      - changing locale changes decimal and unit formatting without changing canonical minutes
+      - 10 minutes on a graph node displays as '0 H 10 M'
+      - 315 minutes on a graph node displays as '5 H 15 M'
+      - 315 minutes in a linked read-only Time control displays Hours 5 and Minutes 15
+      - 10 minutes in an outcome-table hours cell displays as the localized equivalent of 0.2 hours
+      - changing locale changes decimal-hour formatting without changing canonical minutes or graph-node H/M values
 
     openQuestions: []
 
 openQuestions: []
 
 changelog:
+  - version: '3.0'
+    date: '2026-11-24'
+    changes:
+      - Made Figma authoritative for node-sidebar and Overview Time controls.
+      - Replaced their masked input with separate Hours and Minutes fields backed by the same integer-minute value.
+      - Changed graph-node Time tags to exact '[hours] H [minutes] M' presentation.
+      - Kept Ponderation, Classification, and outcome-table presentation unchanged pending separate authoritative designs.
   - version: '2.0'
     date: '2026-11-16'
     changes:

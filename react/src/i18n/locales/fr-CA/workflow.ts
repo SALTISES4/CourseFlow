@@ -33,15 +33,15 @@ const workflowFr = {
   },
   metadata: {
     time: 'Durée',
-    calculateTime: 'Calculer automatiquement la durée',
+    calculateTime: 'Calcul automatique',
     credits: 'Crédits',
-    calculateCredits: 'Calculer automatiquement les crédits',
+    calculateCredits: 'Calcul automatique',
     ponderation: 'Pondération',
-    calculatePonderation: 'Calculer automatiquement la pondération',
+    calculatePonderation: 'Calcul automatique',
     ponderationMismatch:
       'Le total des heures de pondération ne correspond pas à la durée du {{workflowType}}.',
     classification: 'Classification',
-    calculateClassification: 'Calculer automatiquement la classification',
+    calculateClassification: 'Calcul automatique',
     classificationMismatch:
       'Le total des heures de classification ne correspond pas à la durée du programme.',
     code: 'Code',

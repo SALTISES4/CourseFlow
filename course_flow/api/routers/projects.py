@@ -7,6 +7,7 @@ from course_flow.api.auth import BearerAuth, get_current_user
 from course_flow.api.common.schemas import SuccessOut
 from course_flow.api.deps import (
     get_authorization_service,
+    get_project_copy_service,
     get_project_graph_view_service,
     get_project_relations_service,
     get_project_service,
@@ -30,6 +31,7 @@ from course_flow.api.schemas.project_subresources import (
 )
 from course_flow.api.schemas.projects import (
     DisciplineOption,
+    ProjectCopyIn,
     ProjectCreateIn,
     ProjectDetailOut,
     ProjectDetailOutResp,
@@ -48,6 +50,10 @@ from course_flow.application.dto import (
 )
 from course_flow.application.services.authorization_service import (
     AuthorizationDenied,
+)
+from course_flow.application.services.project_copy_service import (
+    ProjectCopySourceNotFound,
+    ProjectCopyValidationError,
 )
 from course_flow.application.services.workspace_edit_lock_service import (
     WorkspaceReferenceType,
@@ -328,6 +334,34 @@ def get_project_graph(request, uuid: UUID):
 
 
 @router.post(
+    "/{uuid}/copy",
+    response=ProjectDetailOut,
+    auth=BearerAuth(),
+    operation_id="copyProject",
+)
+def copy_project(request, uuid: UUID, payload: ProjectCopyIn):
+    current_user = get_current_user(request)
+    try:
+        result = get_project_copy_service().copy(
+            source_project_uuid=uuid,
+            title=payload.title,
+            include_archived_workflows=payload.include_archived_workflows,
+            actor=current_user,
+        )
+    except ProjectCopySourceNotFound as exc:
+        raise HttpError(404, "Project not found") from exc
+    except AuthorizationDenied as exc:
+        raise HttpError(403, "Forbidden") from exc
+    except ProjectCopyValidationError as exc:
+        raise HttpError(422, str(exc)) from exc
+
+    copied = get_project_service().get_by_uuid(result.project_uuid)
+    if copied is None:  # Defensive: the copy transaction committed an invalid result.
+        raise HttpError(500, "Copied project could not be loaded")
+    return _project_detail_out(current_user, copied)
+
+
+@router.post(
     "/{uuid}/duplicate",
     response=ProjectDuplicatePlaceholderOut,
     auth=BearerAuth(),
@@ -335,7 +369,7 @@ def get_project_graph(request, uuid: UUID):
 )
 def duplicate_project_placeholder(request, uuid: UUID):
     """
-    Placeholder route: no duplicate project is created (see application service).
+    Legacy no-op route. Use POST /project/{uuid}/copy to create a project copy.
     """
     current_user = get_current_user(request)
     svc = get_project_service()

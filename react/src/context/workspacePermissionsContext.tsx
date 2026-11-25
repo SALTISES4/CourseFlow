@@ -16,6 +16,7 @@ const LOCK_ALLOWED_ACTIONS = new Set([
   'view',
   'export',
   'copy',
+  'copy_project',
   'create_workflow'
 ])
 

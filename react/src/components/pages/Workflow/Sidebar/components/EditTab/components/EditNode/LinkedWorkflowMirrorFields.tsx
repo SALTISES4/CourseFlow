@@ -1,5 +1,6 @@
 import WysiwygField from '@cf/components/common/UIPrimitives/WysiwygInput'
 import { formatDurationHours } from '@cfComponents/duration'
+import DurationHoursMinutesFields from '@cfComponents/DurationHoursMinutesFields'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { useTranslation } from 'react-i18next'
@@ -51,13 +52,11 @@ const LinkedWorkflowMirrorFields = ({
         value={description}
       />
       {showTime && (
-        <TextField
-          label={t('edit.time')}
-          variant="outlined"
-          size="small"
-          value={formatDurationHours(timeMinutes, i18n.language)}
-          placeholder="—"
-          InputProps={{ readOnly: true }}
+        <DurationHoursMinutesFields
+          groupLabel={t('edit.time')}
+          value={timeMinutes}
+          readOnly
+          testId="workflow-edit-node-time"
         />
       )}
       {showProgramFields && (

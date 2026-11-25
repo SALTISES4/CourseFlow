@@ -62,6 +62,7 @@ from course_flow.e2e_seed.graph_view import (
 from course_flow.e2e_seed.project_builder import create_project, ensure_team
 from course_flow.e2e_seed.rng import SeededRNG
 from course_flow.e2e_seed.team import ensure_e2e_contributors, ensure_e2e_owner
+from course_flow.template_catalog import E2E_TEMPLATE_PROJECT_UUID
 
 
 def _section_manifest(sections) -> list[dict]:
@@ -85,6 +86,7 @@ def _seed_template_workflow(
     title: str,
     section_title: str,
     channel_title: str,
+    is_archived: bool = False,
 ) -> dict:
     require_seed_asset(asset_id, kind="workflow")
     template_graph = Graph.objects.create()
@@ -96,6 +98,9 @@ def _seed_template_workflow(
         title=title,
         description=f"{workflow_type.value} template workflow for cardTemplateChip E2E tests.",
     )
+    if is_archived:
+        template_workflow.is_archived = True
+        template_workflow.save(update_fields=["is_archived"])
     sections, channels = build_sections_and_channels(
         template_graph,
         section_titles=[section_title],
@@ -108,6 +113,7 @@ def _seed_template_workflow(
         "workflow_uuid": str(template_workflow.uuid),
         "workflow_title": template_workflow.title,
         "workflow_type": template_workflow.workflow_type,
+        "is_archived": template_workflow.is_archived,
         "workflow_path": f"/workflow/{template_workflow.uuid}/graph",
         "project_uuid": str(template_project.uuid),
         "sections": _section_manifest(sections),
@@ -398,6 +404,7 @@ def generate_e2e_fixtures(
             owner,
             title=E2E_FIXTURE_TEMPLATE_PROJECT_TITLE,
             description="Deterministic Playwright E2E template project.",
+            uuid=E2E_TEMPLATE_PROJECT_UUID,
         )
         template_project.is_template = True
         template_project.is_published = True
@@ -432,6 +439,7 @@ def generate_e2e_fixtures(
                 title=E2E_FIXTURE_TEMPLATE_PROGRAM_TITLE,
                 section_title="E2E Program Template Section",
                 channel_title="E2E Program Template Channel",
+                is_archived=True,
             ),
         ]
 

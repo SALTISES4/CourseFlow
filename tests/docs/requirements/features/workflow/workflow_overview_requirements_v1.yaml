@@ -1,7 +1,7 @@
 # Normalized requirements: workflow 'Overview' view metadata (activity, course, program)
-# Version: 1.2
+# Version: 1.3
 # Source: tests/docs/__ARCHIVE/functional-requirements.md (Workflow Metadata + Views/Overview sections)
-# Product decision: 2026-11-16 uses canonical integer minutes with hhh:mm duration controls.
+# Product decision: 2026-11-24 uses Figma-authoritative split Hours/Minutes controls for Time while retaining canonical integer minutes.
 # Product decision: COURSEFLOW-655 limits the Code field to course workflows.
 # ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
 # Cross-reference:
@@ -17,7 +17,7 @@
 #   - tests/docs/requirements/features/project/project_overview_requirements_v1.yaml (project-level publish/visibility and contributor inheritance—FR-PROJ-OV-002; contributor removal mid-session—FR-WS-ACCESS-004)
 #   - tests/docs/requirements/features/shared/workspace_access_requirements_v1.yaml (denied access when documentPreconditions fail — FR-WS-ACCESS-002; mid-session contributor removal — FR-WS-ACCESS-004)
 #   - tests/docs/requirements/features/workflow/workflow_public_link_requirements_v1.yaml (workflowGeneratePublicLinkButton and anonymous Overview exception — FR-WF-PUBLIC-001 and FR-WF-PUBLIC-002)
-#   - tests/docs/requirements/features/workflow/workflow_duration_requirements_v1.yaml (shared canonical-minutes, hhh:mm input, and one-decimal-hours display contract — FR-WF-DURATION-001 through FR-WF-DURATION-003)
+#   - tests/docs/requirements/features/workflow/workflow_duration_requirements_v1.yaml (shared canonical minutes and host-specific duration presentation — FR-WF-DURATION-001 through FR-WF-DURATION-003)
 
 documentPreconditions:
   - user is authenticated to CourseFlow
@@ -37,7 +37,11 @@ uiObjectDefinitions:
   workflowMetadataSwitchCalculateTimeAutomatically:
     meaning: Switch control labeled 'Auto-calculate' for Time on workflowOverviewView.
   workflowMetadataFieldTime:
-    meaning: Time duration metadata field on workflowOverviewView; conforms to FR-WF-DURATION-001 through FR-WF-DURATION-003.
+    meaning: Time duration group on workflowOverviewView containing workflowMetadataFieldTimeHours and workflowMetadataFieldTimeMinutes; conforms to FR-WF-DURATION-001 through FR-WF-DURATION-003.
+  workflowMetadataFieldTimeHours:
+    meaning: Non-negative whole-number Hours input inside workflowMetadataFieldTime.
+  workflowMetadataFieldTimeMinutes:
+    meaning: Whole-number Minutes input from 0 through 59 inside workflowMetadataFieldTime.
   workflowMetadataSwitchCalculatePonderationAutomatically:
     meaning: Program-only switch control labeled 'Auto-calculate' for Ponderation on workflowOverviewView.
   workflowMetadataFieldIndividualTime:
@@ -72,6 +76,8 @@ locatorMappings:
   workflowMetadataFieldCode: "canonical_locators.yaml -> workflowMetadataFieldCode"
   workflowMetadataSwitchCalculateTimeAutomatically: "canonical_locators.yaml -> workflowMetadataSwitchCalculateTimeAutomatically"
   workflowMetadataFieldTime: "canonical_locators.yaml -> workflowMetadataFieldTime"
+  workflowMetadataFieldTimeHours: "canonical_locators.yaml -> workflowMetadataFieldTimeHours"
+  workflowMetadataFieldTimeMinutes: "canonical_locators.yaml -> workflowMetadataFieldTimeMinutes"
   workflowMetadataSwitchCalculatePonderationAutomatically: "canonical_locators.yaml -> workflowMetadataSwitchCalculatePonderationAutomatically"
   workflowMetadataFieldIndividualTime: "canonical_locators.yaml -> workflowMetadataFieldIndividualTime"
   workflowMetadataFieldPracticalTime: "canonical_locators.yaml -> workflowMetadataFieldPracticalTime"
@@ -242,7 +248,7 @@ requirements:
       - while workflowMetadataSwitchCalculateTimeAutomatically is ON, any change to the effective time contribution of one or more workflowNodes in the current workflow, including workflowNode create or delete in workflowView per tests/docs/requirements/features/workflow/workflow_add_tab_requirements_v1.yaml and tests/docs/requirements/features/workflow/workflow_delete_node_requirements_v1.yaml FR-WF-DEL-003, workflowEditNodeFormTimeField edit on a non-linked workflowNode per tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml FR-WF-EN-007, workflow link or unlink on a workflowNode per FR-WF-EN-010 and FR-WF-EN-011, archive of a linked child workflow that clears parent node links per tests/docs/requirements/features/workflow/workflow_archive_requirements_v1.yaml FR-WF-ARCH-003, and linked activity or course workflowMetadataFieldTime change on a child workflow that is linked from a node in this workflow per FR-WF-EN-004 and FR-WF-EN-006
 
     mainFlow:
-      - workflowMetadataFieldTime is a duration-type field that conforms to the hhh:mm input, canonical integer-minute persistence, one-decimal-hours display, validation, and localization contract in tests/docs/requirements/features/workflow/workflow_duration_requirements_v1.yaml FR-WF-DURATION-001 through FR-WF-DURATION-003
+      - workflowMetadataFieldTime contains separate Hours and Minutes inputs backed by one canonical integer-minute value and conforms to tests/docs/requirements/features/workflow/workflow_duration_requirements_v1.yaml FR-WF-DURATION-001 through FR-WF-DURATION-003
       - for a newly blank-created workflow, initial auto-calculate switch defaults are defined in FR-WF-OV-008; for a template-created workflow, overview metadata including switch states are copied from the template source per FR-WF-OV-009
       - when workflowMetadataSwitchCalculateTimeAutomatically is OFF, workflowMetadataFieldTime is editable for owner or editor
       - when workflowMetadataSwitchCalculateTimeAutomatically is ON, workflowMetadataFieldTime is read-only and its displayed value equals the arithmetic sum of effective time durations across all workflowNodes in the current workflow; for each workflowNode, effective time is workflowEditNodeFormTimeField when the node has no linked workflow, or the linked activity/course workflow's workflowMetadataFieldTime when the node has a linked workflow per tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml FR-WF-EN-004 and FR-WF-EN-006; nodes with empty or unset effective time contribute zero to the sum
@@ -272,9 +278,9 @@ requirements:
       - given switch is OFF and actor is owner or editor, workflowMetadataFieldTime is editable
       - given switch is ON and actor is owner or editor, workflowMetadataFieldTime is read-only and shows calculated value
       - given actor is viewer, commenter, or user, switch and field are read-only regardless of switch state
-      - given workflowMetadataSwitchCalculateTimeAutomatically is OFF and owner enters 051:00 in workflowMetadataFieldTime, the persisted duration is 3,060 minutes and reopening Overview displays 051:00
+      - given workflowMetadataSwitchCalculateTimeAutomatically is OFF and owner enters Hours 51 and Minutes 0 in workflowMetadataFieldTime, the persisted duration is 3,060 minutes and reopening Overview displays Hours 51 and Minutes 0
       - given owner or editor toggles workflowMetadataSwitchCalculateTimeAutomatically while workflowOverviewView is visible, workflowMetadataFieldTime updates immediately to reflect the new mode and value
-      - given workflowMetadataSwitchCalculateTimeAutomatically is ON and workflowNode N1 has effective time 20 hours and workflowNode N2 has effective time 8 hours (whether from local workflowEditNodeFormTimeField values or linked child workflowMetadataFieldTime per tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml FR-WF-EN-004 and FR-WF-EN-006), workflowMetadataFieldTime displays 028:00 per FR-WF-DURATION-001
+      - given workflowMetadataSwitchCalculateTimeAutomatically is ON and workflowNode N1 has effective time 20 hours and workflowNode N2 has effective time 8 hours (whether from local workflowEditNodeFormTimeField values or linked child workflowMetadataFieldTime per tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml FR-WF-EN-004 and FR-WF-EN-006), workflowMetadataFieldTime displays Hours 28 and Minutes 0 per FR-WF-DURATION-001
       - given workflowMetadataSwitchCalculateTimeAutomatically is ON and owner edits workflowEditNodeFormTimeField on a non-linked workflowNode from 2 hours to 4 hours on the Workflow sub-view, when owner selects Overview on workflowViewTabSelector per FR-WF-HEADER-001, workflowMetadataFieldTime reflects the new sum per FR-WF-OV-010
       - given workflowMetadataSwitchCalculateTimeAutomatically is ON and a workflowNode with effective time 2 hours is deleted per tests/docs/requirements/features/workflow/workflow_delete_node_requirements_v1.yaml FR-WF-DEL-003 on the Workflow sub-view, when owner selects Overview on workflowViewTabSelector per FR-WF-HEADER-001, workflowMetadataFieldTime reflects the reduced total per FR-WF-OV-010
       - given workflowMetadataSwitchCalculateTimeAutomatically is ON and a course workflowNode is linked to an activity workflow whose workflowMetadataFieldTime is 6 hours per tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml FR-WF-EN-004, that node contributes 6 hours to workflowMetadataFieldTime until the link is removed per FR-WF-EN-011 or the linked activity workflowMetadataFieldTime changes
@@ -746,6 +752,11 @@ designEvidenceLinkTable:
     hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5671-108844&t=6weYZA8hUf6tm7DF-1
 
 changelog:
+  - version: '1.3'
+    date: '2026-11-24'
+    changes:
+      - Replaced the Overview Time mask with Figma-authoritative Hours and Minutes fields.
+      - Standardized all overview switch labels as 'Auto-calculate'.
   - version: '1.1'
     date: '2026-10-05'
     changes:

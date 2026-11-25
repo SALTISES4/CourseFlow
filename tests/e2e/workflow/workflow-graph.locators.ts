@@ -340,9 +340,22 @@ export function workflowEditNodeFormTimeUnitField(page: Page): Locator {
   return workflowRightSidebarContentPanel(page).getByLabel(/^Unit type$/i);
 }
 
-/** canonical: workflowEditNodeFormTimeField — single duration field labeled 'Time' */
+/** canonical: workflowEditNodeFormTimeField — duration group containing Hours and Minutes. */
+export function workflowEditNodeFormTimeGroup(page: Page): Locator {
+  return workflowRightSidebarContentPanel(page).locator('[data-test-id="workflow-edit-node-time"]');
+}
+
+export function workflowEditNodeFormTimeHoursField(page: Page): Locator {
+  return workflowEditNodeFormTimeGroup(page).getByLabel(/^Hours$/i);
+}
+
+export function workflowEditNodeFormTimeMinutesField(page: Page): Locator {
+  return workflowEditNodeFormTimeGroup(page).getByLabel(/^Minutes$/i);
+}
+
+/** Backward-compatible alias for tests that only need one field from the Time control. */
 export function workflowEditNodeFormTimeField(page: Page): Locator {
-  return workflowRightSidebarContentPanel(page).getByLabel(/^Time$/i);
+  return workflowEditNodeFormTimeHoursField(page);
 }
 
 /** canonical: workflowEditNodeFormTagsAutocomplete */

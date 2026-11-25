@@ -168,6 +168,7 @@ export type ProjectDetailOut = {
  */
 export enum ProjectPermission {
   VIEW = 'view',
+  COPY_PROJECT = 'copy_project',
   EDIT_PROJECT = 'edit_project',
   MANAGE_MEMBERS = 'manage_members',
   CREATE_WORKFLOW = 'create_workflow',
@@ -427,9 +428,23 @@ export type ProjectGraphViewOut = {
 }
 
 /**
+ * ProjectCopyIn
+ */
+export type ProjectCopyIn = {
+  /**
+   * Title
+   */
+  title: string
+  /**
+   * Includearchivedworkflows
+   */
+  includeArchivedWorkflows?: boolean
+}
+
+/**
  * ProjectDuplicatePlaceholderOut
  *
- * Response for POST /project/{uuid}/duplicate while duplication is not implemented.
+ * Legacy no-op response. Real project copies use POST /project/{uuid}/copy.
  */
 export type ProjectDuplicatePlaceholderOut = {
   /**
@@ -3507,6 +3522,28 @@ export type GetProjectGraphResponses = {
 
 export type GetProjectGraphResponse =
   GetProjectGraphResponses[keyof GetProjectGraphResponses]
+
+export type CopyProjectData = {
+  body: ProjectCopyIn
+  path: {
+    /**
+     * Uuid
+     */
+    uuid: string
+  }
+  query?: never
+  url: '/api/project/{uuid}/copy'
+}
+
+export type CopyProjectResponses = {
+  /**
+   * OK
+   */
+  200: ProjectDetailOut
+}
+
+export type CopyProjectResponse =
+  CopyProjectResponses[keyof CopyProjectResponses]
 
 export type DuplicateProjectPlaceholderData = {
   body?: never

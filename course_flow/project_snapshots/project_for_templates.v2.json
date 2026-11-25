@@ -5,7 +5,7 @@
     "system": "courseflow-v2-uat",
     "project_id": "193cfbb1-3abc-42f2-a80c-a5c068a80460",
     "exported_at": "2026-11-11T19:12:32.367484Z",
-    "fingerprint_sha256": "657198a4b1d702cf4d290e720dc5b650dca671c2163c09bffdf0be35260914ca",
+    "fingerprint_sha256": "2f2354895b4af5d65e16ea5546e6c114b13c018c721b2701bde4501eaed9f68b",
     "exclusions": [
       {
         "kind": "comments",
@@ -33,9 +33,9 @@
     "ref": "193cfbb1-3abc-42f2-a80c-a5c068a80460",
     "title": "Project for templates",
     "description": "This is a project where I've put the 6 SALTISE which SALTISE provided.",
-    "is_published": false,
+    "is_published": true,
     "is_archived": false,
-    "is_template": false,
+    "is_template": true,
     "discipline_codes": [
       "science_general"
     ],

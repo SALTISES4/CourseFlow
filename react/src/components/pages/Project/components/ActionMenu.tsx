@@ -8,19 +8,16 @@ import { useMenuActions } from '@cfPages/Project/hooks/useMenuActions'
 import EditIcon from '@mui/icons-material/Edit'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import { useTranslation } from 'react-i18next'
-import { useParams } from 'react-router-dom'
 
 const ActionMenu = () => {
   const { t } = useTranslation('project')
-  const { uuid } = useParams()
-  const projectUuid = uuid ?? ''
   const { resource: permissions } = useWorkspacePermissions()
   const isArchived = permissions.state === 'archived'
 
   const {
     openEditDialog,
     openShareDialog,
-    duplicateProject,
+    openCopyDialog,
     archiveProject,
     unarchiveProject,
     deleteProject
@@ -50,10 +47,12 @@ const ActionMenu = () => {
         hasPermission(permissions, ProjectPermission.MANAGE_MEMBERS)
     },
     {
-      uuid: 'duplicate-project',
+      uuid: 'copy-project',
       content: t('actions.copy'),
-      action: () => duplicateProject(projectUuid),
-      show: false
+      action: openCopyDialog,
+      show:
+        !isArchived &&
+        hasPermission(permissions, ProjectPermission.COPY_PROJECT)
     },
     {
       uuid: 'archive-project',

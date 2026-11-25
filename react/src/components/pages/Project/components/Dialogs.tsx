@@ -2,6 +2,7 @@ import { getProjectOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import { ProjectPermission } from '@cf/api/gen/types.gen'
 import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import { WorkspaceType } from '@cf/types/enum'
+import ProjectCopyDialog from '@cfComponents/dialog/Project/ProjectCopyDialog'
 import ProjectEditDialog from '@cfComponents/dialog/Project/ProjectEditDialog'
 import ArchiveDialog from '@cfComponents/dialog/Workspace/ArchiveDialog'
 import ContributorAddDialog from '@cfComponents/dialog/Workspace/ContributorAddDialog'
@@ -18,10 +19,11 @@ const ProjectDialogs = () => {
   const canManageMembers = useResourcePermission(
     ProjectPermission.MANAGE_MEMBERS
   )
+  const canCopy = useResourcePermission(ProjectPermission.COPY_PROJECT)
   const canArchive = useResourcePermission(ProjectPermission.ARCHIVE_PROJECT)
   const canRestore = useResourcePermission(ProjectPermission.RESTORE_PROJECT)
 
-  const { refetch } = useQuery({
+  const { data, refetch } = useQuery({
     ...getProjectOptions({
       path: {
         uuid: projectUuid as string
@@ -33,6 +35,12 @@ const ProjectDialogs = () => {
   return (
     <>
       {canEdit && <ProjectEditDialog />}
+      {canCopy && data?.item && (
+        <ProjectCopyDialog
+          sourceProjectUuid={projectUuid}
+          sourceProjectTitle={data.item.title}
+        />
+      )}
       {canRestore && (
         <RestoreDialog
           uuid={projectUuid}

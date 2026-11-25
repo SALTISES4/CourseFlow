@@ -48,18 +48,30 @@ const projectFr = {
     addPlaceholder: 'Ajouter une étiquette'
   },
   messages: {
+    copied: 'Votre projet a été copié',
+    copyFailed: 'Un problème est survenu et votre projet n’a pas été copié',
     created: 'Votre projet a été créé',
     createFailed: 'Un problème est survenu et votre projet n’a pas été créé',
     updated: 'Votre projet a été mis à jour',
-    updateFailed: 'Un problème est survenu et votre projet n’a pas été mis à jour',
+    updateFailed:
+      'Un problème est survenu et votre projet n’a pas été mis à jour',
     published: 'Votre projet a été publié',
     publishFailed: 'Un problème est survenu et votre projet n’a pas été publié',
     unpublished: 'Votre projet a été dépublié',
-    unpublishFailed: 'Un problème est survenu et votre projet n’a pas été dépublié'
+    unpublishFailed:
+      'Un problème est survenu et votre projet n’a pas été dépublié'
   },
   errors: {
     notFound: 'Le projet n’existe pas',
     loadFailed: 'Le projet n’a pas pu être chargé.'
+  },
+  copyDialog: {
+    title: 'Copier le projet',
+    titleSuffix: ' (copie)',
+    includeArchivedWorkflows: 'Inclure les flux de travail archivés',
+    includeArchivedWorkflowsHelp:
+      'Les flux de travail archivés inclus dans la copie resteront archivés.',
+    submit: 'Copier le projet'
   },
   exportDialog: {
     title: 'Exporter {{projectType}}',

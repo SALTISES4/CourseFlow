@@ -3,10 +3,13 @@ import assert from 'node:assert/strict'
 import { configureStore } from '@reduxjs/toolkit'
 
 import {
+  durationPartsFromMinutes,
   formatDurationHours,
+  formatDurationHoursMinutes,
   formatDurationHoursNumber,
   formatDurationInput,
-  parseDurationInput
+  parseDurationInput,
+  parseDurationParts
 } from '../src/components/common/duration'
 import { graphStateReducer } from '../src/features/graph/state/graphState'
 import type {
@@ -174,5 +177,31 @@ assert.equal(formatDurationHoursNumber(10, 'en-CA'), '0.2')
 assert.equal(formatDurationHoursNumber(60, 'en-CA'), '1.0')
 assert.equal(formatDurationHours(60, 'en-CA'), '1.0 hours')
 assert.equal(formatDurationHours(null, 'en-CA'), '')
+assert.deepEqual(durationPartsFromMinutes(315), {
+  hours: '5',
+  minutes: '15'
+})
+assert.deepEqual(parseDurationParts('5', '15'), {
+  valid: true,
+  value: 315
+})
+assert.deepEqual(parseDurationParts('', '15'), {
+  valid: true,
+  value: 15
+})
+assert.deepEqual(parseDurationParts('5', ''), {
+  valid: true,
+  value: 300
+})
+assert.deepEqual(parseDurationParts('', ''), {
+  valid: true,
+  value: null
+})
+assert.deepEqual(parseDurationParts('5', '60'), {
+  valid: false,
+  value: null,
+  field: 'minutes'
+})
+assert.equal(formatDurationHoursMinutes(315), '5 H 15 M')
 
 console.log('Outcome table selector accumulation is isolated.')

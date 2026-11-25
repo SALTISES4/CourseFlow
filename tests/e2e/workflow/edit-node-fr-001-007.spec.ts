@@ -42,6 +42,7 @@ import {
   workflowEditNodeFormTagsField,
   workflowEditNodeFormTaskTypeField,
   workflowEditNodeFormTimeField,
+  workflowEditNodeFormTimeMinutesField,
   workflowEditNodeFormTitleField,
   workflowLinkWorkflowDialog,
   workflowLinkWorkflowDialogCancelButton,
@@ -216,6 +217,7 @@ test.describe('edit-node-fr-001-007', () => {
 
       await expect(workflowEditNodeFormTimeField(page)).toBeVisible();
       await expect(workflowEditNodeFormTimeField(page)).toHaveAttribute('readonly', '');
+      await expect(workflowEditNodeFormTimeMinutesField(page)).toHaveAttribute('readonly', '');
 
       await expect(workflowEditNodeFormContextField(page)).toBeVisible();
       await expect(workflowEditNodeFormContextField(page)).toBeEnabled();
@@ -294,6 +296,7 @@ test.describe('edit-node-fr-001-007', () => {
         await expect(workflowRichTextDescriptionEditor(page)).toHaveAttribute('contenteditable', 'false');
         await expect(workflowEditNodeFormTimeField(page)).toBeVisible();
         await expect(workflowEditNodeFormTimeField(page)).toHaveAttribute('readonly', '');
+        await expect(workflowEditNodeFormTimeMinutesField(page)).toHaveAttribute('readonly', '');
         await expect(workflowEditNodeFormCreditsField(page)).toBeVisible();
         await expect(workflowEditNodeFormCreditsField(page)).toHaveAttribute('readonly', '');
         await expect(workflowEditNodeFormPonderationTheoryField(page)).toHaveAttribute('readonly', '');
@@ -653,6 +656,7 @@ test.describe('edit-node-fr-001-007', () => {
       await expect(workflowEditNodeFormTitleField(page)).toBeEditable();
       await expectEditableWorkflowEditNodeFormRichTextDescription(page);
       await expect(workflowEditNodeFormTimeField(page)).toBeEditable();
+      await expect(workflowEditNodeFormTimeMinutesField(page)).toBeEditable();
 
       await linkNodeWorkflowViaApi(page, nodeUuid, activityUuid);
     });
@@ -678,6 +682,7 @@ test.describe('edit-node-fr-001-007', () => {
         await expect(workflowEditNodeFormTitleField(page)).toBeEditable();
         await expectEditableWorkflowEditNodeFormRichTextDescription(page);
         await expect(workflowEditNodeFormTimeField(page)).toBeEditable();
+        await expect(workflowEditNodeFormTimeMinutesField(page)).toBeEditable();
         await expect(workflowEditNodeFormCreditsField(page)).toBeEditable();
         await expect(workflowEditNodeFormPonderationTheoryField(page)).toBeEditable();
       } finally {
