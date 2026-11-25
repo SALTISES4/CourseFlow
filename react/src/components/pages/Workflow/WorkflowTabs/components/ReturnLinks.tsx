@@ -3,11 +3,9 @@ import {
   getWorkflowOptions
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import { CFRoutes } from '@cf/router/appRoutes'
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Link from '@mui/material/Link'
-import Typography from '@mui/material/Typography'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Link as RouterLink, generatePath, useMatch } from 'react-router-dom'
@@ -60,7 +58,7 @@ const ReturnLinks = () => {
         id="project-return"
         size="small"
         color="primary"
-        startIcon={<ArrowBackIosIcon />}
+        startIcon={<ChevronLeftIcon />}
         to={path}
         component={RouterLink}
       >
@@ -88,7 +86,7 @@ const ReturnLinks = () => {
         data-test-id="link-editable-project-return"
         size="small"
         color="primary"
-        startIcon={<ArrowBackIosIcon />}
+        startIcon={<ChevronLeftIcon />}
         to={path}
         component={RouterLink}
       >
@@ -116,7 +114,7 @@ const ReturnLinks = () => {
         data-test-id="link-editable-workflow-return"
         size="small"
         color="primary"
-        startIcon={<ArrowBackIosIcon />}
+        startIcon={<ChevronLeftIcon />}
         to={path}
         component={RouterLink}
       >
