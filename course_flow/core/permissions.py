@@ -29,6 +29,7 @@ class WorkflowState(StrEnum):
 
 class ProjectPermission(StrEnum):
     VIEW = "view"
+    COPY_PROJECT = "copy_project"
     EDIT_PROJECT = "edit_project"
     MANAGE_MEMBERS = "manage_members"
     CREATE_WORKFLOW = "create_workflow"
@@ -61,6 +62,7 @@ class WorkflowPermission(StrEnum):
 _PROJECT_OWNER_ACTIVE = frozenset(
     {
         ProjectPermission.VIEW,
+        ProjectPermission.COPY_PROJECT,
         ProjectPermission.EDIT_PROJECT,
         ProjectPermission.MANAGE_MEMBERS,
         ProjectPermission.CREATE_WORKFLOW,
@@ -71,13 +73,20 @@ _PROJECT_OWNER_ACTIVE = frozenset(
 _PROJECT_EDITOR_ACTIVE = frozenset(
     {
         ProjectPermission.VIEW,
+        ProjectPermission.COPY_PROJECT,
         ProjectPermission.EDIT_PROJECT,
         ProjectPermission.MANAGE_MEMBERS,
         ProjectPermission.CREATE_WORKFLOW,
         ProjectPermission.PUBLISH_PROJECT,
     }
 )
-_PROJECT_READ_ONLY = frozenset({ProjectPermission.VIEW})
+_PROJECT_CONTRIBUTOR_READ_ONLY = frozenset(
+    {
+        ProjectPermission.VIEW,
+        ProjectPermission.COPY_PROJECT,
+    }
+)
+_PROJECT_PUBLIC_READ_ONLY = frozenset({ProjectPermission.VIEW})
 
 PROJECT_PERMISSION_MATRIX: dict[
     ProjectState, dict[ResourceRole, frozenset[ProjectPermission]]
@@ -85,16 +94,16 @@ PROJECT_PERMISSION_MATRIX: dict[
     ProjectState.PRIVATE: {
         ResourceRole.OWNER: _PROJECT_OWNER_ACTIVE,
         ResourceRole.EDITOR: _PROJECT_EDITOR_ACTIVE,
-        ResourceRole.COMMENTER: _PROJECT_READ_ONLY,
-        ResourceRole.VIEWER: _PROJECT_READ_ONLY,
+        ResourceRole.COMMENTER: _PROJECT_CONTRIBUTOR_READ_ONLY,
+        ResourceRole.VIEWER: _PROJECT_CONTRIBUTOR_READ_ONLY,
         ResourceRole.PUBLIC: frozenset(),
     },
     ProjectState.PUBLIC: {
         ResourceRole.OWNER: _PROJECT_OWNER_ACTIVE,
         ResourceRole.EDITOR: _PROJECT_EDITOR_ACTIVE,
-        ResourceRole.COMMENTER: _PROJECT_READ_ONLY,
-        ResourceRole.VIEWER: _PROJECT_READ_ONLY,
-        ResourceRole.PUBLIC: _PROJECT_READ_ONLY,
+        ResourceRole.COMMENTER: _PROJECT_CONTRIBUTOR_READ_ONLY,
+        ResourceRole.VIEWER: _PROJECT_CONTRIBUTOR_READ_ONLY,
+        ResourceRole.PUBLIC: _PROJECT_PUBLIC_READ_ONLY,
     },
     ProjectState.ARCHIVED: {
         ResourceRole.OWNER: frozenset(

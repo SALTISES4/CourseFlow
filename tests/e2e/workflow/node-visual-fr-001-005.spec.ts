@@ -150,7 +150,7 @@ test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
     const contextLabel = ACTIVITY_CONTEXT_OPTIONS[1]!;
     const taskLabel = ACTIVITY_TASK_TYPE_OPTIONS[1]!;
     const title = `E2E Canvas Meta ${Date.now()}`;
-    const timeDisplay = '2.0 hours';
+    const timeDisplay = '2 H 0 M';
 
     try {
       await patchNodeMetaViaApi(page, nodeUuid, {
@@ -166,6 +166,8 @@ test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
         contextLabel,
         taskLabel,
         timeDisplay,
+        timeHours: '2',
+        timeMinutes: '0',
       });
     } finally {
       await patchNodeMetaViaApi(page, nodeUuid, {
@@ -177,7 +179,7 @@ test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
     }
   });
 
-  test('FR-WF-NODE-001: one-hour node time uses one decimal place', async ({
+  test('FR-WF-NODE-001: one-hour node time uses hours and minutes', async ({
     page,
     workflow,
   }) => {
@@ -190,7 +192,7 @@ test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
       });
       await page.reload();
 
-      await expect(workflowNodeMetaTimeTag(page, nodeUuid)).toHaveText('1.0 hours');
+      await expect(workflowNodeMetaTimeTag(page, nodeUuid)).toHaveText('1 H 0 M');
     } finally {
       await patchNodeMetaViaApi(page, nodeUuid, {
         timeRequiredMinutes: 0,
@@ -266,7 +268,7 @@ test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
       await expect(workflowNodeMetaContextTag(page, nodeUuid)).toBeVisible();
       await expect(workflowNodeMetaTaskTag(page, nodeUuid)).toBeVisible();
       await expect(workflowNodeMetaTimeTag(page, nodeUuid)).toBeVisible();
-      await expect(workflowNodeMetaTimeTag(page, nodeUuid)).toContainText(/\d/);
+      await expect(workflowNodeMetaTimeTag(page, nodeUuid)).toContainText('0 H 10 M');
 
       // Context/task left-aligned; time right-aligned within workflowNodeMeta.
       const contextBox = await workflowNodeMetaContextTag(page, nodeUuid).boundingBox();

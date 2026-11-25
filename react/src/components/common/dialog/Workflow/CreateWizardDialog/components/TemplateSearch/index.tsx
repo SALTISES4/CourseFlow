@@ -1,5 +1,6 @@
 import {
   LibraryContentTypeIn,
+  LibrarySearchScopeIn,
   LibrarySortDirectionIn,
   LibrarySortValueIn,
   WorkflowTypeIn
@@ -36,6 +37,7 @@ const TemplateSearch = ({
    *******************************************************/
   const [keyword, setKeyword] = useState('')
   const { data, isLoading } = useLibrarySearch({
+    scope: LibrarySearchScopeIn.PUBLISHED,
     pagination: { page: 0, resultsPerPage: 4 },
     sort: {
       value: LibrarySortValueIn.DATE_CREATED,
@@ -114,7 +116,7 @@ const TemplateSearch = ({
       <GridWrap sx={{ mt: 4 }} data-test-id="workflow-template-search-results">
         {!workflowData.length && (
           <Typography data-test-id="workflow-template-search-empty-state">
-            {t('results.none')}
+            {t('results.noTemplates')}
           </Typography>
         )}
         {workflowData.map((workflow, index) => (

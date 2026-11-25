@@ -11,8 +11,23 @@ CloudFormation templates live in the `saltise-infra` repository.
 3. uploads the React build to the private frontend bucket;
 4. uploads a versioned runtime bundle to the deployment bucket;
 5. asks SSM Run Command to deploy that bundle on the EC2 host;
-6. retrieves RDS and Django secrets on the host, runs migrations once, starts
-   Docker Compose, and verifies database-backed readiness.
+6. retrieves RDS and Django secrets on the host;
+7. stops Django and uses the guarded `cf_rebuild_staging_database` command to
+   drop the staging application tables, migrate, seed deterministic E2E data,
+   and import the curated template project snapshot;
+8. verifies that no migrations remain, starts Docker Compose, and verifies
+   database-backed readiness.
+
+AWS staging is intentionally disposable for now. Every deployment destroys all
+existing staging application data. The rebuild command requires `ENV=staging`,
+an invocation-scoped `ALLOW_STAGING_DATABASE_RESET=true`, an explicit command
+confirmation, PostgreSQL, a non-local database host, and matching host/database
+fingerprints from the deployment configuration.
+
+After the database has been dropped, the deployment does not restart the
+previous release on failure: its code may be incompatible with the freshly
+migrated schema. A rebuild, migration-verification, or startup failure leaves
+Django stopped and fails the deployment visibly.
 
 The backend is deployed by immutable image digest. Its generated runtime file
 sets `ENV=staging`. CircleCI never receives the database password or Django

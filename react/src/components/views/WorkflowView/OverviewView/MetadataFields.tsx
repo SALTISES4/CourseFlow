@@ -3,6 +3,7 @@ import type {
   WorkflowOverviewMetadataOut
 } from '@cf/api/gen/types.gen'
 import { WorkflowType } from '@cf/api/gen/types.gen'
+import DurationHoursMinutesFields from '@cfComponents/DurationHoursMinutesFields'
 import DurationTextField from '@cfComponents/DurationTextField'
 import Alert from '@mui/material/Alert'
 import FormControlLabel from '@mui/material/FormControlLabel'
@@ -126,11 +127,19 @@ const MetadataFields = ({
       data-test-id="workflow-metadata-section"
     >
       <Grid item xs={6}>
-        <SC.InfoBlock>
+        <SC.InfoBlock data-test-id="workflow-time-section">
           <SC.InfoBlockTitle>{t('metadata.time')}</SC.InfoBlockTitle>
           <SC.InfoBlockContent>
             <Stack direction="row" spacing={2}>
-              {durationField(t('metadata.time'), 'timeMinutes', timeAutomatic)}
+              <DurationHoursMinutesFields
+                groupLabel={t('metadata.time')}
+                value={values.timeMinutes}
+                disabled={!canEdit || timeAutomatic || isSaving}
+                width={182}
+                testId="workflow-overview-time"
+                onValueChange={(value) => setValue('timeMinutes', value)}
+                onValueCommit={(value) => void onSave({ timeMinutes: value })}
+              />
               <FormControlLabel
                 label={t('metadata.calculateTime')}
                 control={
@@ -148,7 +157,7 @@ const MetadataFields = ({
 
       {isCourseOrProgram && (
         <Grid item xs={6}>
-          <SC.InfoBlock>
+          <SC.InfoBlock data-test-id="workflow-credits-section">
             <SC.InfoBlockTitle>{t('metadata.credits')}</SC.InfoBlockTitle>
             <SC.InfoBlockContent>
               <Stack direction="row" spacing={2}>
@@ -178,7 +187,7 @@ const MetadataFields = ({
 
       {isCourseOrProgram && (
         <Grid item xs={6}>
-          <SC.InfoBlock>
+          <SC.InfoBlock data-test-id="workflow-ponderation-section">
             <SC.InfoBlockTitle>{t('metadata.ponderation')}</SC.InfoBlockTitle>
             <SC.InfoBlockContent>
               {isProgram && (
@@ -233,7 +242,7 @@ const MetadataFields = ({
 
       {isProgram && (
         <Grid item xs={6}>
-          <SC.InfoBlock>
+          <SC.InfoBlock data-test-id="workflow-classification-section">
             <SC.InfoBlockTitle>
               {t('metadata.classification')}
             </SC.InfoBlockTitle>

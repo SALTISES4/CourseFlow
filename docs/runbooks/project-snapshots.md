@@ -91,10 +91,17 @@ The UAT Compose overlay disables entrypoint migrations. This command is the
 single owner of the migrate, seed, and import sequence; Django startup only
 serves the already rebuilt database.
 
-The imported source project is private, active, and **not** flagged as a template,
-because that is its authoritative UAT state. Its title does not override those
-flags. Change template/publication state through an explicit product decision
-and a reviewed snapshot update.
+The imported source project is the single curated workflow-template catalog. It
+is active, published, and flagged as a template in the reviewed snapshot. Every
+child workflow derives template status from that parent project; workflows do
+not persist a duplicate template flag.
+
+AWS staging currently follows the same disposable-data lifecycle. Each staging
+deployment runs `cf_rebuild_staging_database`, which drops the staging
+application tables, migrates, seeds deterministic E2E fixtures, and imports this
+snapshot. The AWS deploy script supplies the reset authorization and target
+fingerprint only to the one-off rebuild container; the long-running application
+does not retain reset authorization.
 
 ## Contract maintenance
 

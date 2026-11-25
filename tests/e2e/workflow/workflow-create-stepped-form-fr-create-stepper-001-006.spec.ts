@@ -747,13 +747,23 @@ test.describe('Create workflow stepped form — FR-WF-CREATE-STEPPER-001–006',
         await expectDefaultWorkflowChannelsInHeaderRow(page, entry.workflowType);
       });
 
-      test('filters templates by workflow type and enables the type-scoped submit', async ({
+      test('filters templates by workflow type and handles an empty catalog type', async ({
         page,
         project,
       }) => {
-        const templateFixture = getTemplateWorkflowFixture(manifest, entry.workflowType);
         const dialog = await openCreateWorkflowTemplateStep3(page, entry, project.title);
         const cards = createWorkflowDialogTemplateCards(page);
+
+        if (entry.workflowType === 'program') {
+          await expect(workflowTemplateSearchEmptyState(page)).toHaveText(
+            'No templates available',
+          );
+          await expect(cards).toHaveCount(0);
+          await expect(createWorkflowSubmitButton(page, entry.workflowType)).toBeDisabled();
+          return;
+        }
+
+        const templateFixture = getTemplateWorkflowFixture(manifest, entry.workflowType);
 
         await expect(cards.first()).toBeVisible({ timeout: 15_000 });
         const cardCount = await cards.count();

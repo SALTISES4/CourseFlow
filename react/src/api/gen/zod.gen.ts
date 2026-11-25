@@ -60,6 +60,7 @@ export const zDisciplineOption = z.object({
  */
 export const zProjectPermission = z.enum([
   'view',
+  'copy_project',
   'edit_project',
   'manage_members',
   'create_workflow',
@@ -239,9 +240,17 @@ export const zProjectGraphViewOut = z.object({
 })
 
 /**
+ * ProjectCopyIn
+ */
+export const zProjectCopyIn = z.object({
+  title: z.string(),
+  includeArchivedWorkflows: z.boolean().optional().default(false)
+})
+
+/**
  * ProjectDuplicatePlaceholderOut
  *
- * Response for POST /project/{uuid}/duplicate while duplication is not implemented.
+ * Legacy no-op response. Real project copies use POST /project/{uuid}/copy.
  */
 export const zProjectDuplicatePlaceholderOut = z.object({
   success: z.boolean().optional().default(true),
@@ -1817,6 +1826,19 @@ export const zGetProjectGraphData = z.object({
  * OK
  */
 export const zGetProjectGraphResponse = zProjectGraphViewOut
+
+export const zCopyProjectData = z.object({
+  body: zProjectCopyIn,
+  path: z.object({
+    uuid: z.string().uuid()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zCopyProjectResponse = zProjectDetailOut
 
 export const zDuplicateProjectPlaceholderData = z.object({
   body: z.never().optional(),

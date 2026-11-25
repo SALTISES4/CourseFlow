@@ -32,6 +32,7 @@ from course_flow.infrastructure.project_transfer import (
     DjangoProjectSnapshotWriter,
     ProjectSnapshotImportConflict,
 )
+from course_flow.template_catalog import CURATED_TEMPLATE_PROJECT_UUID
 
 _REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 _SNAPSHOT_PATH = (
@@ -80,9 +81,10 @@ def _first_difference(actual, expected, path="project") -> str | None:
 def test_checked_in_project_snapshot_is_valid_and_complete():
     snapshot = _load_snapshot()
 
-    assert snapshot.project.ref == "193cfbb1-3abc-42f2-a80c-a5c068a80460"
+    assert snapshot.project.ref == str(CURATED_TEMPLATE_PROJECT_UUID)
     assert snapshot.project.title == "Project for templates"
-    assert snapshot.project.is_template is False
+    assert snapshot.project.is_template is True
+    assert snapshot.project.is_published is True
     assert len(snapshot.project.workflows) == 7
     assert (
         sum(len(workflow.graph.nodes) for workflow in snapshot.project.workflows) == 190
@@ -92,7 +94,7 @@ def test_checked_in_project_snapshot_is_valid_and_complete():
         == 79
     )
     assert snapshot.source.fingerprint_sha256 == (
-        "657198a4b1d702cf4d290e720dc5b650dca671c2163c09bffdf0be35260914ca"
+        "2f2354895b4af5d65e16ea5546e6c114b13c018c721b2701bde4501eaed9f68b"
     )
     assert {entry.kind: entry.count for entry in snapshot.source.exclusions} == {
         "comments": 0,
@@ -136,7 +138,8 @@ def test_checked_in_snapshot_round_trips_through_transactional_writer():
     project = Project.objects.get(uuid=result.project_uuid)
     assert project.owner == owner
     assert project.title == snapshot.project.title
-    assert project.is_template is False
+    assert project.is_template is True
+    assert project.is_published is True
     assert project.workflows.count() == 7
     assert result.node_count == 190
     assert result.outcome_count == 79

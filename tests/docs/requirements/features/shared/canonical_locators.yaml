@@ -1206,8 +1206,14 @@ locatorMappings:
     strategy: "{workflowEditNodeForm} select with label 'Task'"
     confidence: inferred
   workflowEditNodeFormTimeField:
-    strategy: "{workflowEditNodeForm} duration field group with accessible name 'Time'"
-    confidence: inferred
+    strategy: "{workflowEditNodeForm} [data-test-id='workflow-edit-node-time'][role='group']"
+    confidence: confirmed
+  workflowEditNodeFormTimeHoursField:
+    strategy: "{workflowEditNodeFormTimeField} input with accessible name 'Hours'"
+    confidence: confirmed
+  workflowEditNodeFormTimeMinutesField:
+    strategy: "{workflowEditNodeFormTimeField} input with accessible name 'Minutes'"
+    confidence: confirmed
   workflowEditNodeFormTitleField:
     strategy: "{workflowEditNodeForm} [name='title']"
     confidence: inferred
@@ -1254,7 +1260,7 @@ locatorMappings:
     strategy: "duration field scoped to its hosting uiObject and identified by that hosting field's accessible name"
     confidence: inferred
   workflowDurationInput:
-    strategy: "{workflowDurationField} masked input with the hosting field's accessible label and ###:## format"
+    strategy: "hosting-specific input presentation within {workflowDurationField}; Time exposes Hours and Minutes inputs while unchanged Ponderation and Classification fields expose a masked ###:## input"
     confidence: inferred
   workflowDurationValidationMessage:
     strategy: "validation message associated with {workflowDurationInput}"
@@ -1344,8 +1350,14 @@ locatorMappings:
     strategy: "{workflowMetadataSection} duration field group with accessible name 'Theory'"
     confidence: inferred
   workflowMetadataFieldTime:
-    strategy: "{workflowMetadataSection} duration field group with accessible name 'Time'"
-    confidence: inferred
+    strategy: "{workflowMetadataSection} [data-test-id='workflow-overview-time'][role='group']"
+    confidence: confirmed
+  workflowMetadataFieldTimeHours:
+    strategy: "{workflowMetadataFieldTime} input with accessible name 'Hours'"
+    confidence: confirmed
+  workflowMetadataFieldTimeMinutes:
+    strategy: "{workflowMetadataFieldTime} input with accessible name 'Minutes'"
+    confidence: confirmed
   workflowMetadataPermissionsPanel:
     strategy: "{workflowOverviewView} contributors and permissions summary panel"
     confidence: inferred

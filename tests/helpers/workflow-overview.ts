@@ -12,6 +12,7 @@ import {
   workflowMetadataFieldSpecificTime,
   workflowMetadataFieldTheoryTime,
   workflowMetadataFieldTime,
+  workflowMetadataFieldTimeMinutes,
   workflowMetadataPermissionsPanel,
   workflowMetadataPonderationSection,
   workflowMetadataSwitchCalculateClassificationAutomatically,
@@ -43,6 +44,21 @@ export async function expectOverviewDurationFieldDisplaysHours(
     return;
   }
   await expect(field).toHaveValue(new RegExp(`^${hours}\\s+hours?$`, 'i'));
+}
+
+/** Figma-authoritative Time control — separate Hours and Minutes fields. */
+export async function expectOverviewTimeFields(
+  page: Page,
+  expected?: { hours: string; minutes: string },
+): Promise<void> {
+  const hours = workflowMetadataFieldTime(page);
+  const minutes = workflowMetadataFieldTimeMinutes(page);
+  await expect(hours).toBeVisible();
+  await expect(minutes).toBeVisible();
+  if (expected) {
+    await expect(hours).toHaveValue(expected.hours);
+    await expect(minutes).toHaveValue(expected.minutes);
+  }
 }
 
 /**
@@ -81,7 +97,7 @@ export async function expectActivityOverviewMetadataCompositionPerFrWfOv001(
 
   await expectDescriptionDisplayOnlyPerFrWfOv002(page);
   await expect(workflowMetadataSwitchCalculateTimeAutomatically(page)).toBeVisible();
-  await expect(workflowMetadataFieldTime(page)).toBeVisible();
+  await expectOverviewTimeFields(page);
   await expect(workflowMetadataPermissionsPanel(page)).toBeVisible();
 
   await expect(workflowMetadataFieldCode(page)).toHaveCount(0);
@@ -110,7 +126,7 @@ export async function expectCourseOverviewMetadataCompositionPerFrWfOv001(
   await expectDescriptionDisplayOnlyPerFrWfOv002(page);
   await expect(workflowMetadataFieldCode(page)).toBeVisible();
   await expect(workflowMetadataSwitchCalculateTimeAutomatically(page)).toBeVisible();
-  await expect(workflowMetadataFieldTime(page)).toBeVisible();
+  await expectOverviewTimeFields(page);
   await expect(workflowMetadataPonderationSection(page)).toBeVisible();
   await expect(workflowMetadataFieldTheoryTime(page)).toBeVisible();
   await expect(workflowMetadataFieldPracticalTime(page)).toBeVisible();
@@ -138,7 +154,7 @@ export async function expectProgramOverviewMetadataCompositionPerFrWfOv001(
   await expectDescriptionDisplayOnlyPerFrWfOv002(page);
   await expect(workflowMetadataFieldCode(page)).toHaveCount(0);
   await expect(workflowMetadataSwitchCalculateTimeAutomatically(page)).toBeVisible();
-  await expect(workflowMetadataFieldTime(page)).toBeVisible();
+  await expectOverviewTimeFields(page);
   await expect(workflowMetadataPonderationSection(page)).toBeVisible();
   await expect(workflowMetadataFieldTheoryTime(page)).toBeVisible();
   await expect(workflowMetadataFieldPracticalTime(page)).toBeVisible();
@@ -154,38 +170,38 @@ export async function expectProgramOverviewMetadataCompositionPerFrWfOv001(
 
 /**
  * FR-WF-OV-003 — ensure Time Auto-calculate is OFF and Time is editable (owner/editor).
- * Time remains a duration-type field (displays an hours unit per FR ACs).
+ * Time remains one duration value represented by separate Hours and Minutes inputs.
  */
 export async function expectTimeEditableWhenAutoCalculateOffPerFrWfOv003(
   page: Page,
 ): Promise<void> {
   const autoCalculate = workflowMetadataSwitchCalculateTimeAutomatically(page);
   await expect(autoCalculate).toBeVisible();
-  await expect(workflowMetadataFieldTime(page)).toBeVisible();
+  await expectOverviewTimeFields(page);
 
   if (await autoCalculate.isChecked()) {
     await autoCalculate.uncheck();
   }
   await expect(autoCalculate).not.toBeChecked();
   await expect(workflowMetadataFieldTime(page)).toBeEnabled();
-  await expectOverviewDurationFieldDisplaysHours(workflowMetadataFieldTime(page));
+  await expect(workflowMetadataFieldTimeMinutes(page)).toBeEnabled();
 }
 
 /**
  * FR-WF-OV-003 — ensure Time Auto-calculate is ON and Time is read-only (owner/editor).
- * Calculated display is duration-type (e.g. '5 hours').
+ * Calculated value remains represented by disabled Hours and Minutes inputs.
  */
 export async function expectTimeReadOnlyWhenAutoCalculateOnPerFrWfOv003(
   page: Page,
 ): Promise<void> {
   const autoCalculate = workflowMetadataSwitchCalculateTimeAutomatically(page);
   await expect(autoCalculate).toBeVisible();
-  await expect(workflowMetadataFieldTime(page)).toBeVisible();
+  await expectOverviewTimeFields(page);
 
   await autoCalculate.check();
   await expect(autoCalculate).toBeChecked();
   await expect(workflowMetadataFieldTime(page)).toBeDisabled();
-  await expectOverviewDurationFieldDisplaysHours(workflowMetadataFieldTime(page));
+  await expect(workflowMetadataFieldTimeMinutes(page)).toBeDisabled();
 }
 
 /**

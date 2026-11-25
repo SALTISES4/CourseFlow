@@ -53,13 +53,13 @@ class ProjectService:
         actor_user_id: int,
     ) -> ProjectDuplicatePlaceholderDTO | None:
         """
-        Placeholder for project duplication: verifies the project exists only.
+        Legacy duplicate endpoint behavior: verifies the project exists only.
 
         Does not clone the project, graphs, tags, team members, or any related
-        data. Full Django-side duplication is intentionally deferred (TODO).
+        data. New callers must use ProjectCopyService via POST /project/{uuid}/copy.
 
-        actor_user_id is accepted for future authorization/audit when real
-        duplication is implemented; it is unused in this placeholder.
+        actor_user_id remains unused because this compatibility endpoint is a
+        no-op and will be removed when its hidden client action is retired.
 
         Returns None if no project exists for project_uuid.
         """

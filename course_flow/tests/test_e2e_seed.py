@@ -17,6 +17,7 @@ from course_flow.core.models import (
     Project,
     Section,
     TeamUser,
+    Workflow,
 )
 from course_flow.e2e_seed.catalog import seed_assets_by_id
 from course_flow.e2e_seed.clear import clear_e2e_fixtures
@@ -118,6 +119,13 @@ def test_e2e_fixture_favourites_cover_default_project_and_workflow_scopes():
         user__email=E2E_FIXTURE_TEACHER_EMAIL,
         graph__workflow__project=template_project,
     ).count() == 3
+    assert Workflow.objects.get(
+        uuid=next(
+            item["workflow_uuid"]
+            for item in manifest["template_workflows"]
+            if item["workflow_type"] == "program"
+        )
+    ).is_archived is True
     favourite_projects = manifest["assets"]["project.favourite_collection"]["items"]
     assert len(favourite_projects) == 5
     assert FavoriteProject.objects.filter(

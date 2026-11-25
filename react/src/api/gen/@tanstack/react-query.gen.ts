@@ -16,6 +16,7 @@ import {
   archiveProject,
   archiveWorkflow,
   confirmPasswordReset,
+  copyProject,
   copyWorkflow,
   courseFlowApiNinjaAppHealth,
   courseFlowApiNinjaAppReady,
@@ -121,6 +122,8 @@ import type {
   ArchiveWorkflowResponse,
   ConfirmPasswordResetData,
   ConfirmPasswordResetResponse,
+  CopyProjectData,
+  CopyProjectResponse,
   CopyWorkflowData,
   CopyWorkflowResponse,
   CourseFlowApiNinjaAppHealthData,
@@ -590,9 +593,36 @@ export const getProjectGraphOptions = (options: Options<GetProjectGraphData>) =>
   })
 
 /**
+ * Copy Project
+ */
+export const copyProjectMutation = (
+  options?: Partial<Options<CopyProjectData>>
+): UseMutationOptions<
+  CopyProjectResponse,
+  DefaultError,
+  Options<CopyProjectData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    CopyProjectResponse,
+    DefaultError,
+    Options<CopyProjectData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await copyProject({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
+/**
  * Duplicate Project Placeholder
  *
- * Placeholder route: no duplicate project is created (see application service).
+ * Legacy no-op route. Use POST /project/{uuid}/copy to create a project copy.
  */
 export const duplicateProjectPlaceholderMutation = (
   options?: Partial<Options<DuplicateProjectPlaceholderData>>

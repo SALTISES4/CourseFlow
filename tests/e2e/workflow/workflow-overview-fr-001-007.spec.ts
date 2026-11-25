@@ -13,6 +13,7 @@ import {
   expectCreditsEditableWhenAutoCalculateOffPerFrWfOv005,
   expectCreditsReadOnlyWhenAutoCalculateOnPerFrWfOv005,
   expectOverviewDurationFieldDisplaysHours,
+  expectOverviewTimeFields,
   expectPonderationEditableWhenAutoCalculateOffPerFrWfOv004,
   expectPonderationReadOnlyWhenAutoCalculateOnPerFrWfOv004,
   expectProgramOverviewMetadataCompositionPerFrWfOv001,
@@ -27,6 +28,7 @@ import { firstWorkflowNodeUuid } from './comments-tab.helpers';
 import { expectWorkflowEditNodeFormTimeField } from './edit-node.helpers';
 import {
   workflowEditNodeFormTimeField,
+  workflowEditNodeFormTimeMinutesField,
   workflowNodeTitle,
   workflowNodes,
 } from './workflow-graph.locators';
@@ -46,6 +48,7 @@ import {
   workflowMetadataFieldSpecificTime,
   workflowMetadataFieldTheoryTime,
   workflowMetadataFieldTime,
+  workflowMetadataFieldTimeMinutes,
   workflowMetadataPermissionsPanel,
   workflowMetadataSwitchCalculateClassificationAutomatically,
   workflowMetadataSwitchCalculateCreditsAutomatically,
@@ -155,8 +158,8 @@ test.describe('workflow-overview-fr-001-007', () => {
 
       await expect(automaticSwitch).toBeEnabled();
       await expect(workflowMetadataFieldTime(page)).toBeEnabled();
-      // FR-WF-OV-003 — duration-type display (e.g. '0 hours'), not a bare number.
-      await expectOverviewDurationFieldDisplaysHours(workflowMetadataFieldTime(page));
+      await expect(workflowMetadataFieldTimeMinutes(page)).toBeEnabled();
+      await expectOverviewTimeFields(page);
     });
 
     test('FR-WF-OV-003: auto-calculate ON makes Time read-only and the switch persists', async ({
@@ -167,7 +170,7 @@ test.describe('workflow-overview-fr-001-007', () => {
       try {
         await setWorkflowOverviewSwitch(page, automaticSwitch, true);
         await expect(workflowMetadataFieldTime(page)).toBeDisabled();
-        await expectOverviewDurationFieldDisplaysHours(workflowMetadataFieldTime(page));
+        await expect(workflowMetadataFieldTimeMinutes(page)).toBeDisabled();
 
         await workflowGraphTab(page).click();
         await expect(page).toHaveURL(new RegExp(`${workflow.path}/?$`));
@@ -175,7 +178,7 @@ test.describe('workflow-overview-fr-001-007', () => {
         await expect(workflowOverviewView(page)).toBeVisible();
         await expect(workflowMetadataSwitchCalculateTimeAutomatically(page)).toBeChecked();
         await expect(workflowMetadataFieldTime(page)).toBeDisabled();
-        await expectOverviewDurationFieldDisplaysHours(workflowMetadataFieldTime(page));
+        await expect(workflowMetadataFieldTimeMinutes(page)).toBeDisabled();
       } finally {
         const restoredSwitch = workflowMetadataSwitchCalculateTimeAutomatically(page);
         await setWorkflowOverviewSwitch(page, restoredSwitch, false);
@@ -328,6 +331,7 @@ test.describe('workflow-overview-fr-001-007', () => {
         await workflowMetadataSwitchCalculateTimeAutomatically(page).uncheck();
         await expect(workflowMetadataSwitchCalculateTimeAutomatically(page)).not.toBeChecked();
         await expect(workflowMetadataFieldTime(page)).toBeEnabled();
+        await expect(workflowMetadataFieldTimeMinutes(page)).toBeEnabled();
       });
 
       test('when Time Auto-calculate is ON, Time equals the sum of node effective times', async ({
@@ -337,8 +341,8 @@ test.describe('workflow-overview-fr-001-007', () => {
         await page.goto(workflow.path);
         await expect(workflowNodes(page).first()).toBeVisible({ timeout: 15_000 });
 
-        // FR-WF-OV-003 / FR-WF-EN-002 — node effective time is workflowEditNodeFormTimeField
-        // (single duration labeled Time), not legacy Amount + Unit type.
+        // FR-WF-OV-003 / FR-WF-EN-002 — node effective time uses one canonical
+        // minute value represented by separate Hours and Minutes inputs.
         const firstNodeUuid = await firstWorkflowNodeUuid(page);
         await workflowNodeTitle(page, firstNodeUuid).click();
         await expectWorkflowEditNodeFormTimeField(page);
@@ -349,7 +353,9 @@ test.describe('workflow-overview-fr-001-007', () => {
             /\/api\/node\/[^/]+\/meta\/?$/.test(new URL(response.url()).pathname),
           { timeout: 15_000 },
         );
-        await workflowEditNodeFormTimeField(page).fill('2 hours');
+        await workflowEditNodeFormTimeField(page).fill('2');
+        await workflowEditNodeFormTimeMinutesField(page).fill('0');
+        await workflowEditNodeFormTimeMinutesField(page).press('Tab');
         await nodeMetaSaved;
 
         const nodeCount = await workflowNodes(page).count();
@@ -368,7 +374,9 @@ test.describe('workflow-overview-fr-001-007', () => {
               /\/api\/node\/[^/]+\/meta\/?$/.test(new URL(response.url()).pathname),
             { timeout: 15_000 },
           );
-          await workflowEditNodeFormTimeField(page).fill('3 hours');
+          await workflowEditNodeFormTimeField(page).fill('3');
+          await workflowEditNodeFormTimeMinutesField(page).fill('0');
+          await workflowEditNodeFormTimeMinutesField(page).press('Tab');
           await secondSaved;
           expectedHours = 5;
         }
@@ -376,12 +384,10 @@ test.describe('workflow-overview-fr-001-007', () => {
         await openWorkflowOverview(page, workflow.path);
         await expectTimeReadOnlyWhenAutoCalculateOnPerFrWfOv003(page);
 
-        // FR-WF-OV-003 AC — with N1=2h and N2=3h (when present), Time displays '5 hours'.
-        // Requires FR duration-type node Time fields; legacy Amount/Unit must not be used.
-        await expectOverviewDurationFieldDisplaysHours(
-          workflowMetadataFieldTime(page),
-          expectedHours,
-        );
+        await expectOverviewTimeFields(page, {
+          hours: String(expectedHours),
+          minutes: '0',
+        });
       });
 
       test.describe('viewer role', () => {
@@ -393,9 +399,10 @@ test.describe('workflow-overview-fr-001-007', () => {
           await openWorkflowOverview(page, workflow.path);
 
           await expect(workflowMetadataSwitchCalculateTimeAutomatically(page)).toBeVisible();
-          await expect(workflowMetadataFieldTime(page)).toBeVisible();
+          await expectOverviewTimeFields(page);
           await expect(workflowMetadataSwitchCalculateTimeAutomatically(page)).toBeDisabled();
           await expect(workflowMetadataFieldTime(page)).toBeDisabled();
+          await expect(workflowMetadataFieldTimeMinutes(page)).toBeDisabled();
         });
       });
     });

@@ -1,6 +1,6 @@
 # Functional requirements: copy project
-# Status: Tentative — in development.
-# Version: 0.2
+# Status: Accepted — backend implementation complete.
+# Version: 1.0
 # Scope: backend copy logic and automated backend tests. UI exposure, dialogs,
 # navigation, snackbars, localization, and Playwright coverage are deferred.
 # Source: product direction recorded 2026-10-29.
@@ -45,7 +45,12 @@ requirements:
   - id: FR-PROJ-COPY-001
     title: Authorize and validate a project copy request
 
-    designEvidence: []
+    designEvidence:
+      - course_flow/core/permissions.py
+      - course_flow/application/services/project_copy_service.py
+      - course_flow/api/schemas/projects.py
+      - course_flow/api/routers/projects.py
+      - course_flow/tests/test_project_copy_api.py
 
     actors:
       - owner
@@ -96,7 +101,10 @@ requirements:
   - id: FR-PROJ-COPY-002
     title: Create a private active project owned only by the initiating actor
 
-    designEvidence: []
+    designEvidence:
+      - course_flow/application/services/project_copy_service.py
+      - course_flow/infrastructure/project_transfer/importer.py
+      - course_flow/tests/test_project_copy_api.py
 
     actors:
       - owner
@@ -140,7 +148,10 @@ requirements:
   - id: FR-PROJ-COPY-003
     title: Copy the project tag catalog and remap tag assignments
 
-    designEvidence: []
+    designEvidence:
+      - course_flow/infrastructure/project_transfer/exporter.py
+      - course_flow/infrastructure/project_transfer/importer.py
+      - course_flow/tests/test_project_copy_api.py
 
     actors:
       - owner
@@ -177,7 +188,11 @@ requirements:
   - id: FR-PROJ-COPY-004
     title: Copy workflows selected by includeArchivedWorkflows using canonical workflow-copy fidelity
 
-    designEvidence: []
+    designEvidence:
+      - course_flow/application/services/project_copy_service.py
+      - course_flow/infrastructure/project_transfer/exporter.py
+      - course_flow/infrastructure/project_transfer/importer.py
+      - course_flow/tests/test_project_copy_api.py
 
     actors:
       - owner
@@ -226,7 +241,11 @@ requirements:
   - id: FR-PROJ-COPY-005
     title: Remap project-internal workflow links to copied workflows
 
-    designEvidence: []
+    designEvidence:
+      - course_flow/application/services/project_copy_service.py
+      - course_flow/infrastructure/project_transfer/exporter.py
+      - course_flow/infrastructure/project_transfer/importer.py
+      - course_flow/tests/test_project_copy_api.py
 
     actors:
       - owner
@@ -270,7 +289,10 @@ requirements:
   - id: FR-PROJ-COPY-006
     title: Do not copy user-specific, collaboration, or transient state
 
-    designEvidence: []
+    designEvidence:
+      - course_flow/infrastructure/project_transfer/exporter.py
+      - course_flow/infrastructure/project_transfer/importer.py
+      - course_flow/tests/test_project_copy_api.py
 
     actors:
       - owner
@@ -309,7 +331,10 @@ requirements:
   - id: FR-PROJ-COPY-007
     title: Copy the project atomically from one coherent source snapshot
 
-    designEvidence: []
+    designEvidence:
+      - course_flow/application/services/project_copy_service.py
+      - course_flow/infrastructure/project_transfer/importer.py
+      - course_flow/tests/test_project_copy_api.py
 
     actors:
       - owner
@@ -348,7 +373,9 @@ requirements:
   - id: FR-PROJ-COPY-008
     title: Return the created project from the backend copy operation
 
-    designEvidence: []
+    designEvidence:
+      - course_flow/api/routers/projects.py
+      - course_flow/tests/test_project_copy_api.py
 
     actors:
       - owner
@@ -381,6 +408,13 @@ requirements:
     openQuestions: []
 
 changelog:
+  - version: '1.0'
+    date: '2026-11-24'
+    changes:
+      - Accepted the backend-only project-copy contract after implementation.
+      - Added COPY_PROJECT authorization, published-template access, strict request validation, and the POST '/api/project/{uuid}/copy' endpoint.
+      - Reused the transactional project-transfer contract for aggregate fidelity, regenerated identities, tag and workflow-link remapping, archived-workflow policy, public-link reset, and collaboration-state exclusions.
+      - Added backend integration coverage for copy fidelity, authorization, archived handling, link severing, validation, retries, source preservation, and rollback.
   - version: '0.2'
     date: '2026-10-29'
     changes:

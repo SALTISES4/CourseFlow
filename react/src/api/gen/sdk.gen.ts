@@ -13,6 +13,8 @@ import type {
   ArchiveWorkflowResponses,
   ConfirmPasswordResetData,
   ConfirmPasswordResetResponses,
+  CopyProjectData,
+  CopyProjectResponses,
   CopyWorkflowData,
   CopyWorkflowResponses,
   CourseFlowApiNinjaAppHealthData,
@@ -211,6 +213,8 @@ import {
   zArchiveWorkflowResponse,
   zConfirmPasswordResetData,
   zConfirmPasswordResetResponse,
+  zCopyProjectData,
+  zCopyProjectResponse,
   zCopyWorkflowData,
   zCopyWorkflowResponse,
   zCourseFlowApiNinjaAppHealthData,
@@ -608,9 +612,28 @@ export const getProjectGraph = <ThrowOnError extends boolean = false>(
   })
 
 /**
+ * Copy Project
+ */
+export const copyProject = <ThrowOnError extends boolean = false>(
+  options: Options<CopyProjectData, ThrowOnError>
+) =>
+  (options.client ?? client).post<CopyProjectResponses, unknown, ThrowOnError>({
+    requestValidator: async (data) => await zCopyProjectData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zCopyProjectResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/project/{uuid}/copy',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers
+    }
+  })
+
+/**
  * Duplicate Project Placeholder
  *
- * Placeholder route: no duplicate project is created (see application service).
+ * Legacy no-op route. Use POST /project/{uuid}/copy to create a project copy.
  */
 export const duplicateProjectPlaceholder = <
   ThrowOnError extends boolean = false

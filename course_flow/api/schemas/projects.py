@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import Field
+from pydantic import Field, StrictBool
 
 from course_flow.api.common.schemas import CamelSchema
 from course_flow.api.schemas.auth import UserSummaryOut
@@ -20,6 +20,11 @@ class ProjectCreateIn(CamelSchema):
     is_published: bool = False
     is_template: bool = False
     disciplines: list[str] = Field(default_factory=list)
+
+
+class ProjectCopyIn(CamelSchema):
+    title: str
+    include_archived_workflows: StrictBool = False
 
 
 class ProjectUpdateIn(CamelSchema):
@@ -92,7 +97,7 @@ class ProjectDetailOutResp(CamelSchema):
 
 class ProjectDuplicatePlaceholderOut(CamelSchema):
     """
-    Response for POST /project/{uuid}/duplicate while duplication is not implemented.
+    Legacy no-op response. Real project copies use POST /project/{uuid}/copy.
     """
 
     success: bool = True

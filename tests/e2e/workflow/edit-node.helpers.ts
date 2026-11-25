@@ -23,6 +23,8 @@ import {
   workflowEditNodeFormTaskTypeField,
   workflowEditNodeFormTimeAmountField,
   workflowEditNodeFormTimeField,
+  workflowEditNodeFormTimeGroup,
+  workflowEditNodeFormTimeMinutesField,
   workflowEditNodeFormTimeUnitField,
   workflowEditNodeFormTitleField,
   workflowLinkWorkflowDialog,
@@ -157,9 +159,11 @@ export async function ensureProgramNodeAndOpenEditForm(page: Page, workflow: Wor
   return openFirstNodeEditForm(page);
 }
 
-/** FR-WF-EN-002…005 — single duration field labeled Time (not Amount + Unit type). */
+/** FR-WF-EN-002…005 — Time is one logical duration with Hours and Minutes fields. */
 export async function expectWorkflowEditNodeFormTimeField(page: Page): Promise<void> {
+  await expect(workflowEditNodeFormTimeGroup(page)).toBeVisible();
   await expect(workflowEditNodeFormTimeField(page)).toBeVisible();
+  await expect(workflowEditNodeFormTimeMinutesField(page)).toBeVisible();
   await expect(workflowEditNodeFormTimeAmountField(page)).toHaveCount(0);
   await expect(workflowEditNodeFormTimeUnitField(page)).toHaveCount(0);
 }
@@ -246,6 +250,7 @@ export async function expectReadOnlyWorkflowEditNodeForm(
     await expect(workflowRichTextDescriptionEditorBoldButton(page)).toBeDisabled();
   }
   await expect(workflowEditNodeFormTimeField(page)).not.toBeEditable();
+  await expect(workflowEditNodeFormTimeMinutesField(page)).not.toBeEditable();
   await expect(workflowEditNodeFormTagsField(page)).toBeDisabled();
 
   if (parentType === 'activity') {

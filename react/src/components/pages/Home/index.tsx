@@ -1,5 +1,6 @@
 import {
   LibraryContentTypeIn,
+  LibrarySearchScopeIn,
   LibrarySortDirectionIn,
   LibrarySortValueIn
 } from '@cf/api/gen'
@@ -40,6 +41,7 @@ const Home = () => {
 
   const { data: templatesData, isLoading: templatesLoading } = useLibrarySearch(
     {
+      scope: LibrarySearchScopeIn.PUBLISHED,
       pagination: {
         page: 0,
         resultsPerPage: 4

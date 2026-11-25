@@ -106,14 +106,20 @@ if [[ -n "${previous_release}" && -f "${previous_release}/runtime.env" ]]; then
     stop django
 fi
 
+if ! "${compose[@]}" run --rm --no-deps \
+  --env ALLOW_STAGING_DATABASE_RESET=true \
+  --env "STAGING_DATABASE_RESET_HOST=${database_host}" \
+  --env "STAGING_DATABASE_RESET_NAME=${database_name}" \
+  django \
+  uv run --no-sync python manage.py cf_rebuild_staging_database \
+    --confirm-staging-reset; then
+  echo "Staging database rebuild failed; leaving the application stopped." >&2
+  exit 1
+fi
+
 if ! "${compose[@]}" run --rm --no-deps django \
-  uv run --no-sync python manage.py migrate --noinput; then
-  if [[ -n "${previous_release}" && -f "${previous_release}/runtime.env" ]]; then
-    docker compose \
-      --env-file "${previous_release}/runtime.env" \
-      --file "${previous_release}/docker-compose.yml" \
-      up --detach django
-  fi
+  uv run --no-sync python manage.py migrate --check; then
+  echo "Staging migration verification failed; leaving the application stopped." >&2
   exit 1
 fi
 
@@ -124,12 +130,7 @@ if ! "${compose[@]}" up \
   --wait-timeout 180; then
   "${compose[@]}" ps >&2 || true
   "${compose[@]}" logs --tail 100 django >&2 || true
-  if [[ -n "${previous_release}" && -f "${previous_release}/runtime.env" ]]; then
-    docker compose \
-      --env-file "${previous_release}/runtime.env" \
-      --file "${previous_release}/docker-compose.yml" \
-      up --detach --wait --wait-timeout 180
-  fi
+  echo "Staging startup failed after database rebuild; leaving the application stopped." >&2
   exit 1
 fi
 

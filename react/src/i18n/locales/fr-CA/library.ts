@@ -28,6 +28,7 @@ const libraryFr = {
     summary_one: 'Affichage de {{range}} résultat sur {{count}}',
     summary_other: 'Affichage de {{range}} résultats sur {{count}}',
     none: 'Aucun résultat',
+    noTemplates: 'Aucun modèle disponible',
     notFound: 'Le contenu recherché est introuvable.',
     loadFailed: 'La bibliothèque n’a pas pu être chargée.',
     seeAll: '+ Tout afficher'

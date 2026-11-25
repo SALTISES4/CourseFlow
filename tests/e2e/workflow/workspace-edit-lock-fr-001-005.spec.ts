@@ -24,7 +24,11 @@ import {
   openEditWorkflowDialog,
   workflowEditTitleField,
 } from './workflow-edit-form.locators';
-import { workflowMetadataFieldTime, workflowOverviewView } from './workflow-overview.locators';
+import {
+  workflowMetadataFieldTime,
+  workflowMetadataFieldTimeMinutes,
+  workflowOverviewView,
+} from './workflow-overview.locators';
 
 test.use({
   seedAsset: 'workflow.standard_activity',
@@ -79,6 +83,7 @@ test('FR-WS-LOCK-001/003/004/005: card tag, confirmed takeover, and prior-editor
   await page.goto(overviewPath);
   await expect(workflowOverviewView(page)).toBeVisible();
   await expect(workflowMetadataFieldTime(page)).toBeEditable();
+  await expect(workflowMetadataFieldTimeMinutes(page)).toBeEditable();
   await expect(workspaceEditLockTakeoverButton(page)).toHaveCount(0);
   await expect(workspaceEditLockLostAlert(page)).toHaveCount(0);
 
@@ -119,6 +124,7 @@ test('FR-WS-LOCK-001/003/004/005: card tag, confirmed takeover, and prior-editor
     await expect(workspaceEditLockTakeoverButton(editorPage)).toHaveText('Take over editing');
     await expect(workspaceEditLockTakeoverButton(editorPage)).toBeEnabled();
     await expect(workflowMetadataFieldTime(editorPage)).not.toBeEditable();
+    await expect(workflowMetadataFieldTimeMinutes(editorPage)).not.toBeEditable();
     await expect(workspaceEditLockLostAlert(editorPage)).toHaveCount(0);
 
     await workspaceEditLockTakeoverButton(editorPage).click();
@@ -132,12 +138,14 @@ test('FR-WS-LOCK-001/003/004/005: card tag, confirmed takeover, and prior-editor
     await workspaceEditLockTakeoverCancelButton(editorPage).click();
     await expect(workspaceEditLockTakeoverDialog(editorPage)).toHaveCount(0);
     await expect(workflowMetadataFieldTime(editorPage)).not.toBeEditable();
+    await expect(workflowMetadataFieldTimeMinutes(editorPage)).not.toBeEditable();
 
     await workspaceEditLockTakeoverButton(editorPage).click();
     await workspaceEditLockTakeoverConfirmButton(editorPage).click();
     await expect(workspaceEditLockTakeoverDialog(editorPage)).toHaveCount(0);
     await expect(workspaceEditLockTakeoverButton(editorPage)).toHaveCount(0);
     await expect(workflowMetadataFieldTime(editorPage)).toBeEditable();
+    await expect(workflowMetadataFieldTimeMinutes(editorPage)).toBeEditable();
 
     const editorLock = await readWorkflowLock(editorPage, workflow.workflowUuid);
     expect(editorLock.state).toBe('held');
@@ -149,6 +157,7 @@ test('FR-WS-LOCK-001/003/004/005: card tag, confirmed takeover, and prior-editor
     );
     await expect(workspaceEditLockTakeoverButton(page)).toHaveText('Take over editing');
     await expect(workflowMetadataFieldTime(page)).not.toBeEditable();
+    await expect(workflowMetadataFieldTimeMinutes(page)).not.toBeEditable();
   } finally {
     if (editorProfile) {
       const editorPage = editorContext.pages()[0];
