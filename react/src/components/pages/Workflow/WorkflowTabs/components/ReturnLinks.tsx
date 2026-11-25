@@ -5,6 +5,7 @@ import {
 import { CFRoutes } from '@cf/router/appRoutes'
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Link from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
 import { useQuery } from '@tanstack/react-query'
@@ -55,19 +56,16 @@ const ReturnLinks = () => {
     })
 
     return (
-      <Link
+      <Button
         id="project-return"
+        size="small"
+        color="primary"
+        startIcon={<ArrowBackIosIcon />}
         to={path}
-        underline="hover"
         component={RouterLink}
       >
-        <Box sx={{ display: 'flex' }}>
-          <ArrowBackIosIcon color="primary" />
-          <Typography color="primary">
-            {t('related.returnTo')} {project.title}
-          </Typography>
-        </Box>
-      </Link>
+        {t('related.returnTo')} {project.title}
+      </Button>
     )
   }
 
@@ -85,20 +83,17 @@ const ReturnLinks = () => {
     })
 
     return (
-      <Link
+      <Button
         id="editable-project-return"
         data-test-id="link-editable-project-return"
+        size="small"
+        color="primary"
+        startIcon={<ArrowBackIosIcon />}
         to={path}
-        underline="hover"
         component={RouterLink}
       >
-        <Box sx={{ display: 'flex' }}>
-          <ArrowBackIosIcon color="primary" />
-          <Typography color="primary">
-            {t('related.returnTo')} {project.title}
-          </Typography>
-        </Box>
-      </Link>
+        {t('related.returnTo')} {project.title}
+      </Button>
     )
   }
 
@@ -116,20 +111,17 @@ const ReturnLinks = () => {
     })
 
     return (
-      <Link
+      <Button
         id="editable-workflow-return"
         data-test-id="link-editable-workflow-return"
+        size="small"
+        color="primary"
+        startIcon={<ArrowBackIosIcon />}
         to={path}
-        underline="hover"
         component={RouterLink}
       >
-        <Box sx={{ display: 'flex' }}>
-          <ArrowBackIosIcon color="primary" />
-          <Typography color="primary">
-            {t('related.returnToEditable')}
-          </Typography>
-        </Box>
-      </Link>
+        {t('related.returnToEditable')}
+      </Button>
     )
   }
 
