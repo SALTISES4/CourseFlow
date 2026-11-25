@@ -26,9 +26,7 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import TuneIcon from '@mui/icons-material/Tune'
 import UnfoldLessIcon from '@mui/icons-material/UnfoldLess'
 import UnfoldMoreIcon from '@mui/icons-material/UnfoldMore'
-import ZoomInMapIcon from '@mui/icons-material/ZoomInMap'
-import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap'
-import { Box, Checkbox, FormControlLabel, Typography } from '@mui/material'
+import { FormControlLabel, Switch, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -241,7 +239,7 @@ const ExpandCollapseMenu = ({
             uuid: 'expand-all-sections',
             content: t('menu.expandSections'),
             action: () => dispatch(graphUiActions.setCollapsedSectionUuids([])),
-            icon: <ZoomOutMapIcon />,
+            icon: <UnfoldMoreIcon sx={{ color: 'action.active' }} />,
             showIconInList: true,
             show: true
           },
@@ -250,7 +248,7 @@ const ExpandCollapseMenu = ({
             content: t('menu.collapseSections'),
             action: () =>
               dispatch(graphUiActions.setCollapsedSectionUuids(sectionIds)),
-            icon: <ZoomInMapIcon />,
+            icon: <UnfoldLessIcon sx={{ color: 'action.active' }} />,
             showIconInList: true,
             show: true
           }
@@ -261,7 +259,7 @@ const ExpandCollapseMenu = ({
               uuid: 'expand-all-outcomes',
               content: t('menu.expandOutcomes'),
               action: onOutcomeExpand(true),
-              icon: <UnfoldMoreIcon />,
+              icon: <UnfoldMoreIcon sx={{ color: 'action.active' }} />,
               showIconInList: true,
               show: true
             },
@@ -269,7 +267,7 @@ const ExpandCollapseMenu = ({
               uuid: 'collapse-all-outcomes',
               content: t('menu.collapseOutcomes'),
               action: onOutcomeExpand(false),
-              icon: <UnfoldLessIcon />,
+              icon: <UnfoldLessIcon sx={{ color: 'action.active' }} />,
               showIconInList: true,
               show: true
             }
@@ -284,7 +282,7 @@ const ExpandCollapseMenu = ({
                     graphOutcomes.map((outcome) => outcome.uuid)
                   )
                 ),
-              icon: <ZoomOutMapIcon />,
+              icon: <UnfoldMoreIcon sx={{ color: 'action.active' }} />,
               showIconInList: true,
               show: true
             },
@@ -293,7 +291,7 @@ const ExpandCollapseMenu = ({
               content: t('menu.collapseOutcomes'),
               action: () =>
                 dispatch(outcomeUiActions.setExpandedOutcomeUuids([])),
-              icon: <ZoomInMapIcon />,
+              icon: <UnfoldLessIcon sx={{ color: 'action.active' }} />,
               showIconInList: true,
               show: true
             }
@@ -305,28 +303,39 @@ const ExpandCollapseMenu = ({
         ? hiddenNodeTagIds
         : hiddenOutcomeTagIds
 
-    menuItems.push({
-      uuid: 'view-settings-tags',
-      content: (
-        <Box>
-          <Typography variant="subtitle2">{t('edit.tags')}</Typography>
-          {displayedTags.map((tag) => (
-            <FormControlLabel
-              key={tag.id}
-              control={
-                <Checkbox
-                  checked={!hiddenTagIds.includes(tag.id)}
-                  onChange={(_, checked) => setTagVisibility(tag.id, checked)}
-                  inputProps={{ 'aria-label': tag.label }}
-                />
-              }
-              label={tag.label}
-            />
-          ))}
-        </Box>
-      ),
-      show: true
-    })
+    menuItems.push(
+      {
+        show: true,
+        separator: 'top',
+        content: <Typography variant="body2">{t('edit.tags')}</Typography>,
+        sx: {
+          pointerEvents: 'none',
+          textTransform: 'uppercase',
+          color: 'text.secondary'
+        }
+      },
+      ...displayedTags.map((tag) => ({
+        show: true,
+        dense: true,
+        sx: {
+          paddingTop: 0,
+          paddingBottom: 0
+        },
+        content: (
+          <FormControlLabel
+            key={tag.id}
+            label={tag.label}
+            control={
+              <Switch
+                checked={!hiddenTagIds.includes(tag.id)}
+                onChange={(_, checked) => setTagVisibility(tag.id, checked)}
+                inputProps={{ 'aria-label': tag.label }}
+              />
+            }
+          />
+        )
+      }))
+    )
   }
 
   return (

@@ -26,6 +26,9 @@ export const Wrap = styled(Box, {
   },
   '& .MuiSvgIcon-root': {
     fontSize: '1em'
+  },
+  '& .MuiIconButton-root:hover': {
+    backgroundColor: '#E9EEF0'
   }
 }))
 

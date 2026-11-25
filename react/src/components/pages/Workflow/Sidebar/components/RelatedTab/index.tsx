@@ -47,9 +47,6 @@ const RelatedTab = () => {
         <Styled.SidebarTitle as="h3" variant="h6">
           {t('outcomes.fromParents')}
         </Styled.SidebarTitle>
-        <Typography variant="body2" sx={{ mb: 3 }}>
-          {t('outcomes.sidebarHelp')}
-        </Typography>
         {alert && (
           <Alert
             severity="warning"

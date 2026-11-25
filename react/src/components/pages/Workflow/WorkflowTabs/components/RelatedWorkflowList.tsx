@@ -1,6 +1,5 @@
 import { getRelatedWorkflowsOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import * as MainSidebar from '@cfComponents/globalNav/MainSidebar/styles'
-import Loader from '@cfComponents/UIPrimitives/Loader'
 import { workflowUrl } from '@cfComponents/UIPrimitives/Titles'
 import Divider from '@mui/material/Divider'
 import List from '@mui/material/List'
@@ -38,10 +37,6 @@ const RelatedWorkflowList = () => {
    * RENDER COMPONENTS
    *******************************************************/
   const ParentWorkflows = () => {
-    if (relatedQuery.isLoading) {
-      return <Loader />
-    }
-
     if (!relatedQuery.data?.appearsIn.length) {
       return <></>
     }
@@ -77,10 +72,6 @@ const RelatedWorkflowList = () => {
   }
 
   const ChildWorkflows = () => {
-    if (relatedQuery.isLoading) {
-      return <Loader />
-    }
-
     if (!relatedQuery.data?.contains.length) {
       return <></>
     }

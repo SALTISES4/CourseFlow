@@ -30,11 +30,16 @@ export const Badge = styled(MuiBadge, {
   shouldForwardProp: (prop) => !['highlight', 'type'].includes(prop as string)
 })<{ highlight?: boolean; type: LinkedTo }>(({ theme, highlight, type }) => ({
   top: '-5px',
-  left: '10px',
+  left: '12px',
   width: '20px',
   height: '20px',
   cursor: 'pointer',
+  '&:hover .MuiBadge-badge': {
+    backgroundColor: highlight ? theme.palette.workflow.highlighted : '#E9EEF0',
+    boxShadow: '0 0 0.1em 0 #000'
+  },
   '& .MuiBadge-badge': {
+    transition: 'all 0.2s ease',
     backgroundColor: highlight
       ? theme.palette.workflow.highlighted
       : type === 'node'

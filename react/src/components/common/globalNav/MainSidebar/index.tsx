@@ -1,7 +1,6 @@
-import { LibraryContentTypeIn, LibraryContentTypeOut } from '@cf/api/gen'
+import { LibraryContentTypeIn } from '@cf/api/gen'
 import { useLibrarySearch } from '@cf/api/wrappedHooks'
 import { CFRoutes } from '@cf/router/appRoutes'
-import Loader from '@cfComponents/UIPrimitives/Loader'
 import CFLogo from '@cfComponents/UIPrimitives/SVG/CFLogo'
 import RelatedWorkflowList from '@cfPages/Workflow/WorkflowTabs/components/RelatedWorkflowList'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
@@ -25,7 +24,7 @@ import * as SC from './styles'
 
 const Favorites = () => {
   const { t } = useTranslation('common')
-  const { data, isLoading, isError } = useLibrarySearch({
+  const { data, isError } = useLibrarySearch({
     pagination: {
       page: 0,
       resultsPerPage: 5
@@ -55,10 +54,6 @@ const Favorites = () => {
         </ListItemButton>
       </ListItem>
     )
-  }
-
-  if (isLoading) {
-    return <Loader />
   }
 
   if (!data || !data.items.length || isError) {

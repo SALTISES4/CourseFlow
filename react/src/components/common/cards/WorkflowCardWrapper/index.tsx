@@ -123,6 +123,8 @@ const WorkflowCardWrapper = ({
 const EditLockChip = ({ holderDisplayName }: { holderDisplayName: string }) => {
   const { t } = useTranslation('common')
 
+  console.log({ holderDisplayName })
+
   return (
     <WorkflowCardChip
       data-testid="card-edit-lock"
