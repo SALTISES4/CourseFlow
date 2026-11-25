@@ -63,11 +63,9 @@ const OutcomeTab = () => {
           <Styled.SidebarTitle as="h3" variant="h6">
             {t('outcomes.title')}
           </Styled.SidebarTitle>
-          <Alert
-            severity="info"
-            persistent
-            subtitle={<>{t('outcomes.empty', { workflowType })}</>}
-          />
+          <Typography variant="body2" sx={{ mb: 3 }}>
+            {t('outcomes.empty', { workflowType })}
+          </Typography>
         </Styled.SidebarContent>
         <Styled.SidebarActions>
           <Button
@@ -89,9 +87,6 @@ const OutcomeTab = () => {
         <Styled.SidebarTitle as="h3" variant="h6">
           {t('outcomes.title')}
         </Styled.SidebarTitle>
-        <Typography variant="body2" sx={{ mb: 3 }}>
-          {t('outcomes.sidebarHelp')}
-        </Typography>
         {outcomeGroups.map(
           (group, idx) =>
             !!group.outcomes.length && (
