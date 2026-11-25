@@ -1,8 +1,8 @@
 # Functional requirements: copy project
-# Status: Accepted — backend implementation complete.
-# Version: 1.0
-# Scope: backend copy logic and automated backend tests. UI exposure, dialogs,
-# navigation, snackbars, localization, and Playwright coverage are deferred.
+# Status: Accepted — backend and UI implementation complete.
+# Version: 1.1
+# Scope: whole-project copy behavior, permission-driven UI exposure, dialog
+# interaction, localization, navigation, user feedback, and automated coverage.
 # Source: product direction recorded 2026-10-29.
 # Cross-reference:
 #   - tests/docs/requirements/features/workflow/workflow_copy_requirements_v1.yaml (canonical single-workflow copy fidelity and exclusions—FR-WF-COPY-003)
@@ -17,7 +17,6 @@ documentPreconditions:
   - source project exists
   - source project is not modified by the copy operation
   - linkedWorkflow associations are expected to target workflows in the same source project per FR-WF-EN-010; FR-PROJ-COPY-005 defines safe fallback behavior for invalid or unmapped source links
-  - requirements in this file describe backend-observable behavior only; the existing project copy UI action remains out of scope while this feature is tentative
 
 domainObjectDefinitions:
   sourceProject:
@@ -37,9 +36,42 @@ domainObjectDefinitions:
   includeArchivedWorkflows:
     meaning: Boolean copy-request flag; false excludes archived source workflows and true includes them while preserving their archived state. The default is false when omitted.
 
-# No UI objects or locators are defined while UI promotion is deferred.
-uiObjectDefinitions: {}
-locatorMappings: {}
+uiObjectDefinitions:
+  copyProjectMenuItem:
+    meaning: Permission-driven 'Copy project' action in the current project context action bar overflow menu.
+  copyProjectDialog:
+    meaning: Modal dialog used to configure and submit a whole-project copy.
+  copyProjectDialogTitle:
+    meaning: Heading in copyProjectDialog with localized text 'Copy project'.
+  copyProjectForm:
+    meaning: Form inside copyProjectDialog containing copy title, archived-workflow choice, and actions.
+  copyProjectTitleField:
+    meaning: Required project-title input in copyProjectDialog, constrained by FR-PROJ-FORM-004.
+  copyProjectIncludeArchivedCheckbox:
+    meaning: Optional Boolean control that maps to includeArchivedWorkflows and defaults to unchecked each time copyProjectDialog opens.
+  copyProjectIncludeArchivedHelp:
+    meaning: Explanatory text stating that included archived workflows remain archived in copiedProject.
+  copyProjectCancelButton:
+    meaning: Secondary action that closes copyProjectDialog without creating copiedProject.
+  copyProjectSubmitButton:
+    meaning: Primary 'Copy project' action that submits copyProjectForm.
+  projectTitle:
+    meaning: Canonical definition in tests/docs/requirements/features/project/project_header_requirements_v1.yaml.
+  globalMessageSnackbar:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml.
+
+locatorMappings:
+  copyProjectMenuItem: "canonical_locators.yaml -> copyProjectMenuItem"
+  copyProjectDialog: "canonical_locators.yaml -> copyProjectDialog"
+  copyProjectDialogTitle: "canonical_locators.yaml -> copyProjectDialogTitle"
+  copyProjectForm: "canonical_locators.yaml -> copyProjectForm"
+  copyProjectTitleField: "canonical_locators.yaml -> copyProjectTitleField"
+  copyProjectIncludeArchivedCheckbox: "canonical_locators.yaml -> copyProjectIncludeArchivedCheckbox"
+  copyProjectIncludeArchivedHelp: "canonical_locators.yaml -> copyProjectIncludeArchivedHelp"
+  copyProjectCancelButton: "canonical_locators.yaml -> copyProjectCancelButton"
+  copyProjectSubmitButton: "canonical_locators.yaml -> copyProjectSubmitButton"
+  projectTitle: "canonical_locators.yaml -> projectTitle"
+  globalMessageSnackbar: "canonical_locators.yaml -> globalMessageSnackbar"
 
 requirements:
   - id: FR-PROJ-COPY-001
@@ -72,7 +104,7 @@ requirements:
       - system authorizes the actor against sourceProject using explicit ProjectPermission.COPY_PROJECT; access to one child workflow alone is not sufficient to copy the containing project
       - active-project owner, editor, commenter, and viewer roles receive ProjectPermission.COPY_PROJECT
       - an authenticated actor with published access but no explicit contributor role receives project-copy access only when sourceProject is both published and a template
-      - an archived sourceProject is non-copyable for every project role; ProjectPermission.COPY_PROJECT is absent and a direct copy request is rejected without creating data
+      - an archived sourceProject is non-copyable for every project role; the copy UI is hidden and a direct copy request is rejected without creating data even when a broad administrator override context advertises other lifecycle actions
       - system rejects a request for a missing sourceProject without creating any project or workflow data
       - system requires an explicit copiedProject title and accepts it only when its trimmed value is non-empty and no longer than 200 characters, matching project title constraints in FR-PROJ-FORM-004
       - includeArchivedWorkflows is optional and defaults to false; when supplied it must be a Boolean
@@ -395,7 +427,6 @@ requirements:
     mainFlow:
       - POST '/api/project/{uuid}/copy' returns the full ProjectDetailOut representation for copiedProject rather than echoing sourceProject identity
       - response includes copiedProject identity, metadata, included workflow summaries, permissions, disciplines, and tags according to the existing ProjectDetailOut contract
-      - this tentative backend requirement does not require the current UI to expose copy, navigate, or show success or failure feedback
 
     roleBehavior: {}
 
@@ -403,11 +434,108 @@ requirements:
       - given successful copy, response contains copiedProject UUID and it differs from sourceProject UUID
       - given successful copy, response validates as ProjectDetailOut for copiedProject
       - given successful copy, actor can fetch copiedProject using the returned UUID and receives owner permissions for that project
-      - given successful copy while UI exposure remains deferred, no acceptance criterion requires a visible project copy action, modal, route change, or snackbar
+
+    openQuestions: []
+
+  - id: FR-PROJ-COPY-009
+    title: Configure and complete a project copy from the project UI
+
+    designEvidence:
+      - course_flow/application/services/authorization_service.py
+      - react/src/context/workspacePermissionsContext.tsx
+      - react/src/components/common/menu/Menu.tsx
+      - react/src/components/pages/Project/components/ActionMenu.tsx
+      - react/src/components/pages/Project/components/Dialogs.tsx
+      - react/src/components/common/dialog/Project/ProjectCopyDialog/index.tsx
+      - react/src/i18n/locales/en-CA/project.ts
+      - react/src/i18n/locales/fr-CA/project.ts
+      - tests/e2e/project/project-copy-fr-001-009.spec.ts
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects:
+      - copyProjectMenuItem
+      - copyProjectDialog
+      - copyProjectDialogTitle
+      - copyProjectForm
+      - copyProjectTitleField
+      - copyProjectIncludeArchivedCheckbox
+      - copyProjectIncludeArchivedHelp
+      - copyProjectCancelButton
+      - copyProjectSubmitButton
+      - projectTitle
+      - globalMessageSnackbar
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - actor has loaded sourceProject in the project workspace
+
+    trigger:
+      - actor opens the project context action bar overflow menu
+      - actor clicks copyProjectMenuItem
+      - actor submits or cancels copyProjectForm
+
+    mainFlow:
+      - system shows copyProjectMenuItem only when the effective sourceProject permission context includes ProjectPermission.COPY_PROJECT and sourceProject is active
+      - the published-template exception from FR-PROJ-COPY-001 is projected into the effective permission context so an authenticated public user sees copyProjectMenuItem on a published template but not on a published non-template project
+      - source workspace read-only state or an edit lock held by another actor does not remove ProjectPermission.COPY_PROJECT or hide copyProjectMenuItem
+      - clicking copyProjectMenuItem opens exactly one copyProjectDialog with copyProjectDialogTitle and copyProjectForm
+      - copyProjectTitleField is prefilled with sourceProject title followed by the localized copy suffix; when the result would exceed 200 characters, the source portion is truncated so the initial value remains valid
+      - copyProjectTitleField is required; its trimmed value must be non-empty and no longer than 200 characters, with inline validation matching FR-PROJ-FORM-004
+      - copyProjectIncludeArchivedCheckbox is visible and unchecked whenever copyProjectDialog opens
+      - copyProjectIncludeArchivedHelp explains that included archived workflows remain archived
+      - copyProjectCancelButton closes copyProjectDialog without creating data or changing the current route; reopening the dialog restores the generated default title and unchecked archived-workflow choice
+      - copyProjectSubmitButton is enabled only while the form is valid and no copy request is pending
+      - submit sends copyProjectTitleField's trimmed value and copyProjectIncludeArchivedCheckbox's Boolean value to POST '/api/project/{sourceProject.uuid}/copy'
+      - while submit is pending, cancel and submit actions are disabled so one dialog submission cannot issue concurrent duplicate requests
+      - on success, system closes copyProjectDialog, updates or invalidates project-list caches, navigates to copiedProject's project route, renders copiedProject title, and shows a localized success globalMessageSnackbar
+      - on failure, system keeps copyProjectDialog open, does not navigate, re-enables valid form actions, and shows a localized error globalMessageSnackbar
+      - all copy dialog labels, helper text, validation messages, and snackbars are available in en-CA and fr-CA
+
+    roleBehavior:
+      owner: copyProjectMenuItem is visible for an active sourceProject.
+      editor: copyProjectMenuItem is visible for an active sourceProject.
+      commenter: copyProjectMenuItem is visible for an active sourceProject even though the workspace is read-only.
+      viewer: copyProjectMenuItem is visible for an active sourceProject even though the workspace is read-only.
+      publishedTemplatePublicUser: copyProjectMenuItem is visible.
+      publishedNonTemplatePublicUser: copyProjectMenuItem is hidden.
+      archivedProjectUser: copyProjectMenuItem is hidden for every project role, including administrator override contexts.
+
+    acceptanceCriteria:
+      - given actor has ProjectPermission.COPY_PROJECT on active sourceProject, when actor opens the project overflow menu, then copyProjectMenuItem is visible with localized label 'Copy project'
+      - given actor lacks ProjectPermission.COPY_PROJECT, when actor opens the project overflow menu, then copyProjectMenuItem is absent
+      - given sourceProject is archived, when actor views its lifecycle actions, then copyProjectMenuItem is absent
+      - given sourceProject is a published template and actor has public access only, when actor opens the project overflow menu, then copyProjectMenuItem is visible
+      - given sourceProject is published but is not a template and actor has public access only, when actor opens the project overflow menu, then copyProjectMenuItem is absent
+      - given actor is a commenter or viewer or another actor holds the source edit lock, when actor has ProjectPermission.COPY_PROJECT and opens the overflow menu, then copyProjectMenuItem remains visible
+      - given actor clicks copyProjectMenuItem, then exactly one copyProjectDialog opens with title 'Copy project', a visible copyProjectTitleField, copyProjectIncludeArchivedCheckbox, copyProjectIncludeArchivedHelp, copyProjectCancelButton, and copyProjectSubmitButton
+      - given en-CA and sourceProject title 'Curriculum', when copyProjectDialog opens, then copyProjectTitleField equals 'Curriculum (copy)'
+      - given fr-CA and sourceProject title 'Programme', when copyProjectDialog opens, then copyProjectTitleField equals 'Programme (copie)'
+      - given the localized generated copy title would exceed 200 characters, when copyProjectDialog opens, then the source title portion is truncated and copyProjectTitleField contains at most 200 characters
+      - given copyProjectDialog opens, then copyProjectIncludeArchivedCheckbox is unchecked
+      - given copyProjectTitleField is empty after trim or exceeds 200 trimmed characters, then the matching inline validation message is visible and copyProjectSubmitButton is disabled
+      - given copyProjectTitleField is valid and no request is pending, then copyProjectSubmitButton is enabled
+      - given actor cancels after changing the form, then copyProjectDialog closes, current route is unchanged, no copy request is sent, and reopening restores default form values
+      - given actor submits valid values, then exactly one request sends the trimmed title and selected includeArchivedWorkflows value for sourceProject
+      - given the copy request is pending, then copyProjectCancelButton and copyProjectSubmitButton are disabled
+      - given copy succeeds, then the dialog closes, browser route identifies copiedProject rather than sourceProject, projectTitle displays the requested title, and globalMessageSnackbar reports success
+      - given copy fails, then copyProjectDialog remains open, the current route remains sourceProject, valid form actions become enabled again, and globalMessageSnackbar reports failure
 
     openQuestions: []
 
 changelog:
+  - version: '1.1'
+    date: '2026-11-25'
+    changes:
+      - Promoted project copy from backend-only scope to a permission-driven project UI flow.
+      - Added localized modal configuration for copy title and archived-workflow inclusion, cancel and pending behavior, success navigation, and success or failure feedback.
+      - Required effective permission projection for public published templates and preservation of copy access in read-only workspace states.
+      - Added Playwright coverage for menu exposure, dialog defaults, validation, cancellation, request payload, successful navigation, role behavior, and public-project policy.
   - version: '1.0'
     date: '2026-11-24'
     changes:

@@ -55,6 +55,10 @@ export const PROJECT_EDIT_SNACKBAR_MESSAGES = {
   success: 'Your project has been successfully updated',
   failure: 'We encountered an issue and your project was not updated',
 } as const;
+export const PROJECT_COPY_SNACKBAR_MESSAGES = {
+  success: 'Your project has been successfully copied',
+  failure: 'We encountered an issue and your project was not copied',
+} as const;
 export const PROJECT_CREATE_API_ROUTE = '**/api/project';
 /** Primary E2E actor — teacher account and owner of fixture projects. */
 export const E2E_PRIMARY_TEACHER_EMAIL = 'teacher@courseflow.com';
@@ -290,6 +294,38 @@ export function projectOverflowButton(page: Page): Locator {
 
 export function archiveProjectMenuItem(page: Page): Locator {
   return page.getByRole('menuitem', { name: 'Archive project', exact: true });
+}
+
+export function copyProjectMenuItem(page: Page): Locator {
+  return page.getByRole('menuitem', { name: 'Copy project', exact: true });
+}
+
+export function copyProjectDialog(page: Page): Locator {
+  return page.locator('[data-test-id="copy-project-dialog"]');
+}
+
+export function copyProjectTitleField(page: Page): Locator {
+  return copyProjectDialog(page).locator('[data-test-id="copy-project-title-field"]');
+}
+
+export function copyProjectIncludeArchivedCheckbox(page: Page): Locator {
+  return copyProjectDialog(page)
+    .locator('[data-test-id="copy-project-include-archived-checkbox"]')
+    .locator('input');
+}
+
+export function copyProjectIncludeArchivedHelp(page: Page): Locator {
+  return copyProjectDialog(page).locator(
+    '[data-test-id="copy-project-include-archived-help"]',
+  );
+}
+
+export function copyProjectCancelButton(page: Page): Locator {
+  return copyProjectDialog(page).locator('[data-test-id="copy-project-cancel-button"]');
+}
+
+export function copyProjectSubmitButton(page: Page): Locator {
+  return copyProjectDialog(page).locator('[data-test-id="copy-project-submit-button"]');
 }
 
 export const PROJECT_ARCHIVE_CONFIRMATION_MODAL_COPY = {

@@ -1,16 +1,7 @@
-import { duplicateProjectPlaceholderMutation } from '@cf/api/gen/@tanstack/react-query.gen'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
-import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
-import { useMutation } from '@tanstack/react-query'
 
 export const useMenuActions = () => {
   const { dispatch: dispatchDialog } = useDialog()
-
-  const duplicateProjectMutation = useMutation({
-    ...duplicateProjectPlaceholderMutation()
-  })
-
-  const { onError, onSuccess } = useGenericMsgHandler()
 
   /**
    *
@@ -34,6 +25,13 @@ export const useMenuActions = () => {
   }
 
   /**
+   * Open the whole-project copy dialog.
+   */
+  function openCopyDialog() {
+    dispatchDialog(DialogMode.PROJECT_COPY)
+  }
+
+  /**
    *
    */
   function archiveProject() {
@@ -54,26 +52,11 @@ export const useMenuActions = () => {
     dispatchDialog(DialogMode.PROJECT_DELETE)
   }
 
-  /**
-   *
-   * @param projectUuid — v2 project UUID (path param for POST /api/project/{uuid}/duplicate)
-   */
-  async function duplicateProject(projectUuid: string) {
-    try {
-      const response = await duplicateProjectMutation.mutateAsync({
-        path: { uuid: projectUuid }
-      })
-      onSuccess(response)
-    } catch (err) {
-      onError(err)
-    }
-  }
-
   return {
     openEditDialog,
     openShareDialog,
     openExportDialog,
-    duplicateProject,
+    openCopyDialog,
     archiveProject,
     unarchiveProject,
     deleteProject

@@ -122,21 +122,10 @@ class ProjectCopyService:
         )
 
     def _require_source_copy_access(self, *, actor: User, source: Project) -> None:
-        try:
-            self._authorization.require_project(
-                user=actor,
-                project=source,
-                action=ProjectPermission.COPY_PROJECT,
-            )
-            return
-        except AuthorizationDenied:
-            if not (source.is_published and source.is_template):
-                raise
-
         self._authorization.require_project(
             user=actor,
             project=source,
-            action=ProjectPermission.VIEW,
+            action=ProjectPermission.COPY_PROJECT,
         )
 
     @staticmethod

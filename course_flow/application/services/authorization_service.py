@@ -64,7 +64,21 @@ class AuthorizationService:
             resource_owner_id=None,
             is_public=project.is_published,
         )
-        return self._project_context(user=user, role=role, state=state)
+        context = self._project_context(user=user, role=role, state=state)
+        if (
+            state is ProjectState.PUBLIC
+            and role is ResourceRole.PUBLIC
+            and project.is_template
+            and context.allows(ProjectPermission.VIEW)
+        ):
+            return PermissionContext(
+                account_role=context.account_role,
+                resource_role=context.resource_role,
+                state=context.state,
+                actions=context.actions | {ProjectPermission.COPY_PROJECT.value},
+                admin_override=context.admin_override,
+            )
+        return context
 
     def permissions_for_workflow(
         self,

@@ -161,6 +161,33 @@ locatorMappings:
   contributorRoleDropdown:
     strategy: "{projectMetadataPermissionsPanel} role dropdown on a contributor entry with assignable options 'Editor', 'Commenter', and 'Viewer' (current role disabled) and 'Remove contributor'"
     confidence: inferred
+  copyProjectCancelButton:
+    strategy: "[data-test-id=\"copy-project-cancel-button\"]"
+    confidence: implemented
+  copyProjectDialog:
+    strategy: "[data-test-id=\"copy-project-dialog\"]"
+    confidence: implemented
+  copyProjectDialogTitle:
+    strategy: "[data-test-id=\"copy-project-dialog-title\"]"
+    confidence: implemented
+  copyProjectForm:
+    strategy: "[data-test-id=\"copy-project-form\"]"
+    confidence: implemented
+  copyProjectIncludeArchivedCheckbox:
+    strategy: "[data-test-id=\"copy-project-include-archived-checkbox\"]"
+    confidence: implemented
+  copyProjectIncludeArchivedHelp:
+    strategy: "[data-test-id=\"copy-project-include-archived-help\"]"
+    confidence: implemented
+  copyProjectMenuItem:
+    strategy: "#copy-project-button"
+    confidence: implemented
+  copyProjectSubmitButton:
+    strategy: "[data-test-id=\"copy-project-submit-button\"]"
+    confidence: implemented
+  copyProjectTitleField:
+    strategy: "[data-test-id=\"copy-project-title-field\"]"
+    confidence: implemented
   copyWorkflowDialog:
     strategy: null
     confidence: unresolved

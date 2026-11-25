@@ -250,7 +250,20 @@ const MenuWithOverflow = ({
         />
       )
     } else {
-      return <ListMenuItem key={item.uuid ?? item.id} {...item} />
+      return (
+        <ListMenuItem
+          key={item.uuid ?? item.id}
+          {...item}
+          action={
+            item.action && !item.persistent
+              ? (event: MouseEvent<HTMLElement>) => {
+                  item.action?.(event)
+                  handleClose()
+                }
+              : item.action
+          }
+        />
+      )
     }
   })
 

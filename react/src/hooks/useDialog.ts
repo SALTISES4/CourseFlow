@@ -8,6 +8,7 @@ export enum DialogMode {
   TARGET_PROJECT = 'target_project',
 
   PROJECT_CREATE = 'project_create',
+  PROJECT_COPY = 'project_copy',
   PROJECT_EDIT = 'project_edit',
   PROJECT_EXPORT = 'project_export',
   PROJECT_DELETE = 'project_delete',
@@ -55,6 +56,7 @@ export type DialogPayloadMap = {
    *******************************************************/
   [DialogMode.TARGET_PROJECT]: undefined
   [DialogMode.PROJECT_CREATE]: undefined
+  [DialogMode.PROJECT_COPY]: undefined
   [DialogMode.PROJECT_EDIT]: undefined
   [DialogMode.PROJECT_EXPORT]: undefined
   [DialogMode.PROJECT_DELETE]: undefined
