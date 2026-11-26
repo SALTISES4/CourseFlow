@@ -39,8 +39,10 @@ uiObjectDefinitions:
     meaning: Assign-tab content region inside workflowRightSidebarOutcomesTabContent; mutually exclusive with workflowOutcomesAssignTabTagGroup, workflowOutcomesAssignTabUntaggedGroup, and workflowOutcomesAssignTabOutcomeRow. Corresponds to the sole case where the current workflow has zero workflowOutcome entries at any level (nothing to list from the 'Outcomes' view) per FR-WF-AO-001.
   workflowOutcomesAssignTabHeading:
     meaning: Heading inside workflowRightSidebarOutcomesTabContent with literal copy 'Outcomes'.
-  workflowOutcomesAssignTabEmptyStateAlert:
-    meaning: Informational alert inside workflowOutcomesAssignTabEmptyState; body copy per FR-WF-AO-001.
+  workflowOutcomesAssignTabEmptyStateMessage:
+    meaning: Plain explanatory body text inside workflowOutcomesAssignTabEmptyState; copy per FR-WF-AO-001.
+  workflowOutcomesAssignTabHelpText:
+    meaning: Legacy populated-state subtitle 'Drag and drop to associate outcomes from parent workflows with outcomes in the current workflow. Select an outcome to highlight relevant nodes.'; not rendered per FR-WF-AO-002.
   workflowOutcomesAssignTabAddOutcomesButton:
     meaning: Action button inside workflowOutcomesAssignTabEmptyState labeled 'Add outcomes'.
   workflowOutcomesAssignTabEditOutcomesButton:
@@ -90,7 +92,8 @@ locatorMappings:
   workflowRightSidebarOutcomesTabContent: "canonical_locators.yaml -> workflowRightSidebarOutcomesTabContent"
   workflowOutcomesAssignTabHeading: "canonical_locators.yaml -> workflowOutcomesAssignTabHeading"
   workflowOutcomesAssignTabEmptyState: "canonical_locators.yaml -> workflowOutcomesAssignTabEmptyState"
-  workflowOutcomesAssignTabEmptyStateAlert: "canonical_locators.yaml -> workflowOutcomesAssignTabEmptyStateAlert"
+  workflowOutcomesAssignTabEmptyStateMessage: "canonical_locators.yaml -> workflowOutcomesAssignTabEmptyStateMessage"
+  workflowOutcomesAssignTabHelpText: "canonical_locators.yaml -> workflowOutcomesAssignTabHelpText"
   workflowOutcomesAssignTabAddOutcomesButton: "canonical_locators.yaml -> workflowOutcomesAssignTabAddOutcomesButton"
   workflowOutcomesAssignTabEditOutcomesButton: "canonical_locators.yaml -> workflowOutcomesAssignTabEditOutcomesButton"
   workflowOutcomesAssignTabTagGroup: "canonical_locators.yaml -> workflowOutcomesAssignTabTagGroup"
@@ -127,7 +130,7 @@ requirements:
       - workflowRightSidebarOutcomesTabContent
       - workflowOutcomesAssignTabHeading
       - workflowOutcomesAssignTabEmptyState
-      - workflowOutcomesAssignTabEmptyStateAlert
+      - workflowOutcomesAssignTabEmptyStateMessage
       - workflowOutcomesAssignTabAddOutcomesButton
     
     preconditions:
@@ -141,29 +144,29 @@ requirements:
     mainFlow:
       - workflowRightSidebarOutcomesTabContent renders workflowOutcomesAssignTabHeading with literal copy 'Outcomes'
       - workflowRightSidebarOutcomesTabContent renders workflowOutcomesAssignTabEmptyState in place of workflowOutcomesAssignTabTagGroup, workflowOutcomesAssignTabUntaggedGroup, and workflowOutcomesAssignTabOutcomeRow
-      - workflowOutcomesAssignTabEmptyStateAlert is rendered with a persistent (non-dismissible) presentation and body copy matching 'There are currently no outcomes in this [workflow type]. Open the outcomes view to add outcomes.' after substituting the current workflow's user-visible type label for '[workflow type]'
+      - workflowOutcomesAssignTabEmptyStateMessage is rendered as plain body text matching 'There are currently no outcomes in this [workflow type]. Open the outcomes view to add outcomes.' after substituting the current workflow's user-visible type label for '[workflow type]'
       - workflowOutcomesAssignTabAddOutcomesButton is rendered with literal label 'Add outcomes' as the primary action of the empty state; it is interactive for owner and editor and presented in a disabled (non-interactive) state for commenter, viewer, and user
       - when workflowOutcomesAssignTabAddOutcomesButton is interactive for the actor (owner or editor), clicking it navigates the actor to the 'Outcomes' view of the current workflow at route '/workflow/{id}/outcomes'; the click does not modify any workflowOutcome data
     
     roleBehavior:
       owner:
-        workflowOutcomesAssignTabEmptyStateAlert: visible
+        workflowOutcomesAssignTabEmptyStateMessage: visible
         workflowOutcomesAssignTabAddOutcomesButton: visibleAndEnabled
       editor:
-        workflowOutcomesAssignTabEmptyStateAlert: visible
+        workflowOutcomesAssignTabEmptyStateMessage: visible
         workflowOutcomesAssignTabAddOutcomesButton: visibleAndEnabled
       commenter:
-        workflowOutcomesAssignTabEmptyStateAlert: visible
+        workflowOutcomesAssignTabEmptyStateMessage: visible
         workflowOutcomesAssignTabAddOutcomesButton: visibleAndDisabled
       viewer:
-        workflowOutcomesAssignTabEmptyStateAlert: visible
+        workflowOutcomesAssignTabEmptyStateMessage: visible
         workflowOutcomesAssignTabAddOutcomesButton: visibleAndDisabled
       user:
-        workflowOutcomesAssignTabEmptyStateAlert: visible
+        workflowOutcomesAssignTabEmptyStateMessage: visible
         workflowOutcomesAssignTabAddOutcomesButton: visibleAndDisabled
     
     acceptanceCriteria:
-      - given the workflow has zero workflowOutcome entries and workflowRightSidebarOutcomesTab is the active tab, then workflowRightSidebarOutcomesTabContent renders workflowOutcomesAssignTabHeading 'Outcomes', workflowOutcomesAssignTabEmptyStateAlert with body copy matching 'There are currently no outcomes in this [workflow type]. Open the outcomes view to add outcomes.' after substituting the current workflow's user-visible type label for '[workflow type]', and workflowOutcomesAssignTabAddOutcomesButton with label 'Add outcomes'
+      - given the workflow has zero workflowOutcome entries and workflowRightSidebarOutcomesTab is the active tab, then workflowRightSidebarOutcomesTabContent renders workflowOutcomesAssignTabHeading 'Outcomes', workflowOutcomesAssignTabEmptyStateMessage with body copy matching 'There are currently no outcomes in this [workflow type]. Open the outcomes view to add outcomes.' after substituting the current workflow's user-visible type label for '[workflow type]', and workflowOutcomesAssignTabAddOutcomesButton with label 'Add outcomes'
       - given workflowRightSidebarOutcomesTab is the active tab and actor is owner or editor and workflowOutcomesAssignTabEmptyState is rendered, then workflowOutcomesAssignTabAddOutcomesButton is rendered with literal label 'Add outcomes' in an enabled (interactive) presentation
       - given workflowRightSidebarOutcomesTab is the active tab and actor is commenter, viewer, or user (published-access) and workflowOutcomesAssignTabEmptyState is rendered, then workflowOutcomesAssignTabAddOutcomesButton is rendered with literal label 'Add outcomes' in a disabled (non-interactive) presentation and clicks on it are a no-op
       - given workflowRightSidebarOutcomesTab is the active tab and actor is owner or editor and workflowOutcomesAssignTabEmptyState is rendered, when actor clicks workflowOutcomesAssignTabAddOutcomesButton, then the actor is navigated to the 'Outcomes' view at route '/workflow/{id}/outcomes' and no workflowOutcome data is created or modified by the click itself
@@ -189,6 +192,7 @@ requirements:
     uiObjects:
       - workflowRightSidebarOutcomesTabContent
       - workflowOutcomesAssignTabHeading
+      - workflowOutcomesAssignTabHelpText
       - workflowOutcomesAssignTabTagGroup
       - workflowOutcomesAssignTabTagGroupTitle
       - workflowOutcomesAssignTabUntaggedGroup
@@ -207,6 +211,7 @@ requirements:
     mainFlow:
       - tag catalog deletion — when tag T is deleted per FR-PROJ-OV-005, entity tag assignments are cleared there before workflowOutcomesAssignTabTagGroup layout refreshes per this FR; assign-tab group removal for T follows the existing AC below when no level-1 workflowOutcome retains T
       - workflowRightSidebarOutcomesTabContent renders workflowOutcomesAssignTabHeading with literal copy 'Outcomes'
+      - workflowOutcomesAssignTabHelpText is not rendered; populated content begins with outcome groups/rows after workflowOutcomesAssignTabHeading, without explanatory subtitle copy
       - the workflowOutcome entities listed in workflowRightSidebarOutcomesTabContent (across all workflowOutcomesAssignTabTagGroup and workflowOutcomesAssignTabUntaggedGroup occurrences, plus any descendant rows revealed by workflowOutcomesAssignTabOutcomeRowToggle) are exactly the workflowOutcome entities that appear in workflowOutcomeTree of the 'Outcomes' view of the current workflow (same set of entity ids, same hierarchical parent/child structure, same persisted field values such as workflowEditOutcomeFormTitleField, workflowEditOutcomeFormCodeField, workflowEditOutcomeFormDescriptionField, workflowEditOutcomeFormTagsAutocomplete); the two surfaces differ only in layout (tag-grouped flat-with-expansion here vs. nested tree there), not in the underlying workflowOutcome set
       - workflowRightSidebarOutcomesTabContent renders one workflowOutcomesAssignTabTagGroup per tag from the project-level tag catalog per FR-PROJ-OV-005 that is currently assigned to at least one level-1 workflowOutcome of the workflow
       - each workflowOutcomesAssignTabTagGroup contains the level-1 workflowOutcomes that have that tag assigned, each as a workflowOutcomesAssignTabOutcomeRow; the tag-group title (workflowOutcomesAssignTabTagGroupTitle) renders the tag label from the project-level tag catalog
@@ -232,6 +237,7 @@ requirements:
     
     acceptanceCriteria:
       - given the workflow has at least one level-1 workflowOutcome and workflowRightSidebarOutcomesTab is the active tab, then workflowRightSidebarOutcomesTabContent renders workflowOutcomesAssignTabHeading 'Outcomes', at least one workflowOutcomesAssignTabTagGroup or workflowOutcomesAssignTabUntaggedGroup, and workflowOutcomesAssignTabEditOutcomesButton
+      - given the workflow has at least one level-1 workflowOutcome and workflowRightSidebarOutcomesTab is the active tab, workflowOutcomesAssignTabHelpText is not rendered
       - given workflowRightSidebarOutcomesTab is the active tab and a tag T from the project-level tag catalog is assigned to N level-1 workflowOutcomes of the workflow, then workflowRightSidebarOutcomesTabContent renders a workflowOutcomesAssignTabTagGroup with title T containing exactly those N level-1 workflowOutcomes, each as a workflowOutcomesAssignTabOutcomeRow
       - given workflowRightSidebarOutcomesTab is the active tab and a level-1 workflowOutcome has multiple tags {T1, T2}, then it appears as a workflowOutcomesAssignTabOutcomeRow once in each of workflowOutcomesAssignTabTagGroup T1 and workflowOutcomesAssignTabTagGroup T2
       - given workflowRightSidebarOutcomesTab is the active tab and every level-1 workflowOutcome of the workflow has at least one tag assigned, then workflowOutcomesAssignTabUntaggedGroup is not rendered

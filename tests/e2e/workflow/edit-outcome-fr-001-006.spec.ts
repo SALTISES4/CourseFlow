@@ -242,6 +242,77 @@ test.describe('edit-outcome-fr-001-006', () => {
       await workflowEditOutcomeFormTitleField(page).fill(E2E_OUTCOME_TITLE);
       await expect(workflowOutcomeHeader(page, E2E_OUTCOME_TITLE)).toBeVisible({ timeout: 15_000 });
     });
+
+    test('FR-WF-EO-006: newer Title and Code text survive an older auto-save response', async ({
+      page,
+      workflow,
+    }) => {
+      test.setTimeout(45_000);
+      const outcomeUuid = workflow.firstOutcome().uuid;
+      const titleField = workflowEditOutcomeFormTitleField(page);
+      const codeField = workflowEditOutcomeFormCodeField(page);
+      const titlePrefix = `E2E pending ${Date.now()}`;
+      const titleSuffix = ' complete';
+      const completeTitle = `${titlePrefix}${titleSuffix}`;
+      const completeCode = `CODE-${Date.now()}`;
+      const endpoint = `/api/outcome/${outcomeUuid}`;
+      let delayedFirstResponse = false;
+
+      await page.route(`**${endpoint}`, async (route) => {
+        if (route.request().method() !== 'PATCH' || delayedFirstResponse) {
+          await route.continue();
+          return;
+        }
+        delayedFirstResponse = true;
+        const response = await route.fetch();
+        await new Promise((resolve) => setTimeout(resolve, 1_800));
+        await route.fulfill({ response });
+      });
+
+      const firstRequest = page.waitForRequest(
+        (request) =>
+          new URL(request.url()).pathname === endpoint &&
+          request.method() === 'PATCH' &&
+          (request.postDataJSON() as { title?: string }).title === titlePrefix,
+      );
+      const firstResponse = page.waitForResponse(
+        (response) =>
+          new URL(response.url()).pathname === endpoint &&
+          response.request().method() === 'PATCH' &&
+          (response.request().postDataJSON() as { title?: string }).title === titlePrefix &&
+          response.ok(),
+      );
+      await titleField.fill(titlePrefix);
+      await firstRequest;
+
+      const finalResponse = page.waitForResponse((response) => {
+        if (
+          new URL(response.url()).pathname !== endpoint ||
+          response.request().method() !== 'PATCH' ||
+          !response.ok()
+        ) {
+          return false;
+        }
+        const body = response.request().postDataJSON() as {
+          title?: string;
+          code?: string;
+        };
+        return body.title === completeTitle && body.code === completeCode;
+      });
+      await titleField.press('End');
+      await titleField.pressSequentially(titleSuffix, { delay: 50 });
+      await codeField.fill(completeCode);
+      await expect(titleField).toHaveValue(completeTitle);
+      await expect(codeField).toHaveValue(completeCode);
+      await Promise.all([firstResponse, finalResponse]);
+      await expect(titleField).toHaveValue(completeTitle);
+      await expect(codeField).toHaveValue(completeCode);
+
+      await page.reload();
+      await expect(
+        page.getByText(`1 - ${completeCode} - ${completeTitle}`, { exact: true }),
+      ).toBeVisible({ timeout: 15_000 });
+    });
   });
 
   test.describe('Level-specific field sets (FR-WF-EO-005)', () => {

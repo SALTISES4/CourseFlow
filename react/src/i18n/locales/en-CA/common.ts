@@ -74,8 +74,8 @@ const common = {
     french: 'French'
   },
   duration: {
-    placeholder: 'hhh:mm',
     hours: 'Hours',
+    hourUnit: 'h',
     minutes: 'Minutes',
     hoursInvalid: 'Enter a whole number of hours.',
     minutesInvalid: 'Enter minutes from 0 to 59.'

@@ -3,6 +3,7 @@ import { authenticatedApiRequest } from '../../helpers/api';
 import {
   cleanupLibraryLifecycleFixture,
   createArchivedWorkflowFixture,
+  createProjectWorkflowCountFixture,
 } from '../../helpers/library-lifecycle';
 import { expectProjectCardClickNavigatesToWorkflowsView } from '../../helpers/card-navigation';
 import {
@@ -261,6 +262,22 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
         cardChipWithLabel(card, 'Project'),
         cardFavouriteToggle(card),
       );
+    });
+
+    test('project workflow count excludes archived workflows', async ({ page }) => {
+      const fixture = await createProjectWorkflowCountFixture(page, 'FR-CARD-001 count');
+
+      try {
+        const { card, searchBody } = await showLibraryProjectCard(page, fixture.projectTitle);
+        const projectItem = searchBody.items.find(
+          (item) => item.uuid === fixture.projectUuid && item.contentType === 'project',
+        );
+
+        expect(projectItem?.workflowCount).toBe(1);
+        await expect(cardWorkflowCountChip(card)).toHaveText('1 workflow');
+      } finally {
+        await cleanupLibraryLifecycleFixture(page, fixture);
+      }
     });
 
     test('workflow cards show mapped content and layout regions', async ({ page }) => {

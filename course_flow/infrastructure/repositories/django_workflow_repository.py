@@ -139,17 +139,6 @@ def _node_queryset(workflow: Workflow):
     )
 
 
-def _specific_classification(value: str) -> bool:
-    return value.strip().lower() in {
-        "specific",
-        "specific education",
-        "specific_education",
-        "true",
-        "1",
-        "on",
-    }
-
-
 def _local_node_overview_values(node: Node) -> tuple[dict[str, Any], bool]:
     if node.node_type == NodeType.TASK:
         meta = getattr(node, "taskmeta", None)
@@ -175,7 +164,7 @@ def _local_node_overview_values(node: Node) -> tuple[dict[str, Any], bool]:
                 "individual_time_minutes": meta.ponderation_individual_minutes,
                 "credits": meta.credits,
             },
-            _specific_classification(meta.classification),
+            bool(meta.specific_education),
         )
     return {}, False
 
@@ -185,13 +174,10 @@ def _effective_node_values(workflow: Workflow, calculated_workflow_ids: set[int]
         if node.linked_workflow_id:
             linked = node.linked_workflow
             values = _overview_metadata(linked, calculated_workflow_ids)
-            linked_course_meta = getattr(linked, "coursemeta", None)
+            node_course_meta = getattr(node, "coursemeta", None)
             yield (
                 values,
-                bool(
-                    linked_course_meta
-                    and _specific_classification(linked_course_meta.classification)
-                ),
+                bool(node_course_meta and node_course_meta.specific_education),
             )
         else:
             yield _local_node_overview_values(node)

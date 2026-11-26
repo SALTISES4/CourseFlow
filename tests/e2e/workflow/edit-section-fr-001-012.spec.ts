@@ -16,6 +16,8 @@ import {
   expectEmptySectionHeaderShowsNumberLabelOnlyPerFrSec002,
   expectSectionTitleChangePersistsAfterReload,
   restoreSectionOrder,
+  sectionReorderDropIndicator,
+  sectionReorderDropIndicators,
   sectionNodeUuids,
   sectionOrderUuids,
 } from './edit-section.helpers';
@@ -118,6 +120,12 @@ test.describe('edit-section-fr-001-012', () => {
         editSectionForm(page).getByRole('heading', { name: EDIT_SECTION_HEADING, exact: true }),
       ).toBeVisible();
       await expect(titleFieldInEditSectionForm(page)).toBeVisible();
+      await expect(titleFieldInEditSectionForm(page)).toHaveAccessibleName(
+        'Title',
+      );
+      await expect(editSectionForm(page).getByLabel(/^Section$/i)).toHaveCount(
+        0,
+      );
       await expect(titleFieldInEditSectionForm(page)).toHaveValue(section.title);
       await expect(duplicateButtonInSidebar(page)).toBeVisible();
       await expect(duplicateButtonInSidebar(page)).toBeEnabled();
@@ -202,6 +210,73 @@ test.describe('edit-section-fr-001-012', () => {
         await page.goto(workflow.path);
         await expect(sectionContainers(page).first()).toBeVisible({ timeout: 15_000 });
         await expectSectionTitleChangePersistsAfterReload(page, workflow);
+      });
+
+      test('FR-SEC-003: owner — newer title text survives an older auto-save response', async ({
+        page,
+        workflow,
+      }) => {
+        await loginAsTestUser(page);
+        await page.goto(workflow.path);
+        await expect(sectionContainers(page).first()).toBeVisible({ timeout: 15_000 });
+
+        const section = workflow.sectionByTitle('E2E Section 1');
+        const field = titleFieldInEditSectionForm(page);
+        const prefix = `E2E pending ${Date.now()}`;
+        const suffix = ' complete';
+        const completeTitle = `${prefix}${suffix}`;
+        const endpoint = `/api/section/${section.uuid}`;
+        let delayedFirstResponse = false;
+
+        await sectionHeader(page, section.uuid).click();
+        await expect(field).toBeVisible();
+        await page.route(`**${endpoint}`, async (route) => {
+          if (route.request().method() !== 'PATCH' || delayedFirstResponse) {
+            await route.continue();
+            return;
+          }
+          delayedFirstResponse = true;
+          const response = await route.fetch();
+          await new Promise((resolve) => setTimeout(resolve, 1_800));
+          await route.fulfill({ response });
+        });
+
+        const firstRequest = page.waitForRequest(
+          (request) =>
+            new URL(request.url()).pathname === endpoint &&
+            request.method() === 'PATCH' &&
+            (request.postDataJSON() as { title?: string }).title === prefix,
+        );
+        const firstResponse = page.waitForResponse(
+          (response) =>
+            new URL(response.url()).pathname === endpoint &&
+            response.request().method() === 'PATCH' &&
+            (response.request().postDataJSON() as { title?: string }).title === prefix &&
+            response.ok(),
+        );
+        await field.fill(prefix);
+        await firstRequest;
+
+        const finalResponse = page.waitForResponse(
+          (response) =>
+            new URL(response.url()).pathname === endpoint &&
+            response.request().method() === 'PATCH' &&
+            (response.request().postDataJSON() as { title?: string }).title === completeTitle &&
+            response.ok(),
+        );
+        await field.press('End');
+        await field.pressSequentially(suffix, { delay: 50 });
+        await expect(field).toHaveValue(completeTitle);
+        await Promise.all([firstResponse, finalResponse]);
+        await expect(field).toHaveValue(completeTitle);
+        await expect(sectionHeader(page, section.uuid)).toContainText(completeTitle, {
+          timeout: 15_000,
+        });
+
+        await page.reload();
+        await expect(sectionContainers(page).first()).toBeVisible();
+        await sectionHeader(page, section.uuid).click();
+        await expect(field).toHaveValue(completeTitle);
       });
 
       test('FR-SEC-003: owner — clearing title shows workflowSectionNumberLabel only', async ({
@@ -503,6 +578,7 @@ test.describe('edit-section-fr-001-012', () => {
         await dragSectionBelow(page, first.uuid, blank.uuid);
 
         await expect.poll(async () => sectionOrderUuids(page)).not.toEqual(orderBefore);
+        await expect(sectionReorderDropIndicators(page)).toHaveCount(0);
 
         const orderAfter = await sectionOrderUuids(page);
         expect(orderAfter.indexOf(first.uuid)).toBeGreaterThan(orderAfter.indexOf(blank.uuid));
@@ -564,12 +640,15 @@ test.describe('edit-section-fr-001-012', () => {
       await beginSectionDragToward(page, first.uuid, blank.uuid);
 
       try {
+        await expect(sectionReorderDropIndicator(page, blank.uuid)).toBeVisible();
         for (const section of sections) {
           await expect(sectionNodes(page, section.uuid)).toHaveCount(0);
         }
       } finally {
         await endSectionDrag(page);
       }
+
+      await expect(sectionReorderDropIndicators(page)).toHaveCount(0);
 
       await expect
         .poll(async () => {

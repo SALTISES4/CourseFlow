@@ -4,8 +4,8 @@ import {
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import { WorkflowPermission } from '@cf/api/gen/types.gen'
 import DurationHoursMinutesFields from '@cf/components/common/DurationHoursMinutesFields'
-import DurationTextField from '@cf/components/common/DurationTextField'
 import WysiwygField from '@cf/components/common/UIPrimitives/WysiwygInput'
+import WholeHoursField from '@cf/components/common/WholeHoursField'
 import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import type { NodeEntity } from '@cf/features/graph/state/model/types'
 import type { NodeInsertMode } from '@cf/features/graph/state/resolveNodeDropRow'
@@ -491,7 +491,7 @@ const EditNodeForm = ({
                   name="ponderation.theoryMinutes"
                   control={control}
                   render={({ field }) => (
-                    <DurationTextField
+                    <WholeHoursField
                       label={t('edit.theoryHours')}
                       value={field.value}
                       readOnly={!canEdit}
@@ -507,7 +507,7 @@ const EditNodeForm = ({
                   name="ponderation.practiceMinutes"
                   control={control}
                   render={({ field }) => (
-                    <DurationTextField
+                    <WholeHoursField
                       label={t('edit.practiceHours')}
                       value={field.value}
                       readOnly={!canEdit}
@@ -523,7 +523,7 @@ const EditNodeForm = ({
                   name="ponderation.individualMinutes"
                   control={control}
                   render={({ field }) => (
-                    <DurationTextField
+                    <WholeHoursField
                       label={t('edit.individualHours')}
                       value={field.value}
                       readOnly={!canEdit}

@@ -1,4 +1,5 @@
 import { expect, test } from '../../fixtures';
+import { authenticatedApiRequest } from '../../helpers/api';
 import { loginAs } from '../../helpers/auth';
 import { getNavigationLinkedWorkflows } from '../../helpers/main-navigation-workflow-context';
 import { workflowOverviewPath } from '../../helpers/workflow-navigation';
@@ -97,6 +98,38 @@ test.describe('workflow-overview-fr-001-007', () => {
       await expect(workflowRightSidebar(page)).toHaveCount(0);
     });
 
+    test('FR-WF-OV-001: Description and Permissions labels have 16 px content spacing', async ({
+      page,
+    }) => {
+      const descriptionLabel = workflowOverviewView(page).getByText('Description', {
+        exact: true,
+      });
+      const descriptionContent = descriptionLabel.locator('xpath=following-sibling::*[1]');
+      const permissionsPanel = workflowMetadataPermissionsPanel(page);
+      const permissionsLabel = permissionsPanel.getByText('Permissions', {
+        exact: true,
+      });
+      const permissionsContent = permissionsLabel.locator(
+        'xpath=following-sibling::*[1]',
+      );
+
+      for (const [label, content] of [
+        [descriptionLabel, descriptionContent],
+        [permissionsLabel, permissionsContent],
+      ] as const) {
+        const [labelBox, contentBox] = await Promise.all([
+          label.boundingBox(),
+          content.boundingBox(),
+        ]);
+        expect(labelBox).not.toBeNull();
+        expect(contentBox).not.toBeNull();
+        expect(contentBox!.y - (labelBox!.y + labelBox!.height)).toBeCloseTo(
+          16,
+          0,
+        );
+      }
+    });
+
     test('FR-WF-OV-001: navigate to Workflow and back preserves overview metadata blocks', async ({
       page,
       workflow,
@@ -142,6 +175,44 @@ test.describe('workflow-overview-fr-001-007', () => {
         name: 'Description',
       });
       await expect(descriptionInput).toHaveCount(0);
+    });
+
+    test('FR-WF-OV-002: supported description HTML renders with the application font', async ({
+      page,
+      workflow,
+    }) => {
+      const descriptionHtml =
+        '<p>Overview <strong>bold</strong> and <em>italic</em> text with <u>underline</u>.</p>' +
+        '<ol><li>Formatted list item</li></ol>';
+      const response = await authenticatedApiRequest(
+        page,
+        'PATCH',
+        `/api/workflow/${workflow.workflowUuid}`,
+        { data: { description: descriptionHtml } },
+      );
+      expect(response.ok(), await response.text()).toBe(true);
+
+      await page.reload();
+      const description = workflowMetadataFieldDescription(page);
+      await expect(description).toBeVisible();
+      await expect(description.locator('strong')).toHaveText('bold');
+      await expect(description.locator('em')).toHaveText('italic');
+      await expect(description.locator('u')).toHaveText('underline');
+      await expect(description.locator('ol > li')).toHaveText(
+        'Formatted list item',
+      );
+      await expect(description).not.toContainText('<strong>');
+
+      const renderedContent = description.locator('.ql-editor');
+      await expect(renderedContent).toBeVisible();
+      const [descriptionFont, applicationFont] = await Promise.all([
+        renderedContent.evaluate((element) => getComputedStyle(element).fontFamily),
+        workflowOverviewView(page).evaluate(
+          (element) => getComputedStyle(element).fontFamily,
+        ),
+      ]);
+      expect(descriptionFont).toBe(applicationFont);
+      expect(descriptionFont).toContain('Open Sans');
     });
   });
 

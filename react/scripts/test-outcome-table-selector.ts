@@ -4,12 +4,12 @@ import { configureStore } from '@reduxjs/toolkit'
 
 import {
   durationPartsFromMinutes,
-  formatDurationHours,
   formatDurationHoursMinutes,
   formatDurationHoursNumber,
-  formatDurationInput,
-  parseDurationInput,
-  parseDurationParts
+  formatWholeHoursInput,
+  formatWholeHoursNumber,
+  parseDurationParts,
+  parseWholeHoursInput
 } from '../src/components/common/duration'
 import { graphStateReducer } from '../src/features/graph/state/graphState'
 import type {
@@ -163,20 +163,20 @@ assert(zeroCredits && 'values' in zeroCredits)
 assert.equal(zeroCredits.values[nodeUuid], 0)
 assert.equal(zeroCredits.values[sectionUuid], 0)
 
-assert.deepEqual(parseDurationInput('12345'), {
+assert.deepEqual(parseWholeHoursInput('123'), {
   valid: true,
-  value: 7425
+  value: 7380
 })
-assert.deepEqual(parseDurationInput('12360'), {
+assert.deepEqual(parseWholeHoursInput('1.5'), {
   valid: false,
   value: null
 })
-assert.deepEqual(parseDurationInput(''), { valid: true, value: null })
-assert.equal(formatDurationInput(7425), '12345')
+assert.deepEqual(parseWholeHoursInput(''), { valid: true, value: null })
+assert.equal(formatWholeHoursInput(90), '2')
+assert.equal(formatWholeHoursNumber(90, 'en-CA'), '2')
+assert.equal(formatWholeHoursNumber(89, 'en-CA'), '1')
 assert.equal(formatDurationHoursNumber(10, 'en-CA'), '0.2')
 assert.equal(formatDurationHoursNumber(60, 'en-CA'), '1.0')
-assert.equal(formatDurationHours(60, 'en-CA'), '1.0 hours')
-assert.equal(formatDurationHours(null, 'en-CA'), '')
 assert.deepEqual(durationPartsFromMinutes(315), {
   hours: '5',
   minutes: '15'

@@ -192,6 +192,31 @@ def test_overview_credits_reject_fractional_values():
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize(
+    "field_name",
+    [
+        "theoryTimeMinutes",
+        "practicalTimeMinutes",
+        "individualTimeMinutes",
+        "generalTimeMinutes",
+        "specificTimeMinutes",
+    ],
+)
+def test_overview_hour_only_fields_reject_minute_remainders(field_name: str):
+    owner = _user(f"hour-only-{field_name.lower()}@example.com")
+    workflow = _workflow(owner, WorkflowType.PROGRAM)
+
+    response = Client().patch(
+        f"/api/workflow/{workflow.uuid}",
+        data={"overviewMetadata": {field_name: 90}},
+        content_type="application/json",
+        **_auth(owner),
+    )
+
+    assert response.status_code == 422
+
+
+@pytest.mark.django_db
 def test_automatic_time_is_derived_from_current_node_values():
     owner = _user("time-rollup@example.com")
     workflow = _workflow(owner, WorkflowType.ACTIVITY)
@@ -223,20 +248,26 @@ def test_program_automatic_fields_use_local_and_linked_course_metadata():
     linked_node.linked_workflow = linked_course
     linked_node.save(update_fields=["linked_workflow"])
 
-    local_node.coursemeta.time_required_minutes = 120
+    local_node.coursemeta.time_required_minutes = 90
     local_node.coursemeta.credits = 3
     local_node.coursemeta.ponderation_theory_minutes = 60
-    local_node.coursemeta.ponderation_practice_minutes = 30
-    local_node.coursemeta.ponderation_individual_minutes = 30
-    local_node.coursemeta.classification = "specific education"
+    local_node.coursemeta.ponderation_practice_minutes = 120
+    local_node.coursemeta.ponderation_individual_minutes = 180
+    local_node.coursemeta.specific_education = True
+    local_node.coursemeta.classification = "general"
     local_node.coursemeta.save()
+
+    linked_node.coursemeta.specific_education = False
+    linked_node.coursemeta.classification = "specific education"
+    linked_node.coursemeta.save()
 
     linked_course.coursemeta.time_required_minutes = 240
     linked_course.coursemeta.credits = 5
     linked_course.coursemeta.ponderation_theory_minutes = 120
     linked_course.coursemeta.ponderation_practice_minutes = 60
     linked_course.coursemeta.ponderation_individual_minutes = 60
-    linked_course.coursemeta.classification = "general"
+    linked_course.coursemeta.specific_education = True
+    linked_course.coursemeta.classification = "specific education"
     linked_course.coursemeta.save()
 
     program.programmeta.calculate_time = "automatic"
@@ -249,13 +280,13 @@ def test_program_automatic_fields_use_local_and_linked_course_metadata():
 
     assert response.status_code == 200, response.content
     metadata = response.json()["item"]["overviewMetadata"]
-    assert metadata["timeMinutes"] == 360
+    assert metadata["timeMinutes"] == 330
     assert metadata["credits"] == 8
     assert metadata["theoryTimeMinutes"] == 180
-    assert metadata["practicalTimeMinutes"] == 90
-    assert metadata["individualTimeMinutes"] == 90
+    assert metadata["practicalTimeMinutes"] == 180
+    assert metadata["individualTimeMinutes"] == 240
     assert metadata["generalTimeMinutes"] == 240
-    assert metadata["specificTimeMinutes"] == 120
+    assert metadata["specificTimeMinutes"] == 90
 
 
 @pytest.mark.django_db

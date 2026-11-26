@@ -68,13 +68,7 @@ const EditOutcomeForm = ({ outcome }: { outcome: OutcomeEntity }) => {
     t('outcomes.untitled')
   )
 
-  const {
-    control,
-    register,
-    subscribe,
-    reset,
-    formState: { errors }
-  } = useForm<OutcomeFormValues>({
+  const { control, register, subscribe } = useForm<OutcomeFormValues>({
     defaultValues: {
       title: editableTitle,
       description: outcome.description,
@@ -107,19 +101,18 @@ const EditOutcomeForm = ({ outcome }: { outcome: OutcomeEntity }) => {
 
   useEffect(() => {
     const unsubscribe = subscribe({
-      formState: { values: true, dirtyFields: true },
-      callback: ({ values, dirtyFields }) =>
-        debouncedDispatch(
-          values as OutcomeFormValues,
-          Boolean(dirtyFields?.title)
-        )
+      formState: { values: true },
+      callback: ({ values }) => {
+        const formValues = values as OutcomeFormValues
+        debouncedDispatch(formValues, formValues.title !== editableTitle)
+      }
     })
 
     return () => {
       unsubscribe()
       debouncedDispatch.clear()
     }
-  }, [subscribe, debouncedDispatch])
+  }, [subscribe, debouncedDispatch, editableTitle])
 
   const onDuplicate = useCallback(() => {
     dispatch(

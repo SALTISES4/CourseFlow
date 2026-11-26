@@ -128,6 +128,7 @@ requirements:
       - when project has disciplines, disciplines in projectMetadataFieldDisciplines are sorted from A-Z and shown as comma-separated values
       - projectMetadataFieldDisciplines is display-only on projectOverviewView; discipline updates are performed through editProjectDialog flow defined in tests/docs/requirements/features/project/project_edit_form_requirements_v1.yaml (FR-PROJ-FORM-003)
       - projectTagsSection empty-state and read-only display rules are defined in FR-PROJ-OV-005
+      - each project Overview information block uses 16 px vertical spacing between its section label and content; content children use a 16 px gap, including the contributor permission list and its project-visibility warning
       - project top section behavior (title, favourite toggle, tab selector, and sub-view switching) is defined in tests/docs/requirements/features/project/project_header_requirements_v1.yaml
 
     roleBehavior: {}
@@ -145,6 +146,7 @@ requirements:
       - given user needs to change project disciplines, update path is editProjectDialog defined in tests/docs/requirements/features/project/project_edit_form_requirements_v1.yaml (FR-PROJ-FORM-003)
       - given projectOverviewView is visible, projectMetadataPermissionsPanel label 'Contributors' is visible
       - given projectOverviewView is visible, projectTagsSection label 'Tags' is visible
+      - project Overview section labels are separated from their content by 16 px and the Contributors permission list is separated from the project-visibility warning by 16 px
 
     openQuestions: []
 
@@ -420,6 +422,7 @@ requirements:
       - projectTagsSection displays existing projectTagItem entries
       - for owner and editor, addNewTagInput with placeholder 'Add new tag' allows creating a new tag; when project has no tags, projectTagsSection shows no projectTagItem entries and addNewTagInput is visible; for viewer, commenter, or user (published-access) per documentPreconditions with no tags, displayed value is '-'
       - for owner and editor, when addNewTagInput has a non-empty value, committing addNewTagInput by pressing Enter or clicking outside addNewTagInput creates a new projectTagItem
+      - after owner or editor creates a new projectTagItem, the tag is immediately available in workflowEditNodeFormTagsAutocomplete and workflowEditOutcomeFormTagsAutocomplete for every child workflow in the project during the same browser session; no page reload is required
       - for owner and editor, when addNewTagInput is empty or whitespace-only, committing addNewTagInput by pressing Enter or clicking outside addNewTagInput does not create a projectTagItem
       - for owner and editor, editTagInput allows inline editing of existing tag labels
       - for owner and editor, when editTagInput has a non-empty value, committing editTagInput by pressing Enter or clicking outside that projectTagItem saves the updated tag label on that projectTagItem
@@ -458,6 +461,7 @@ requirements:
       - given project has no tags and viewer, commenter, or user (published-access) per documentPreconditions, projectTagsSection is visible with displayed value '-'; addNewTagInput is not visible
       - given owner or editor enters a non-empty value in addNewTagInput and presses Enter, a new projectTagItem is shown
       - given owner or editor enters a non-empty value in addNewTagInput and clicks outside addNewTagInput, a new projectTagItem is shown
+      - given a child workflow was already opened during the current browser session and owner or editor then creates tag T in projectTagsSection, when actor returns to that child workflow through in-app navigation without reloading the page, T is offered in workflowEditNodeFormTagsAutocomplete and workflowEditOutcomeFormTagsAutocomplete
       - given owner or editor commits addNewTagInput with empty or whitespace-only value by pressing Enter or clicking outside addNewTagInput, no new projectTagItem is created
       - given owner or editor edits a tag label in editTagInput to a non-empty value and presses Enter, projectTagItem reflects the new label
       - given owner or editor edits a tag label in editTagInput to a non-empty value and clicks outside that projectTagItem, projectTagItem reflects the new label

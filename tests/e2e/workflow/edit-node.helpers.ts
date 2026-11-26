@@ -1,6 +1,7 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 
 import { authenticatedApiRequest } from '../../helpers/api';
+import { expectRichTextItalicAndUnderlineGlyphs } from '../../helpers/workflow-description-rich-text';
 import type { WorkflowHandle } from '../../fixtures';
 import { workflowRightSidebarAddTab, workflowSectionContainers } from '../../shared/locators/workflow';
 import { addNewTagInput, projectTagItemByLabel } from '../project/project.locators';
@@ -178,8 +179,11 @@ export async function expectEditableWorkflowEditNodeFormRichTextDescription(page
   await expect(workflowRichTextDescriptionEditor(page)).toHaveAttribute('contenteditable', 'true');
   await expect(workflowRichTextDescriptionEditorToolbar(page)).toBeVisible();
   await expect(workflowRichTextDescriptionEditorBoldButton(page)).toBeVisible();
-  await expect(workflowRichTextDescriptionEditorItalicButton(page)).toBeVisible();
-  await expect(workflowRichTextDescriptionEditorUnderlineButton(page)).toBeVisible();
+  const italicButton = workflowRichTextDescriptionEditorItalicButton(page);
+  const underlineButton = workflowRichTextDescriptionEditorUnderlineButton(page);
+  await expect(italicButton).toBeVisible();
+  await expect(underlineButton).toBeVisible();
+  await expectRichTextItalicAndUnderlineGlyphs(italicButton, underlineButton);
   await expect(workflowRichTextDescriptionEditorSuperscriptButton(page)).toBeVisible();
   await expect(workflowRichTextDescriptionEditorSubscriptButton(page)).toBeVisible();
   await expect(workflowRichTextDescriptionEditorBulletListButton(page)).toBeVisible();

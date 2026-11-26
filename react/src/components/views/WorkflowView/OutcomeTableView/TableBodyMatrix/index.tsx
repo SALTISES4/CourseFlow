@@ -1,3 +1,5 @@
+import { WorkflowPermission } from '@cf/api/gen/types.gen'
+import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import {
   OutcomeTable,
   selectIsOutcomeExpanded
@@ -8,8 +10,15 @@ import {
 } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { displaySystemTitle } from '@cf/i18n/systemTitles'
 import { AppDispatch, RootState } from '@cf/redux/store'
-import { formatDurationHoursNumber } from '@cfComponents/duration'
-import { NodeTitle } from '@cfViews/WorkflowView/GraphView/components/Section/Cell/CellNode/useNodeTitle'
+import {
+  formatDurationHoursNumber,
+  formatWholeHoursNumber
+} from '@cfComponents/duration'
+import {
+  NodeTitle,
+  useNodeTitle
+} from '@cfViews/WorkflowView/GraphView/components/Section/Cell/CellNode/useNodeTitle'
+import useOutcomeTitle from '@cfViews/WorkflowView/OutcomeEditView/useOutcomeTitle'
 import { Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
@@ -26,6 +35,9 @@ const TableBody = ({
   workflowType: WorkflowType
 }) => {
   const { t, i18n } = useTranslation('workflow')
+  const canAssignOutcomes = useResourcePermission(
+    WorkflowPermission.ASSIGN_OUTCOMES
+  )
   const groups = table.entities.sections.map((section, sectionIndex) => {
     const sectionDefaultTitle = t('systemLabels.sectionNumber', {
       number: (section.position ?? 0) + 1
@@ -35,7 +47,11 @@ const TableBody = ({
     const extraColumns = table.extraColumns[workflowType]
 
     return (
-      <>
+      <Styled.SemanticGroup
+        key={section.uuid}
+        role="rowgroup"
+        aria-label={sectionTitle}
+      >
         <SectionHeaderRow
           uuid={section.uuid}
           index={sectionIndex}
@@ -48,9 +64,9 @@ const TableBody = ({
           const node = table.entities.nodes[nodeUuid]
           const color = table.board.columns.colors[node.channelUuid ?? '']
           return (
-            <Styled.BodyRow key={nodeUuid}>
+            <Styled.BodyRow key={nodeUuid} role="row">
               <Styled.BodyLegendWrap>
-                <Styled.TableLegend color={color}>
+                <Styled.TableLegend color={color} role="rowheader" tabIndex={0}>
                   <NodeTitle node={node} />
                 </Styled.TableLegend>
               </Styled.BodyLegendWrap>
@@ -74,6 +90,7 @@ const TableBody = ({
                           groupIndex={sectionIndex}
                           rowIndex={rowIndex}
                           table={table}
+                          readOnly={!canAssignOutcomes}
                         />
                       ))}
                     </Styled.CheckmarkGroup>
@@ -91,6 +108,7 @@ const TableBody = ({
                           key={column.labelKey}
                           className={column.className}
                           data-test-id={column.nodeTestId}
+                          role="gridcell"
                         >
                           {renderExtraColumnValue(
                             column.values[nodeUuid],
@@ -107,7 +125,10 @@ const TableBody = ({
                     className={`checkmarks-group ${group.className}`}
                     sx={{ marginLeft: 2 }}
                   >
-                    <Styled.TableCell data-test-id={group.nodeTestId}>
+                    <Styled.TableCell
+                      data-test-id={group.nodeTestId}
+                      role="gridcell"
+                    >
                       {renderExtraColumnValue(
                         group.values[nodeUuid],
                         group.format,
@@ -120,7 +141,7 @@ const TableBody = ({
             </Styled.BodyRow>
           )
         })}
-      </>
+      </Styled.SemanticGroup>
     )
   })
 
@@ -136,16 +157,25 @@ const CheckmarkGroup = ({
   outcomeUuid,
   table,
   groupIndex,
-  rowIndex
+  rowIndex,
+  readOnly
 }: {
   outcomeUuid: string
   table: OutcomeTable
   groupIndex: number
   rowIndex: number
+  readOnly: boolean
 }) => {
   const dispatch = useDispatch<AppDispatch>()
+  const { t } = useTranslation('workflow')
   const outcome = table.outcomeTree.outcomes[outcomeUuid]
   const node = table.groups[groupIndex].nodes[rowIndex]
+  const nodeTitle = useNodeTitle(table.entities.nodes[node.uuid])
+  const outcomeTitle = useOutcomeTitle({
+    title: outcome.title,
+    titleCopyCount: outcome.titleCopyCount
+  })
+  const outcomeDisplayTitle = `${outcome.prefix} ${outcomeTitle}`
   const status = node.completion[outcomeUuid] ?? 'empty'
   const expanded = useSelector((state: RootState) =>
     selectIsOutcomeExpanded(state, outcome.uuid)
@@ -175,6 +205,11 @@ const CheckmarkGroup = ({
     <>
       <Checkmark
         key={node.uuid}
+        label={t('outcomeTable.assignmentCellLabel', {
+          outcome: outcomeDisplayTitle,
+          node: nodeTitle
+        })}
+        readOnly={readOnly}
         value={status}
         onClick={onCheckmarkClick(node.uuid, status)}
       />
@@ -186,6 +221,7 @@ const CheckmarkGroup = ({
             groupIndex={groupIndex}
             rowIndex={rowIndex}
             table={table}
+            readOnly={readOnly}
           />
         ))}
     </>
@@ -209,9 +245,9 @@ const SectionHeaderRow = ({
   const extraColumns = table.extraColumns[workflowType]
 
   return (
-    <Styled.BodyRow className="section-header-row">
+    <Styled.BodyRow className="section-header-row" role="row">
       <Styled.BodyLegendWrap>
-        <Styled.TableLegend>{title}</Styled.TableLegend>
+        <Styled.TableLegend role="rowheader">{title}</Styled.TableLegend>
       </Styled.BodyLegendWrap>
       {table.tagGroups.map((group, groupIndex) => (
         <Styled.CheckmarkGroup key={group.uuid}>
@@ -227,6 +263,7 @@ const SectionHeaderRow = ({
                 outcomeUuid={outcomeUuid}
                 groupIndex={index}
                 table={table}
+                sectionTitle={title}
               />
             ))}
           </Styled.CheckmarkGroup>
@@ -242,6 +279,7 @@ const SectionHeaderRow = ({
                 <Styled.TableCell
                   key={column.labelKey}
                   data-test-id={column.sectionTestId}
+                  role="gridcell"
                 >
                   {renderExtraColumnValue(
                     column.values[uuid],
@@ -258,7 +296,10 @@ const SectionHeaderRow = ({
             className={`checkmarks-group ${group.className}`}
             sx={{ marginLeft: 2 }}
           >
-            <Styled.TableCell data-test-id={group.sectionTestId}>
+            <Styled.TableCell
+              data-test-id={group.sectionTestId}
+              role="gridcell"
+            >
               {renderExtraColumnValue(
                 group.values[uuid],
                 group.format,
@@ -279,11 +320,16 @@ const GrandTotalRow = ({
   table: OutcomeTable
   workflowType: WorkflowType
 }) => {
-  const { t } = useTranslation('workflow')
+  const { t, i18n } = useTranslation('workflow')
   const extraColumns = table.extraColumns[workflowType]
+  const nodeUuids = Object.keys(table.entities.nodes)
 
   return (
-    <Styled.BodyRow className="section-header-row">
+    <Styled.BodyRow
+      className="section-header-row"
+      data-test-id="workflow-outcome-table-grand-total-row"
+      role="row"
+    >
       <Styled.BodyLegendWrap>
         <Styled.TableLegend sx={{ background: '#E5E9F4' }}>
           {t('outcomeTable.grandTotal')}
@@ -317,12 +363,16 @@ const GrandTotalRow = ({
               {group.columns.map((column) => (
                 <Styled.TableCell
                   key={column.labelKey}
-                  data-test-id={column.sectionTestId}
+                  data-test-id={column.grandTotal?.testId}
+                  role="gridcell"
                 >
-                  {table.entities.sections.reduce((acc, section) => {
-                    const val = column.values[section.uuid] ?? 0
-                    return acc + val
-                  }, 0)}
+                  {column.grandTotal?.include
+                    ? renderExtraColumnValue(
+                        sumGrandTotalValues(column.values, nodeUuids),
+                        column.format,
+                        i18n.language
+                      )
+                    : null}
                 </Styled.TableCell>
               ))}
             </Styled.CheckmarkGroup>
@@ -333,11 +383,17 @@ const GrandTotalRow = ({
             className={`checkmarks-group ${group.className}`}
             sx={{ marginLeft: 2 }}
           >
-            <Styled.TableCell data-test-id={group.sectionTestId}>
-              {table.entities.sections.reduce((acc, section) => {
-                const val = group.values[section.uuid] ?? 0
-                return acc + val
-              }, 0)}
+            <Styled.TableCell
+              data-test-id={group.grandTotal?.testId}
+              role="gridcell"
+            >
+              {group.grandTotal?.include
+                ? renderExtraColumnValue(
+                    sumGrandTotalValues(group.values, nodeUuids),
+                    group.format,
+                    i18n.language
+                  )
+                : null}
             </Styled.TableCell>
           </Styled.CheckmarkGroup>
         )
@@ -362,7 +418,7 @@ const GrandTotalEmptyCellGroup = ({
 
   return (
     <>
-      <Styled.TableCell />
+      <Styled.TableCell data-test-id="workflow-outcome-table-grand-total-outcome-cell" />
       {expanded &&
         outcome.children.map((childUuid) => (
           <GrandTotalEmptyCellGroup
@@ -376,9 +432,31 @@ const GrandTotalEmptyCellGroup = ({
   )
 }
 
+function sumGrandTotalValues(
+  values: Record<string, number | null | undefined>,
+  nodeUuids: string[]
+): number | null | undefined {
+  const applicableValues = nodeUuids
+    .map((uuid) => values[uuid])
+    .filter((value) => value !== undefined)
+
+  if (applicableValues.length === 0) {
+    return undefined
+  }
+
+  const enteredValues = applicableValues.filter(
+    (value): value is number => value !== null
+  )
+  if (enteredValues.length === 0) {
+    return null
+  }
+
+  return enteredValues.reduce((total, value) => total + value, 0)
+}
+
 function renderExtraColumnValue(
   value: number | null | undefined,
-  format: 'durationHours' | undefined,
+  format: 'durationHours' | 'wholeHours' | undefined,
   locale: string
 ) {
   if (value === undefined) {
@@ -387,21 +465,33 @@ function renderExtraColumnValue(
   if (value === null) {
     return '—'
   }
-  return format === 'durationHours'
-    ? formatDurationHoursNumber(value, locale)
-    : value
+  if (format === 'durationHours') {
+    return formatDurationHoursNumber(value, locale)
+  }
+  if (format === 'wholeHours') {
+    return formatWholeHoursNumber(value, locale)
+  }
+  return value
 }
 
 const OutcomeGroup = ({
   outcomeUuid,
   groupIndex,
-  table
+  table,
+  sectionTitle
 }: {
   outcomeUuid: string
   groupIndex: number
   table: OutcomeTable
+  sectionTitle: string
 }) => {
+  const { t } = useTranslation('workflow')
   const outcome = table.outcomeTree.outcomes[outcomeUuid]
+  const outcomeTitle = useOutcomeTitle({
+    title: outcome.title,
+    titleCopyCount: outcome.titleCopyCount
+  })
+  const outcomeDisplayTitle = `${outcome.prefix} ${outcomeTitle}`
   const expanded = useSelector((state: RootState) =>
     selectIsOutcomeExpanded(state, outcome.uuid)
   )
@@ -411,6 +501,10 @@ const OutcomeGroup = ({
       <Checkmark
         key={outcomeUuid}
         readOnly
+        label={t('outcomeTable.sectionRollupCellLabel', {
+          outcome: outcomeDisplayTitle,
+          section: sectionTitle
+        })}
         value={table.groups[groupIndex].completion[outcomeUuid] ?? 'empty'}
       />
       {expanded &&
@@ -420,6 +514,7 @@ const OutcomeGroup = ({
             outcomeUuid={childUuid}
             groupIndex={groupIndex}
             table={table}
+            sectionTitle={sectionTitle}
           />
         ))}
     </>

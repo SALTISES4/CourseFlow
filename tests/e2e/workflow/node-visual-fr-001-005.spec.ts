@@ -28,6 +28,7 @@ import {
   workflowNodeBorderBackgroundColor,
 } from './node-visual.helpers';
 import { loginAsWorkflowContributor } from './role.helpers';
+import { workflowNodeEdgeHandle } from './edge.locators';
 import {
   clickAssignTabOutcomeRow,
   E2E_SEED_OUTCOME_HEADER,
@@ -55,6 +56,10 @@ import {
   workflowNodeMetaTimeTag,
   workflowNodeTitle,
 } from './workflow-graph.locators';
+import {
+  workflowNodeLinkedOutcomesBadge,
+  workflowNodeLinkedOutcomesPopover,
+} from './workflow-assign-outcome.locators';
 
 test.use({
   seedAsset: 'workflow.standard_activity',
@@ -477,6 +482,82 @@ test.describe('Workflow node — hover menu (FR-WF-NODE-004, FR-WF-NODE-005)', (
       await expect(workflowNodeHoverDuplicateItem(page, nodeUuid)).toBeEnabled();
       await expect(workflowNodeHoverDeleteItem(page, nodeUuid)).toBeEnabled();
       await expect(workflowNodeHoverCommentsItem(page, nodeUuid)).toBeEnabled();
+    });
+
+    test('FR-WF-NODE-004/006 and FR-WF-AO-007: hover menu leaves top handle and outcome badge actionable', async ({
+      page,
+    }) => {
+      const nodeUuid = await firstWorkflowNodeUuid(page);
+      await hoverWorkflowNode(page, nodeUuid);
+
+      const commentsButton = workflowNodeHoverCommentsItem(page, nodeUuid);
+      const hoverMenu = commentsButton.locator('xpath=../..');
+      const topHandle = workflowNodeEdgeHandle(page, nodeUuid, 'top');
+      const outcomeBadge = workflowNodeLinkedOutcomesBadge(page, nodeUuid, 1);
+      const badgeVisual = outcomeBadge.locator('xpath=ancestor::*[contains(@class, "MuiBadge-root")]')
+        .locator('.MuiBadge-badge');
+
+      await expect(hoverMenu).toBeVisible();
+      await expect(topHandle).toBeVisible();
+      await expect(outcomeBadge).toBeVisible();
+
+      const [menuBox, handleBox, badgeBox] = await Promise.all([
+        hoverMenu.boundingBox(),
+        topHandle.boundingBox(),
+        outcomeBadge.boundingBox(),
+      ]);
+      expect(menuBox && handleBox && badgeBox).toBeTruthy();
+      const overlaps = (
+        left: NonNullable<typeof menuBox>,
+        right: NonNullable<typeof menuBox>,
+      ) =>
+        left.x < right.x + right.width &&
+        left.x + left.width > right.x &&
+        left.y < right.y + right.height &&
+        left.y + left.height > right.y;
+      expect(overlaps(menuBox!, handleBox!)).toBe(false);
+      expect(overlaps(menuBox!, badgeBox!)).toBe(false);
+
+      await commentsButton.hover();
+      await expect
+        .poll(() => commentsButton.evaluate((element) => getComputedStyle(element).backgroundColor))
+        .toBe('rgb(233, 238, 240)');
+
+      await outcomeBadge.hover();
+      await expect
+        .poll(() => badgeVisual.evaluate((element) => getComputedStyle(element).backgroundColor))
+        .toBe('rgb(233, 238, 240)');
+      await outcomeBadge.click();
+      await expect(workflowNodeLinkedOutcomesPopover(page)).toBeVisible();
+      await page.keyboard.press('Escape');
+
+      await hoverWorkflowNode(page, nodeUuid);
+      const refreshedHandleBox = await topHandle.boundingBox();
+      expect(refreshedHandleBox).toBeTruthy();
+      const handleCenter = {
+        x: refreshedHandleBox!.x + refreshedHandleBox!.width / 2,
+        y: refreshedHandleBox!.y + refreshedHandleBox!.height / 2,
+      };
+      expect(
+        await page.evaluate(
+          ({ x, y }) => document.elementFromPoint(x, y)?.getAttribute('data-edge'),
+          handleCenter,
+        ),
+      ).toBe('top');
+
+      await page.mouse.move(handleCenter.x, handleCenter.y);
+      try {
+        await page.mouse.down();
+        await page.mouse.move(handleCenter.x, handleCenter.y - 40, { steps: 4 });
+        const linkPreview = page
+          .locator('#line-svg svg')
+          .last()
+          .locator('path[stroke="#FCD748"]');
+        await expect(linkPreview).toHaveCount(1);
+        await expect(linkPreview).toHaveAttribute('d', /^M /);
+      } finally {
+        await page.mouse.up();
+      }
     });
 
     test.describe('Insert and duplicate actions (FR-WF-DUP-002, FR-WF-DUP-003)', () => {

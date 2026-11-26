@@ -31,9 +31,19 @@ export function workflowOutcomesAssignTabAddOutcomesButton(page: Page): Locator 
   });
 }
 
-/** canonical: workflowOutcomesAssignTabEmptyStateAlert */
-export function workflowOutcomesAssignTabEmptyStateAlert(page: Page): Locator {
-  return workflowOutcomesAssignTabPanel(page).getByRole('alert');
+/** canonical: workflowOutcomesAssignTabEmptyStateMessage */
+export function workflowOutcomesAssignTabEmptyStateMessage(page: Page): Locator {
+  return workflowOutcomesAssignTabPanel(page).getByText(
+    /There are currently no outcomes in this .+\. Open the outcomes view to add outcomes\./,
+  );
+}
+
+/** canonical: workflowOutcomesAssignTabHelpText — prohibited legacy populated-state copy. */
+export function workflowOutcomesAssignTabHelpText(page: Page): Locator {
+  return workflowOutcomesAssignTabPanel(page).getByText(
+    'Drag and drop to associate outcomes from parent workflows with outcomes in the current workflow. Select an outcome to highlight relevant nodes.',
+    { exact: true },
+  );
 }
 
 /** canonical: workflowOutcomesAssignTabTagGroup / workflowOutcomesAssignTabUntaggedGroup section */

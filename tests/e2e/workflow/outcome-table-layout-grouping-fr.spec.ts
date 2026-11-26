@@ -1,4 +1,4 @@
-import { expect, test } from "../../fixtures";
+import { expect, test, type Locator } from "../../fixtures";
 import { ensurePageWorkspaceEditLock } from "../../helpers/edit-lock";
 import { createOutcomeViaApi } from "./outcome-drag.helpers";
 import {
@@ -21,6 +21,29 @@ test.use({
   actorAsset: "actor.teacher",
   seedAccess: "disposable-project-copy",
 });
+
+async function layoutLeft(locator: Locator): Promise<number> {
+  return locator.evaluate((element) => {
+    let left = 0;
+    let current: HTMLElement | null = element as HTMLElement;
+    while (current) {
+      left += current.offsetLeft;
+      current = current.offsetParent as HTMLElement | null;
+    }
+    return left;
+  });
+}
+
+async function expectApproximateOutcomeTableHeaderHeight(
+  grid: Locator,
+): Promise<void> {
+  const header = grid.locator(':scope > [role="row"]').first();
+  await expect(header).toBeVisible();
+  const box = await header.boundingBox();
+  expect(box).not.toBeNull();
+  expect(box!.height).toBeGreaterThanOrEqual(200);
+  expect(box!.height).toBeLessThanOrEqual(240);
+}
 
 test.describe("FR-WF-OT-001/002: table layout and accessible semantics", () => {
   test("Normal exposes the outcome hierarchy, section and node axes, colour band, and assignment semantics", async ({
@@ -80,6 +103,8 @@ test.describe("FR-WF-OT-001/002: table layout and accessible semantics", () => {
     const assignment = outcomeTableCell(page, rootTitle, nodeTitle);
     await expect(assignment).toHaveAttribute("aria-checked", "false");
     await expect(assignment).toBeEnabled();
+    await expectApproximateOutcomeTableHeaderHeight(grid);
+    expect(Math.abs((await layoutLeft(nodeHeader)) - (await layoutLeft(assignment)))).toBeLessThanOrEqual(1);
 
     await nodeHeader.locator("span").first().hover();
     await expect(page.getByRole("tooltip", { name: nodeTitle })).toBeVisible();
@@ -121,6 +146,19 @@ test.describe("FR-WF-OT-001/002: table layout and accessible semantics", () => {
     await expect(
       grid.getByRole("columnheader", { name: /Course summary outcome/ }),
     ).toBeVisible();
+    const outcomeHeader = grid.getByRole("columnheader", {
+      name: /Course summary outcome/,
+    });
+    const assignment = grid.getByRole("checkbox", {
+      name: /Course summary outcome.*—.*Course summary node/,
+    });
+    await expect(assignment).toBeVisible();
+    await expectApproximateOutcomeTableHeaderHeight(grid);
+    expect(
+      Math.abs(
+        (await layoutLeft(outcomeHeader)) - (await layoutLeft(assignment)),
+      ),
+    ).toBeLessThanOrEqual(1);
     await expect(
       grid.getByRole("columnheader", { name: "Total hours" }),
     ).toBeVisible();
@@ -195,6 +233,32 @@ test.describe("FR-WF-OT-008 and FR-CAB-008/FR-WF-OT-011: tag grouping and filter
         ),
       )
       .toEqual([alphaLabel, betaLabel, "Untagged"]);
+    const groupBottomBorders = await tagBands.evaluateAll((groups) =>
+      groups.map((group) => {
+        const dataRows = Array.from(group.children).filter(
+          (child) =>
+            child.getAttribute("role") === "row" &&
+            !child.classList.contains("tag-header-row"),
+        );
+        const assignmentRegion = dataRows.at(-1)?.lastElementChild;
+        if (!(assignmentRegion instanceof HTMLElement)) return null;
+        const style = getComputedStyle(assignmentRegion);
+        return {
+          width: style.borderBottomWidth,
+          style: style.borderBottomStyle,
+          color: style.borderBottomColor,
+          renderedWidth: assignmentRegion.getBoundingClientRect().width,
+        };
+      }),
+    );
+    expect(groupBottomBorders).toHaveLength(3);
+    for (const border of groupBottomBorders) {
+      expect(border).not.toBeNull();
+      expect(border!.width).toBe("1px");
+      expect(border!.style).toBe("solid");
+      expect(border!.color).not.toBe("rgba(0, 0, 0, 0)");
+      expect(border!.renderedWidth).toBeGreaterThan(0);
+    }
     await expect(
       grid.getByRole("rowheader", { name: new RegExp(multiTitle) }),
     ).toHaveCount(2);
@@ -211,6 +275,10 @@ test.describe("FR-WF-OT-008 and FR-CAB-008/FR-WF-OT-011: tag grouping and filter
       page.getByRole("checkbox", { name: nodeOnlyLabel }),
     ).toHaveCount(0);
     await page.getByRole("checkbox", { name: alphaLabel }).uncheck();
+    await expect(page.locator("#actions-menu-button")).toHaveAttribute(
+      "aria-expanded",
+      "true",
+    );
     await page.keyboard.press("Escape");
 
     await expect(

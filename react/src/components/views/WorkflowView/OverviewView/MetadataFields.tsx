@@ -4,7 +4,7 @@ import type {
 } from '@cf/api/gen/types.gen'
 import { WorkflowType } from '@cf/api/gen/types.gen'
 import DurationHoursMinutesFields from '@cfComponents/DurationHoursMinutesFields'
-import DurationTextField from '@cfComponents/DurationTextField'
+import WholeHoursField from '@cfComponents/WholeHoursField'
 import Alert from '@mui/material/Alert'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Grid from '@mui/material/Grid'
@@ -81,13 +81,13 @@ const MetadataFields = ({
     />
   )
 
-  const durationField = (
+  const wholeHoursField = (
     label: string,
     key: MetadataKey,
     disabled = false,
     fullWidth = false
   ) => (
-    <DurationTextField
+    <WholeHoursField
       label={label}
       value={values[key] as number | null | undefined}
       disabled={!canEdit || disabled || isSaving}
@@ -204,21 +204,21 @@ const MetadataFields = ({
               )}
               <Grid container spacing={2}>
                 <Grid item xs={12} md={4}>
-                  {durationField(
+                  {wholeHoursField(
                     t('metadata.theory'),
                     'theoryTimeMinutes',
                     ponderationAutomatic
                   )}
                 </Grid>
                 <Grid item xs={12} md={4}>
-                  {durationField(
+                  {wholeHoursField(
                     t('metadata.practical'),
                     'practicalTimeMinutes',
                     ponderationAutomatic
                   )}
                 </Grid>
                 <Grid item xs={12} md={4}>
-                  {durationField(
+                  {wholeHoursField(
                     t('metadata.individual'),
                     'individualTimeMinutes',
                     ponderationAutomatic
@@ -259,7 +259,7 @@ const MetadataFields = ({
               />
               <Grid container spacing={2}>
                 <Grid item xs={12} md={6}>
-                  {durationField(
+                  {wholeHoursField(
                     t('metadata.generalTime'),
                     'generalTimeMinutes',
                     classificationAutomatic,
@@ -267,7 +267,7 @@ const MetadataFields = ({
                   )}
                 </Grid>
                 <Grid item xs={12} md={6}>
-                  {durationField(
+                  {wholeHoursField(
                     t('metadata.specificTime'),
                     'specificTimeMinutes',
                     classificationAutomatic,

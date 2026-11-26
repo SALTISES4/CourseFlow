@@ -453,6 +453,7 @@ requirements:
     mainFlow:
       - system persists changes without an explicit save control on workflowEditOutcomeForm
       - workflowEditOutcomeForm does not render any visible auto-save status indicator (e.g. 'Saving…' or 'Saved')
+      - every editable field continuously retains the user's latest local value while an earlier auto-save request is pending or completing; an older response never temporarily or permanently replaces newer unsaved or saved Title or Code text
       - applying a toolbar format on workflowEditOutcomeFormDescriptionField or inserting or editing a hyperlink via workflowRichTextDescriptionEditorLinkButton counts as a field modification for auto-save
       - workflowOutcomeHeaderTitle and workflowOutcomeHeaderTagChips on the bound workflowOutcome reflect persisted values from workflowEditOutcomeFormTitleField, workflowEditOutcomeFormCodeField (level 1), and workflowEditOutcomeFormTagsAutocomplete; workflowEditOutcomeForm re-renders show persisted values for every rendered field including workflowEditOutcomeFormDescriptionField
     
@@ -470,6 +471,7 @@ requirements:
     
     acceptanceCriteria:
       - given workflowEditOutcomeForm is bound to a workflowOutcome and actor is owner or editor, when actor types in workflowEditOutcomeFormTitleField, then workflowOutcomeHeaderTitle on the corresponding workflowOutcomeHeader updates to the typed value (with the numeric prefix preserved — see FR-WF-EO-007)
+      - given owner or editor continues changing workflowEditOutcomeFormTitleField or workflowEditOutcomeFormCodeField after an auto-save request has started, when that earlier request completes before or after the newer save, neither field disappears or reverts to the earlier request value and the latest complete Title and Code persist
       - given workflowEditOutcomeForm is bound to a workflowOutcome and actor is owner or editor, when actor modifies an editable field on workflowEditOutcomeForm, workflowEditOutcomeForm does not show any visible auto-save status indicator
       - given workflowEditOutcomeForm is bound to a level 1 workflowOutcome and actor is owner or editor, when actor types in workflowEditOutcomeFormCodeField, then workflowOutcomeHeaderTitle updates to the format described in FR-WF-EO-007 for outcomes with a non-empty workflowEditOutcomeFormCodeField value
       - given workflowEditOutcomeForm is bound to a level 1 workflowOutcome and actor is owner or editor, when actor adds or removes a tag in workflowEditOutcomeFormTagsAutocomplete, then workflowOutcomeHeaderTagChips on the corresponding workflowOutcomeHeader reflects the new tag set

@@ -32,6 +32,7 @@ import {
   HELP_SUPPORT_URL,
   homeNavItem,
   mainNavigation,
+  mainNavigationLoader,
   mainNavigationPanel,
   mainNavigationScrollRegion,
   myLibraryNavItem,
@@ -257,6 +258,49 @@ test.describe('Main navigation — calibration (FR-NAV-001-013)', () => {
 });
 
 test.describe('Main navigation — workflow context (FR-NAV-012–013)', () => {
+  test('FR-NAV-001: pending favourites and related-workflow requests never render a main-menu loader', async ({
+    page,
+  }) => {
+    const linked = getNavigationLinkedWorkflows();
+    let releaseRequests!: () => void;
+    const requestsHeld = new Promise<void>((resolve) => {
+      releaseRequests = resolve;
+    });
+
+    await page.route('**/api/library/search', async (route) => {
+      if (route.request().method() === 'POST') {
+        await requestsHeld;
+      }
+      await route.continue();
+    });
+    await page.route(`**/api/workflow/${linked.course.workflow_uuid}/related`, async (route) => {
+      await requestsHeld;
+      await route.continue();
+    });
+
+    const favouritesRequest = page.waitForRequest(
+      (request) =>
+        request.method() === 'POST' && new URL(request.url()).pathname === '/api/library/search',
+    );
+    const relatedRequest = page.waitForRequest(
+      (request) =>
+        new URL(request.url()).pathname ===
+        `/api/workflow/${linked.course.workflow_uuid}/related`,
+    );
+
+    try {
+      await gotoAuthenticatedShell(page, linked.course.workflow_path);
+      await Promise.all([favouritesRequest, relatedRequest]);
+      await expect(mainNavigation(page)).toBeVisible();
+      await expect(homeNavItem(page)).toBeVisible();
+      await expect(mainNavigationLoader(page)).toHaveCount(0);
+    } finally {
+      releaseRequests();
+    }
+
+    await waitForMainNavigationReady(page);
+  });
+
   test.describe('when workflow has no related links', () => {
     test('FR-NAV-012: activity workflow hides Contains', async ({ page }) => {
       const linked = getNavigationLinkedWorkflows();

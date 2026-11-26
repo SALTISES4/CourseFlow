@@ -4,12 +4,15 @@ Canonical delta envelope for graph mutations.
 
 from __future__ import annotations
 
+from typing import Annotated
 from uuid import UUID
 
 from pydantic import Field, field_validator
 
 from course_flow.api.common.schemas import CamelSchema
 from course_flow.core.enum import ContextClassification, TaskClassification
+
+WholeHoursInMinutes = Annotated[int, Field(ge=0, multiple_of=60)]
 
 
 class GraphNodeMutationOut(CamelSchema):
@@ -249,9 +252,9 @@ class GraphNodeMetaPatchIn(CamelSchema):
     task_classification: TaskClassification | None = None
     time_required_minutes: int | None = Field(default=None, ge=0)
     represents_workflow: bool | None = None
-    ponderation_theory_minutes: int | None = Field(default=None, ge=0)
-    ponderation_practice_minutes: int | None = Field(default=None, ge=0)
-    ponderation_individual_minutes: int | None = Field(default=None, ge=0)
+    ponderation_theory_minutes: WholeHoursInMinutes | None = None
+    ponderation_practice_minutes: WholeHoursInMinutes | None = None
+    ponderation_individual_minutes: WholeHoursInMinutes | None = None
     credits: int | None = Field(default=None, ge=0)
     specific_education: bool | None = None
     tag_ids: list[int] | None = None

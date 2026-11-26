@@ -116,6 +116,28 @@ export async function createArchivedWorkflowFixture(
   };
 }
 
+/** Project card fixture with one active and one archived child workflow. */
+export async function createProjectWorkflowCountFixture(
+  page: Page,
+  label: string,
+): Promise<LibraryLifecycleFixture> {
+  const project = await createProject(page, `${label} project`);
+  const activeWorkflow = await createWorkflow(page, project.uuid, `${label} active workflow`);
+  const archivedWorkflow = await createWorkflow(
+    page,
+    project.uuid,
+    `${label} archived workflow`,
+  );
+  await archiveWorkflow(page, archivedWorkflow.uuid);
+
+  return {
+    projectUuid: project.uuid,
+    projectTitle: project.title,
+    workflowUuid: activeWorkflow.uuid,
+    workflowTitle: activeWorkflow.title,
+  };
+}
+
 /**
  * Remove an isolated project regardless of whether its lifecycle test restored,
  * retained, or already permanently deleted it.

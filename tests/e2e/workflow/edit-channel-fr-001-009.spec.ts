@@ -298,6 +298,65 @@ test.describe('FR-CHAN-003: title and color auto-save', () => {
     await expect(workflowChannelHeader(page, channelUuid)).toContainText(uniqueTitle);
   });
 
+  test('newer channel title text survives an older auto-save response', async ({ page }) => {
+    const channelUuid = await channelUuidByTitle(page, E2E_CHANNEL_C);
+    const field = workflowEditChannelFormTitleField(page);
+    const prefix = `E2E pending ${Date.now()}`;
+    const suffix = ' complete';
+    const completeTitle = `${prefix}${suffix}`;
+    const endpoint = `/api/channel/${channelUuid}`;
+    let delayedFirstResponse = false;
+
+    await workflowChannelHeader(page, channelUuid).click();
+    await expect(workflowEditChannelForm(page)).toBeVisible();
+    await page.route(`**${endpoint}`, async (route) => {
+      if (route.request().method() !== 'PATCH' || delayedFirstResponse) {
+        await route.continue();
+        return;
+      }
+      delayedFirstResponse = true;
+      const response = await route.fetch();
+      await new Promise((resolve) => setTimeout(resolve, 1_800));
+      await route.fulfill({ response });
+    });
+
+    const firstRequest = page.waitForRequest(
+      (request) =>
+        new URL(request.url()).pathname === endpoint &&
+        request.method() === 'PATCH' &&
+        (request.postDataJSON() as { title?: string }).title === prefix,
+    );
+    const firstResponse = page.waitForResponse(
+      (response) =>
+        new URL(response.url()).pathname === endpoint &&
+        response.request().method() === 'PATCH' &&
+        (response.request().postDataJSON() as { title?: string }).title === prefix &&
+        response.ok(),
+    );
+    await field.fill(prefix);
+    await firstRequest;
+
+    const finalResponse = page.waitForResponse(
+      (response) =>
+        new URL(response.url()).pathname === endpoint &&
+        response.request().method() === 'PATCH' &&
+        (response.request().postDataJSON() as { title?: string }).title === completeTitle &&
+        response.ok(),
+    );
+    await field.press('End');
+    await field.pressSequentially(suffix, { delay: 50 });
+    await expect(field).toHaveValue(completeTitle);
+    await Promise.all([firstResponse, finalResponse]);
+    await expect(field).toHaveValue(completeTitle);
+    await expect(workflowChannelHeader(page, channelUuid)).toContainText(completeTitle, {
+      timeout: 15_000,
+    });
+
+    await page.reload();
+    await workflowChannelHeader(page, channelUuid).click();
+    await expect(field).toHaveValue(completeTitle);
+  });
+
   test('clearing title shows Untitled node category on header and blank Title field', async ({
     page,
   }) => {

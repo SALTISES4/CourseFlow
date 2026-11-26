@@ -24,7 +24,7 @@ import {
   seededLinkedActivityUuid,
   selectEditNodeTag,
 } from './edit-node.helpers';
-import type { Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 import {
   WORKFLOW_LINK_DIALOG_SEARCH_NO_MATCHES,
   workflowEditNodeForm,
@@ -70,6 +70,22 @@ test.use({
  * Edit node — FR-WF-EN-001 through FR-WF-EN-011 (Description rich text: FR-WF-EN-012).
  * Requirements: workflow_edit_node_requirements_v1.yaml
  */
+
+async function richTextMarkupSnapshot(editor: Locator): Promise<{
+  html: string;
+  text: string;
+  tags: string[];
+  attributes: string[];
+}> {
+  return editor.evaluate((element) => ({
+    html: element.innerHTML,
+    text: element.textContent ?? '',
+    tags: Array.from(element.querySelectorAll('*')).map((child) => child.tagName.toLowerCase()),
+    attributes: Array.from(element.querySelectorAll('*')).flatMap((child) =>
+      Array.from(child.attributes).map((attribute) => `${child.tagName.toLowerCase()}:${attribute.name}`),
+    ),
+  }));
+}
 
 test.describe('edit-node-fr-001-007', () => {
   test.describe('Open workflowEditNodeForm (FR-WF-EN-001)', () => {
@@ -136,6 +152,105 @@ test.describe('edit-node-fr-001-007', () => {
       await expect(workflowEditNodeFormCreditsField(page)).toHaveCount(0);
       await expect(workflowEditNodeFormPonderationGroup(page)).toHaveCount(0);
       await expect(workflowEditNodeFormSpecificEducationSwitch(page)).toHaveCount(0);
+    });
+
+    test('FR-WF-EN-012: pasted external HTML retains only the eight supported formats', async ({
+      page,
+    }) => {
+      const nodeUuid = await firstWorkflowNodeUuid(page);
+      const editor = workflowRichTextDescriptionEditor(page);
+      const endpoint = `/api/node/${nodeUuid}/meta`;
+      const externalHtml = [
+        '<div class="external-field" style="font-family: Comic Sans MS; font-size: 32px; color: red" data-field-boundary="true">',
+        '<h1 id="external-heading">External heading</h1>',
+        '<p><span class="ql-size-huge" style="background: yellow">Plain external text</span> ',
+        '<strong style="font-size: 28px">Bold text</strong> ',
+        '<em data-external="italic">Italic text</em> ',
+        '<u style="color: blue">Underline text</u> ',
+        '<sup class="external-super">Super text</sup> ',
+        '<sub id="external-sub">Sub text</sub> ',
+        '<a href="https://example.com/pasted" style="font-family: serif">Link text</a></p>',
+        '<blockquote>Quote text</blockquote>',
+        '<ul style="list-style: square"><li>Bullet text</li></ul>',
+        '<ol class="external-list"><li>Numbered text</li></ol>',
+        '<table><tbody><tr><td>Table text</td></tr></tbody></table>',
+        '<img src="https://example.com/external.png" alt="External image">',
+        '</div>',
+      ].join('');
+      const plainText =
+        'External heading Plain external text Bold text Italic text Underline text Super text Sub text Link text Quote text Bullet text Numbered text Table text';
+
+      const saveResponse = page.waitForResponse(
+        (response) =>
+          new URL(response.url()).pathname === endpoint &&
+          response.request().method() === 'PATCH' &&
+          typeof (response.request().postDataJSON() as { description?: unknown }).description ===
+            'string' &&
+          (response.request().postDataJSON() as { description: string }).description.includes(
+            'Plain external text',
+          ) &&
+          response.ok(),
+      );
+      await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+      await page.evaluate(
+        async (clipboardContent) => {
+          await navigator.clipboard.write([
+            new ClipboardItem({
+              'text/html': new Blob([clipboardContent.html], { type: 'text/html' }),
+              'text/plain': new Blob([clipboardContent.text], { type: 'text/plain' }),
+            }),
+          ]);
+        },
+        { html: externalHtml, text: plainText },
+      );
+      await editor.click();
+      await page.keyboard.press('ControlOrMeta+A');
+      await page.keyboard.press('ControlOrMeta+V');
+      const response = await saveResponse;
+      const persistedHtml = (response.request().postDataJSON() as { description: string })
+        .description;
+      const allowedTags = new Set([
+        'p',
+        'br',
+        'strong',
+        'em',
+        'u',
+        'sup',
+        'sub',
+        'ul',
+        'ol',
+        'li',
+        'a',
+      ]);
+
+      const assertSanitizedSnapshot = (snapshot: Awaited<ReturnType<typeof richTextMarkupSnapshot>>) => {
+        expect(snapshot.text).toContain('Plain external text');
+        expect(snapshot.text).toContain('Bold text');
+        const disallowedTags = snapshot.tags.filter((tag) => !allowedTags.has(tag));
+        expect(disallowedTags, `Unsupported pasted tags remained in ${snapshot.html}`).toEqual([]);
+        const allowedAttributes = new Set(['a:href', 'a:rel', 'a:target']);
+        const disallowedAttributes = snapshot.attributes.filter(
+          (attribute) => !allowedAttributes.has(attribute),
+        );
+        expect(
+          disallowedAttributes,
+          `Unsupported pasted attributes remained in ${snapshot.html}`,
+        ).toEqual([]);
+        expect(snapshot.html).toContain('<strong>Bold text</strong>');
+        expect(snapshot.html).toContain('<em>Italic text</em>');
+        expect(snapshot.html).toMatch(/<u(?:\s[^>]*)?>Underline text<\/u>/);
+        expect(snapshot.html).toContain('<sup>Super text</sup>');
+        expect(snapshot.html).toContain('<sub>Sub text</sub>');
+        expect(snapshot.html).toContain('href="https://example.com/pasted"');
+      };
+
+      assertSanitizedSnapshot(await richTextMarkupSnapshot(editor));
+      expect(persistedHtml).not.toMatch(/<(h[1-6]|blockquote|table|tbody|tr|td|img|div|span)\b/i);
+      expect(persistedHtml).not.toMatch(/\s(?:style|class|id|data-[\w-]+)=/i);
+
+      await page.reload();
+      await openFirstNodeEditForm(page);
+      assertSanitizedSnapshot(await richTextMarkupSnapshot(workflowRichTextDescriptionEditor(page)));
     });
   });
 

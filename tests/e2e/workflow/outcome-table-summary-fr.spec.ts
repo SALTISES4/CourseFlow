@@ -18,13 +18,23 @@ const nodeRow = (page: Page, title: string) =>
 const firstSectionSummaryRow = (page: Page) =>
   outcomeTableGrid(page).getByRole("rowgroup").first().getByRole("row").first();
 
+const grandTotalRow = (page: Page) =>
+  outcomeTableGrid(page).locator(
+    '[data-test-id="workflow-outcome-table-grand-total-row"]',
+  );
+
+const grandTotalCell = (page: Page, suffix: string) =>
+  grandTotalRow(page).locator(
+    `[data-test-id="workflow-outcome-table-grand-total-${suffix}-cell"]`,
+  );
+
 test.use({
   seedAsset: "workflow.navigation_course",
   actorAsset: "actor.teacher",
   seedAccess: "disposable-project-copy",
 });
 
-test("FR-WF-OT-009: course duration cells distinguish unset and zero and normalize section sums", async ({
+test("FR-WF-OT-009/012: course duration cells, section sums, and Grand total normalize canonical minutes", async ({
   page,
   workflow,
 }) => {
@@ -80,12 +90,31 @@ test("FR-WF-OT-009: course duration cells distinguish unset and zero and normali
     ),
   ).toHaveText("10.0");
   await expect(sectionTotal).toHaveText("54.0");
+
+  const grandTotal = grandTotalRow(page);
+  await expect(grandTotal).toBeVisible();
+  await expect(
+    grandTotal.getByText("Grand total", { exact: true }),
+  ).toBeVisible();
+  await expect(grandTotalCell(page, "hours")).toHaveText("54.0");
+  const outcomeCells = grandTotal.locator(
+    '[data-test-id="workflow-outcome-table-grand-total-outcome-cell"]',
+  );
+  expect(await outcomeCells.count()).toBeGreaterThan(0);
+  await expect(outcomeCells).toHaveText(
+    Array.from({ length: await outcomeCells.count() }, () => ""),
+  );
+  expect(
+    await grandTotal.evaluate(
+      (row) => row === row.parentElement?.lastElementChild,
+    ),
+  ).toBe(true);
 });
 
 test.describe("program Competency matrix summaries", () => {
   test.use({ seedAsset: "workflow.navigation_program" });
 
-  test("FR-WF-OT-002/010: program classification, ponderation, credits, and section totals match node metadata", async ({
+  test("FR-WF-OT-002/010/012: program summaries, section totals, and Grand total match node metadata", async ({
     page,
     workflow,
   }) => {
@@ -97,7 +126,7 @@ test.describe("program Competency matrix summaries", () => {
     const secondTitle = "Program summary specific";
     await patchOutcomeTableNodeViaApi(page, firstNodeUuid, {
       title: firstTitle,
-      timeRequiredMinutes: 2640,
+      timeRequiredMinutes: 2670,
       specificEducation: false,
       ponderationTheoryMinutes: 2640,
       ponderationPracticeMinutes: 600,
@@ -106,7 +135,7 @@ test.describe("program Competency matrix summaries", () => {
     });
     await patchOutcomeTableNodeViaApi(page, secondNodeUuid, {
       title: secondTitle,
-      timeRequiredMinutes: 600,
+      timeRequiredMinutes: 570,
       specificEducation: true,
       ponderationTheoryMinutes: null,
       ponderationPracticeMinutes: null,
@@ -146,7 +175,7 @@ test.describe("program Competency matrix summaries", () => {
       firstRow.locator(
         '[data-test-id="workflow-outcome-table-general-education-cell"]',
       ),
-    ).toHaveText("44.0");
+    ).toHaveText("45");
     await expect(
       firstRow.locator(
         '[data-test-id="workflow-outcome-table-specific-education-cell"]',
@@ -154,12 +183,12 @@ test.describe("program Competency matrix summaries", () => {
     ).toHaveText("");
     await expect(
       firstRow.locator('[data-test-id="workflow-outcome-table-theory-cell"]'),
-    ).toHaveText("44.0");
+    ).toHaveText("44");
     await expect(
       firstRow.locator(
         '[data-test-id="workflow-outcome-table-practical-cell"]',
       ),
-    ).toHaveText("10.0");
+    ).toHaveText("10");
     await expect(
       firstRow.locator(
         '[data-test-id="workflow-outcome-table-individual-cell"]',
@@ -169,7 +198,7 @@ test.describe("program Competency matrix summaries", () => {
       firstRow.locator(
         '[data-test-id="workflow-outcome-table-ponderation-total-cell"]',
       ),
-    ).toHaveText("54.0");
+    ).toHaveText("54");
     await expect(
       firstRow.locator('[data-test-id="workflow-outcome-table-credits-cell"]'),
     ).toHaveText("0");
@@ -184,7 +213,7 @@ test.describe("program Competency matrix summaries", () => {
       secondRow.locator(
         '[data-test-id="workflow-outcome-table-specific-education-cell"]',
       ),
-    ).toHaveText("10.0");
+    ).toHaveText("10");
     await expect(
       secondRow.locator(
         '[data-test-id="workflow-outcome-table-ponderation-total-cell"]',
@@ -199,22 +228,22 @@ test.describe("program Competency matrix summaries", () => {
       sectionRow.locator(
         '[data-test-id="workflow-outcome-table-section-general-education-total"]',
       ),
-    ).toHaveText("44.0");
+    ).toHaveText("45");
     await expect(
       sectionRow.locator(
         '[data-test-id="workflow-outcome-table-section-specific-education-total"]',
       ),
-    ).toHaveText("10.0");
+    ).toHaveText("10");
     await expect(
       sectionRow.locator(
         '[data-test-id="workflow-outcome-table-section-theory-total"]',
       ),
-    ).toHaveText("44.0");
+    ).toHaveText("44");
     await expect(
       sectionRow.locator(
         '[data-test-id="workflow-outcome-table-section-practical-total"]',
       ),
-    ).toHaveText("10.0");
+    ).toHaveText("10");
     await expect(
       sectionRow.locator(
         '[data-test-id="workflow-outcome-table-section-individual-total"]',
@@ -224,11 +253,24 @@ test.describe("program Competency matrix summaries", () => {
       sectionRow.locator(
         '[data-test-id="workflow-outcome-table-section-ponderation-total-total"]',
       ),
-    ).toHaveText("54.0");
+    ).toHaveText("54");
     await expect(
       sectionRow.locator(
         '[data-test-id="workflow-outcome-table-section-credits-total"]',
       ),
     ).toHaveText("0");
+
+    const grandTotal = grandTotalRow(page);
+    await expect(grandTotal).toBeVisible();
+    await expect(
+      grandTotal.getByText("Grand total", { exact: true }),
+    ).toBeVisible();
+    await expect(grandTotalCell(page, "general-education")).toHaveText("45");
+    await expect(grandTotalCell(page, "specific-education")).toHaveText("10");
+    await expect(grandTotalCell(page, "theory")).toHaveText("44");
+    await expect(grandTotalCell(page, "practical")).toHaveText("10");
+    await expect(grandTotalCell(page, "individual")).toHaveText("—");
+    await expect(grandTotalCell(page, "ponderation-hours")).toHaveText("54");
+    await expect(grandTotalCell(page, "credits")).toHaveText("");
   });
 });

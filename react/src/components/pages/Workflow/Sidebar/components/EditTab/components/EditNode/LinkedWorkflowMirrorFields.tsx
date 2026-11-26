@@ -1,6 +1,6 @@
 import WysiwygField from '@cf/components/common/UIPrimitives/WysiwygInput'
-import { formatDurationHours } from '@cfComponents/duration'
 import DurationHoursMinutesFields from '@cfComponents/DurationHoursMinutesFields'
+import WholeHoursField from '@cfComponents/WholeHoursField'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { useTranslation } from 'react-i18next'
@@ -35,7 +35,7 @@ const LinkedWorkflowMirrorFields = ({
   ponderationPracticeMinutes,
   ponderationIndividualMinutes
 }: Props) => {
-  const { t, i18n } = useTranslation('workflow')
+  const { t } = useTranslation('workflow')
 
   return (
     <Stack spacing={2}>
@@ -69,35 +69,20 @@ const LinkedWorkflowMirrorFields = ({
             placeholder="—"
             InputProps={{ readOnly: true }}
           />
-          <TextField
+          <WholeHoursField
             label={t('edit.theoryHours')}
-            variant="outlined"
-            size="small"
-            value={formatDurationHours(ponderationTheoryMinutes, i18n.language)}
-            placeholder="—"
-            InputProps={{ readOnly: true }}
+            value={ponderationTheoryMinutes}
+            readOnly
           />
-          <TextField
+          <WholeHoursField
             label={t('edit.practiceHours')}
-            variant="outlined"
-            size="small"
-            value={formatDurationHours(
-              ponderationPracticeMinutes,
-              i18n.language
-            )}
-            placeholder="—"
-            InputProps={{ readOnly: true }}
+            value={ponderationPracticeMinutes}
+            readOnly
           />
-          <TextField
+          <WholeHoursField
             label={t('edit.individualHours')}
-            variant="outlined"
-            size="small"
-            value={formatDurationHours(
-              ponderationIndividualMinutes,
-              i18n.language
-            )}
-            placeholder="—"
-            InputProps={{ readOnly: true }}
+            value={ponderationIndividualMinutes}
+            readOnly
           />
         </>
       )}

@@ -1,7 +1,8 @@
 # Normalized requirements: edit an existing workflowNode via workflowRightSidebarEditTab / workflowRightSidebarEditTabContent ('Workflow' view), including link-workflow dialog (course → activity, program → course)
-# Version: 1.2
+# Version: 1.3
 # Source: tests/docs/__ARCHIVE/functional-requirements.md (Nodes — Node Metadata; Node Actions — Link a Workflow)
 # Product decision: 2026-11-24 uses Figma-authoritative split Hours/Minutes controls for Time while retaining canonical integer minutes.
+# Product decision: 2026-11-26 uses one whole-number Hours input for node Ponderation, persists integer minutes divisible by 60, and uses the node Specific education boolean for automatic Classification bucketing.
 # ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
 # Cross-reference:
 #   - tests/docs/requirements/features/workflow/workflow_right_sidebar_requirements_v1.yaml (workflowRightSidebar / Edit tab — FR-WF-RS-001, FR-WF-RS-002, FR-WF-RS-003)
@@ -65,9 +66,9 @@ uiObjectDefinitions:
   workflowRichTextDescriptionEditorBoldButton:
     meaning: Toolbar control on workflowRichTextDescriptionEditorToolbar that toggles bold on the current selection.
   workflowRichTextDescriptionEditorItalicButton:
-    meaning: Toolbar control on workflowRichTextDescriptionEditorToolbar that toggles italic on the current selection.
+    meaning: Toolbar control on workflowRichTextDescriptionEditorToolbar that toggles italic on the current selection and is visibly represented by an italic I glyph.
   workflowRichTextDescriptionEditorUnderlineButton:
-    meaning: Toolbar control on workflowRichTextDescriptionEditorToolbar that toggles underline on the current selection.
+    meaning: Toolbar control on workflowRichTextDescriptionEditorToolbar that toggles underline on the current selection and is visibly represented by a U glyph with a distinct underline.
   workflowRichTextDescriptionEditorSuperscriptButton:
     meaning: Toolbar control on workflowRichTextDescriptionEditorToolbar that applies superscript to the current selection.
   workflowRichTextDescriptionEditorSubscriptButton:
@@ -99,11 +100,11 @@ uiObjectDefinitions:
   workflowEditNodeFormPonderationGroup:
     meaning: Field group on workflowEditNodeForm with heading 'Ponderation'; program workflow type only.
   workflowEditNodeFormPonderationTheoryField:
-    meaning: Duration input group inside workflowEditNodeFormPonderationGroup labeled 'Theory'; conforms to FR-WF-DURATION-001 through FR-WF-DURATION-003.
+    meaning: Single non-negative whole-number Hours input inside workflowEditNodeFormPonderationGroup labeled 'Theory'; its canonical value is integer minutes divisible by 60.
   workflowEditNodeFormPonderationPracticeField:
-    meaning: Duration input group inside workflowEditNodeFormPonderationGroup labeled 'Practical'; conforms to FR-WF-DURATION-001 through FR-WF-DURATION-003.
+    meaning: Single non-negative whole-number Hours input inside workflowEditNodeFormPonderationGroup labeled 'Practical'; its canonical value is integer minutes divisible by 60.
   workflowEditNodeFormPonderationIndividualField:
-    meaning: Duration input group inside workflowEditNodeFormPonderationGroup labeled 'Individual'; conforms to FR-WF-DURATION-001 through FR-WF-DURATION-003.
+    meaning: Single non-negative whole-number Hours input inside workflowEditNodeFormPonderationGroup labeled 'Individual'; its canonical value is integer minutes divisible by 60.
   workflowEditNodeFormSpecificEducationSwitch:
     meaning: Binary switch on workflowEditNodeForm labeled 'Specific education'; program workflow type only.
   workflowEditNodeFormLinkWorkflowButton:
@@ -224,7 +225,7 @@ requirements:
       - field set inside workflowEditNodeForm follows the parent workflow type per FR-WF-EN-002 (activity), FR-WF-EN-003 / FR-WF-EN-004 (course, depending on whether the workflowNode has a linked workflow), or FR-WF-EN-005 / FR-WF-EN-006 (program, depending on whether the workflowNode has a linked workflow)
       - editable field changes auto-save per FR-WF-EN-007 without an explicit save control on workflowEditNodeForm
       - canvas presentation of workflowNodeTitle, workflowNodeMeta tags, and workflowNodeLinkedWorkflowIndicator in workflowView uses the same field values and applicability as workflowEditNodeForm per FR-WF-EN-002 through FR-WF-EN-006; layout and chrome on the canvas conform to FR-WF-NODE-001
-      - workflowEditNodeFormTimeField and, when present, workflowEditNodeFormPonderationTheoryField, workflowEditNodeFormPonderationPracticeField, and workflowEditNodeFormPonderationIndividualField conform to the canonical integer-minute and host-specific presentation contract in tests/docs/requirements/features/workflow/workflow_duration_requirements_v1.yaml FR-WF-DURATION-001 through FR-WF-DURATION-003
+      - workflowEditNodeFormTimeField conforms to the split Hours/Minutes and canonical integer-minute contract in tests/docs/requirements/features/workflow/workflow_duration_requirements_v1.yaml; when present, workflowEditNodeFormPonderationTheoryField, workflowEditNodeFormPonderationPracticeField, and workflowEditNodeFormPonderationIndividualField each use one whole-number Hours input and persist canonical integer minutes divisible by 60
       - field-level read-only when linked per FR-WF-EN-004 or FR-WF-EN-006
 
     roleBehavior:
@@ -465,8 +466,8 @@ requirements:
     roleBehavior: {}
 
     acceptanceCriteria:
-      - given parent workflow type is program and the workflowNode has no linked workflow, the visible fields in workflowEditNodeForm are, in order, workflowEditNodeFormTitleField, workflowEditNodeFormDescriptionField, workflowEditNodeFormTimeField, workflowEditNodeFormCreditsField, workflowEditNodeFormPonderationGroup (with its three duration fields), workflowEditNodeFormSpecificEducationSwitch, and workflowEditNodeFormTagsAutocomplete; workflowEditNodeFormLinkWorkflowButton, workflowEditNodeFormDuplicateButton and workflowEditNodeFormDeleteButton are visible in the action area
-      - given parent workflow type is program and the workflowNode has no linked workflow, workflowEditNodeFormPonderationTheoryField, workflowEditNodeFormPonderationPracticeField, and workflowEditNodeFormPonderationIndividualField each contain one hhh:mm masked duration input per FR-WF-DURATION-001
+      - given parent workflow type is program and the workflowNode has no linked workflow, the visible fields in workflowEditNodeForm are, in order, workflowEditNodeFormTitleField, workflowEditNodeFormDescriptionField, workflowEditNodeFormTimeField, workflowEditNodeFormCreditsField, workflowEditNodeFormPonderationGroup (with its three whole-number Hours fields), workflowEditNodeFormSpecificEducationSwitch, and workflowEditNodeFormTagsAutocomplete; workflowEditNodeFormLinkWorkflowButton, workflowEditNodeFormDuplicateButton and workflowEditNodeFormDeleteButton are visible in the action area
+      - given parent workflow type is program and the workflowNode has no linked workflow, workflowEditNodeFormPonderationTheoryField, workflowEditNodeFormPonderationPracticeField, and workflowEditNodeFormPonderationIndividualField each contain one non-negative whole-number Hours input; minutes and fractional hours are rejected
       - given parent workflow type is program and the workflowNode has no linked workflow, workflowEditNodeFormLinkWorkflowButton displays 'Link a course'
       - given parent workflow type is program and the workflowNode is newly created (no prior user interaction with workflowEditNodeFormSpecificEducationSwitch), workflowEditNodeFormSpecificEducationSwitch defaults to OFF
 
@@ -526,7 +527,7 @@ requirements:
       - given parent workflow type is program and the workflowNode has a linked course workflow, workflowEditNodeFormTitleField is rendered read-only at the top and displays the linked course workflow's workflowTitle
       - given parent workflow type is program and the workflowNode has a linked course workflow, workflowEditNodeFormDescriptionField, workflowEditNodeFormTimeField, workflowEditNodeFormCreditsField, workflowEditNodeFormPonderationTheoryField, workflowEditNodeFormPonderationPracticeField, and workflowEditNodeFormPonderationIndividualField are read-only for every actor and mirror the linked course workflow's workflowMetadataFieldDescription, workflowMetadataFieldTime, workflowMetadataFieldCredits, workflowMetadataFieldTheoryTime, workflowMetadataFieldPracticalTime, and workflowMetadataFieldIndividualTime respectively; updates follow only when those metadata fields change on the linked course workflow
       - given the linked course Time is 3,060 minutes, its read-only workflowEditNodeFormTimeField displays Hours 51 and Minutes 0 per FR-WF-DURATION-003
-      - given a linked course Ponderation duration field is 3,060 minutes, its corresponding read-only workflowEditNodeForm Ponderation field displays the localized equivalent of 51.0 hours per FR-WF-DURATION-003
+      - given a linked course Ponderation field is 3,060 minutes, its corresponding read-only workflowEditNodeForm Ponderation field displays 51 hours
       - given parent workflow type is program and the workflowNode has a linked course workflow, workflowEditNodeFormTagsAutocomplete is rendered as program-node-local metadata and remains editable for owner/editor (it is not forced to read-only by the linked workflow)
       - given parent workflow type is program and the workflowNode has a linked course workflow, workflowEditNodeFormSpecificEducationSwitch is rendered and editable for owner/editor
       - given parent workflow type is program and the workflowNode has a linked course workflow, workflowEditNodeFormLinkWorkflowButton displays 'Remove linked course' and permissions per FR-WF-EN-010 roleBehavior; workflowEditNodeFormDuplicateButton and workflowEditNodeFormDeleteButton are present in the form's action area
@@ -558,7 +559,8 @@ requirements:
     mainFlow:
       - system persists changes without an explicit save control on workflowEditNodeForm
       - workflowEditNodeFormTimeField persists its Hours and Minutes components as one logical duration only when both values satisfy FR-WF-DURATION-001; an invalid component is not auto-saved as a partial or replacement duration
-      - the three workflowEditNodeFormPonderation* fields persist their masked duration values only when valid per FR-WF-DURATION-001
+      - the three workflowEditNodeFormPonderation* fields persist only non-negative whole-hour values; the UI converts entered hours to minutes and every node write or import boundary rejects canonical minute values not divisible by 60
+      - workflowEditNodeFormSpecificEducationSwitch is the program-node-local source used to route that node's exact Time minutes into the parent's General or Specific automatic Classification total; the legacy classification string has no role in this calculation
       - workflowEditNodeForm does not render any visible auto-save status indicator (e.g. 'Saving…' or 'Saved')
       - applying a toolbar format on workflowEditNodeFormDescriptionField or inserting or editing a hyperlink via workflowRichTextDescriptionEditorLinkButton counts as a field modification for auto-save
       - if workflowEditNodeFormTitleField is rendered and editable for the actor and the actor clears it, the empty string is persisted as the workflowNode's title; the 'Untitled node' placeholder is a display fallback only and is not auto-substituted into the persisted value; workflowNodeTitle in workflowView shows the same display fallback when persisted title is empty (canvas layout per FR-WF-NODE-001)
@@ -566,7 +568,7 @@ requirements:
       - downstream overview totals — when the parent workflow has workflowMetadataSwitchCalculateTimeAutomatically ON per FR-WF-OV-003, changes to workflowEditNodeFormTimeField on non-linked nodes and changes to mirrored linked workflowMetadataFieldTime per FR-WF-EN-004 and FR-WF-EN-006 cause workflowMetadataFieldTime on the parent workflow overview to recompute per FR-WF-OV-003
       - downstream overview ponderation totals — when the parent program workflow has workflowMetadataSwitchCalculatePonderationAutomatically ON per FR-WF-OV-004, changes to workflowEditNodeFormPonderationTheoryField, workflowEditNodeFormPonderationPracticeField, or workflowEditNodeFormPonderationIndividualField on non-linked nodes and changes to mirrored linked-course workflowMetadataFieldTheoryTime, workflowMetadataFieldPracticalTime, or workflowMetadataFieldIndividualTime per FR-WF-EN-006 cause the corresponding overview ponderation fields to recompute per FR-WF-OV-004
       - downstream overview credits totals — when the parent program workflow has workflowMetadataSwitchCalculateCreditsAutomatically ON per FR-WF-OV-005, changes to workflowEditNodeFormCreditsField on non-linked nodes and changes to mirrored linked-course workflowMetadataFieldCredits per FR-WF-EN-006 cause workflowMetadataFieldCredits on the parent program overview to recompute per FR-WF-OV-005
-      - downstream overview classification totals — when the parent program workflow has workflowMetadataSwitchCalculateClassificationAutomatically ON per FR-WF-OV-006, changes to workflowEditNodeFormTimeField or workflowEditNodeFormSpecificEducationSwitch on non-linked program nodes cause workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime on the parent program overview to recompute per FR-WF-OV-006
+      - downstream overview classification totals — when the parent program workflow has workflowMetadataSwitchCalculateClassificationAutomatically ON per FR-WF-OV-006, changes to workflowEditNodeFormTimeField or the program node's local workflowEditNodeFormSpecificEducationSwitch cause workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime on the parent program overview to recompute per FR-WF-OV-006; for a linked node, Time is mirrored from the linked course but the bucket remains selected by the program node's local switch
 
     roleBehavior: {}
 
@@ -574,7 +576,8 @@ requirements:
       - given workflowEditNodeForm is open for a workflowNode and actor is owner or editor, when user modifies an editable field, then the change is persisted without an explicit save control click
       - given workflowEditNodeForm is open for a workflowNode and actor is owner or editor, when user modifies an editable field, workflowEditNodeForm does not show any visible auto-save status indicator
       - given owner or editor changes workflowEditNodeFormTimeField to Hours 51 and Minutes 0, the canonical value 3,060 minutes auto-saves and reopening the workflowNode displays Hours 51 and Minutes 0
-      - given owner or editor changes an editable Ponderation duration field to 051:00, the canonical value 3,060 minutes auto-saves and reopening the workflowNode displays 051:00
+      - given owner or editor changes an editable Ponderation field to 51, the canonical value 3,060 minutes auto-saves and reopening the workflowNode displays 51
+      - given a node Ponderation write or import contains 3,090 minutes, the boundary rejects it because the value is not divisible by 60
       - given owner or editor enters an invalid duration child value, no partial duration auto-save occurs and validation is shown per FR-WF-DURATION-001
 
     openQuestions: []
@@ -618,6 +621,7 @@ requirements:
       - workflowEditNodeFormDescriptionField, workflowEditOutcomeFormDescriptionField, projectDescriptionField, and workflowDescriptionField each render workflowRichTextDescriptionEditor; none is a plain text input or plain multiline text input
       - visible field label is 'Description' on workflowEditNodeFormDescriptionField, workflowEditOutcomeFormDescriptionField, and projectDescriptionField; on workflowDescriptionField the visible label matches the hosting workflow create or edit dialog pattern (e.g. 'Activity description') per the hosting form FR
       - when editable for the actor (owner or editor, and not read-only per FR-WF-EN-004, FR-WF-EN-006, or FR-WF-EO-005 roleBehavior), workflowRichTextDescriptionEditorToolbar is visible with exactly these controls — workflowRichTextDescriptionEditorBoldButton, workflowRichTextDescriptionEditorItalicButton, workflowRichTextDescriptionEditorUnderlineButton, workflowRichTextDescriptionEditorSuperscriptButton, workflowRichTextDescriptionEditorSubscriptButton, workflowRichTextDescriptionEditorBulletListButton, workflowRichTextDescriptionEditorNumberedListButton, and workflowRichTextDescriptionEditorLinkButton — and exposes no other formatting controls (no headings, font size, colour, tables, images, code blocks, or blockquote)
+      - in every editable instance of the shared workflowRichTextDescriptionEditor, workflowRichTextDescriptionEditorItalicButton uses an italic I glyph and workflowRichTextDescriptionEditorUnderlineButton uses a U glyph with a separate visible underline; the glyphs are not unstyled plain I and U characters
       - owner or editor can apply each supported format to the current selection or insertion point via the corresponding toolbar control; formatting is reflected immediately in the editor content region
       - owner or editor can create and edit bulleted and numbered lists via workflowRichTextDescriptionEditorBulletListButton and workflowRichTextDescriptionEditorNumberedListButton
       - when owner or editor clicks workflowRichTextDescriptionEditorLinkButton with a non-empty text selection, workflowRichTextDescriptionEditorLinkDialog opens so the actor can enter or edit a URL; on confirm, the selected text becomes a hyperlink opening in a new browser tab with `http` or `https` protocol; when owner or editor clicks workflowRichTextDescriptionEditorLinkButton with an empty selection, the system inserts the literal link text 'link', selects it, and opens workflowRichTextDescriptionEditorLinkDialog so the actor can set the URL for that insertion
@@ -645,6 +649,7 @@ requirements:
 
     acceptanceCriteria:
       - given workflowEditNodeFormDescriptionField is editable for owner or editor, workflowRichTextDescriptionEditorToolbar shows exactly bold, italic, underline, superscript, subscript, bullet list, numbered list, and link controls and no additional formatting controls
+      - given any editable workflowRichTextDescriptionEditor renders, its italic control has the visible cap-and-slanted-stem geometry of an italic I and its underline control has a visible U-shaped stroke plus a distinct underline stroke
       - given workflowEditOutcomeFormDescriptionField is editable for owner or editor, the same toolbar controls and restrictions apply per this FR
       - given projectDescriptionField is rendered in createProjectDialog or editProjectDialog for an actor who can edit that form, projectDescriptionField hosts workflowRichTextDescriptionEditor and the same toolbar controls and restrictions apply per this FR
       - given workflowDescriptionField is rendered in createWorkflowDialog or editWorkflowDialog for an actor who can edit that form, workflowDescriptionField hosts workflowRichTextDescriptionEditor and the same toolbar controls and restrictions apply per this FR
@@ -904,6 +909,11 @@ designEvidenceLinkTable:
     hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5677-55544&t=6weYZA8hUf6tm7DF-1
 
 changelog:
+  - version: '1.3'
+    date: '2026-11-26'
+    changes:
+      - Replaced node Ponderation masks with single whole-number Hours inputs backed by integer minutes divisible by 60.
+      - Defined the node-local Specific education boolean as the automatic Classification bucket selector and excluded the legacy classification string.
   - version: '1.2'
     date: '2026-11-24'
     changes:

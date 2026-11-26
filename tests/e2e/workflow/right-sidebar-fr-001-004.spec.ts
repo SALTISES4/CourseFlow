@@ -40,8 +40,13 @@ const E2E_OUTCOME_TITLE = 'E2E Outcome 1';
  */
 
 async function expectSidebarCollapsed(page: import('@playwright/test').Page) {
-  await expect(workflowRightSidebar(page)).toBeVisible();
+  await expectSidebarRendered(page);
   await expect(workflowRightSidebarContentPanel(page)).toBeHidden();
+}
+
+async function expectSidebarRendered(page: import('@playwright/test').Page) {
+  await expect(workflowRightSidebar(page)).toHaveCount(1);
+  await expect(workflowRightSidebarTabStrip(page)).toBeVisible();
 }
 
 async function expectNoSidebarTabSelected(page: import('@playwright/test').Page) {
@@ -103,8 +108,6 @@ test.describe('Right sidebar — visibility and collapse (FR-WF-RS-001)', () => 
   test('FR-WF-RS-001: graph route renders workflowRightSidebar collapsed with tab strip only', async ({
     page,
   }) => {
-    await expect(workflowRightSidebar(page)).toBeVisible();
-    await expect(workflowRightSidebarTabStrip(page)).toBeVisible();
     await expectSidebarCollapsed(page);
     await expectNoSidebarTabSelected(page);
   });
@@ -178,7 +181,7 @@ test.describe('Right sidebar — visibility and collapse (FR-WF-RS-001)', () => 
 test.describe('Right sidebar — tab strip (FR-WF-RS-002)', () => {
   test.beforeEach(async ({ page, workflow }) => {
     await page.goto(workflow.path);
-    await expect(workflowRightSidebar(page)).toBeVisible({ timeout: 15_000 });
+    await expectSidebarRendered(page);
   });
 
   test('FR-WF-RS-002: graph view tab strip order is Edit, Add, Outcomes without selection', async ({
@@ -210,7 +213,7 @@ test.describe('Right sidebar — tab strip (FR-WF-RS-002)', () => {
     await workflowOutcomesTab(page).click();
     await expect(page).toHaveURL(new RegExp(`${workflowOutcomesPath(workflow.path)}/?$`));
 
-    await expect(workflowRightSidebar(page)).toBeVisible();
+    await expectSidebarRendered(page);
 
     const tabs = workflowRightSidebarTabStrip(page).getByRole('button');
     await expect(tabs).toHaveCount(1);

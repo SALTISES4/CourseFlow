@@ -1140,8 +1140,8 @@ locatorMappings:
     strategy: "{workflowBlankForm} description field labelled '[Workflow type] description', or {workflowEditForm} description field labelled 'Description'; region contains workflowRichTextDescriptionEditor"
     confidence: inferred
   workflowEdge:
-    strategy: "{workflowView} SVG g[data-nodelink-id='{workflowEdgeId}']"
-    confidence: inferred
+    strategy: "{workflowView} #line-svg SVG g[data-edge-id='{workflowEdgeId}']"
+    confidence: confirmed
   workflowEdgeSourceReconnectHandle:
     strategy: "{workflowEdge} source-end StyledHandle circle shown when workflowEdge is selected"
     confidence: inferred
@@ -1149,8 +1149,8 @@ locatorMappings:
     strategy: "{workflowEdge} target-end StyledHandle circle shown when workflowEdge is selected"
     confidence: inferred
   workflowEdgeTitleLabel:
-    strategy: null
-    confidence: unresolved
+    strategy: "{workflowEdge} SVG text element whose text content equals the persisted edge title, with its sibling background rect"
+    confidence: confirmed
   workflowEditChannelForm:
     strategy: null
     confidence: unresolved
@@ -1215,13 +1215,13 @@ locatorMappings:
     strategy: null
     confidence: unresolved
   workflowEditNodeFormPonderationIndividualField:
-    strategy: "{workflowEditNodeFormPonderationGroup} duration field group with accessible name 'Individual'"
+    strategy: "{workflowEditNodeFormPonderationGroup} numeric input with accessible name 'Individual' and step='1'"
     confidence: inferred
   workflowEditNodeFormPonderationPracticeField:
-    strategy: "{workflowEditNodeFormPonderationGroup} duration field group with accessible name 'Practical'"
+    strategy: "{workflowEditNodeFormPonderationGroup} numeric input with accessible name 'Practical' and step='1'"
     confidence: inferred
   workflowEditNodeFormPonderationTheoryField:
-    strategy: "{workflowEditNodeFormPonderationGroup} duration field group with accessible name 'Theory'"
+    strategy: "{workflowEditNodeFormPonderationGroup} numeric input with accessible name 'Theory' and step='1'"
     confidence: inferred
   workflowEditNodeFormSpecificEducationSwitch:
     strategy: null
@@ -1287,7 +1287,7 @@ locatorMappings:
     strategy: "duration field scoped to its hosting uiObject and identified by that hosting field's accessible name"
     confidence: inferred
   workflowDurationInput:
-    strategy: "hosting-specific input presentation within {workflowDurationField}; Time exposes Hours and Minutes inputs while unchanged Ponderation and Classification fields expose a masked ###:## input"
+    strategy: "hosting-specific input presentation within {workflowDurationField}; Time exposes separate Hours and Minutes inputs, while Ponderation and Classification each expose one whole-number Hours input with step='1'"
     confidence: inferred
   workflowDurationValidationMessage:
     strategy: "validation message associated with {workflowDurationInput}"
@@ -1362,19 +1362,19 @@ locatorMappings:
     strategy: null
     confidence: unresolved
   workflowMetadataFieldGeneralTime:
-    strategy: "{workflowMetadataSection} duration field group with accessible name 'General time'"
+    strategy: "{workflowMetadataSection} numeric input with accessible name 'General time' and step='1'"
     confidence: inferred
   workflowMetadataFieldIndividualTime:
-    strategy: "{workflowMetadataSection} duration field group with accessible name 'Individual'"
+    strategy: "{workflowMetadataSection} numeric input with accessible name 'Individual' and step='1'"
     confidence: inferred
   workflowMetadataFieldPracticalTime:
-    strategy: "{workflowMetadataSection} duration field group with accessible name 'Practical'"
+    strategy: "{workflowMetadataSection} numeric input with accessible name 'Practical' and step='1'"
     confidence: inferred
   workflowMetadataFieldSpecificTime:
-    strategy: "{workflowMetadataSection} duration field group with accessible name 'Specific time'"
+    strategy: "{workflowMetadataSection} numeric input with accessible name 'Specific time' and step='1'"
     confidence: inferred
   workflowMetadataFieldTheoryTime:
-    strategy: "{workflowMetadataSection} duration field group with accessible name 'Theory'"
+    strategy: "{workflowMetadataSection} numeric input with accessible name 'Theory' and step='1'"
     confidence: inferred
   workflowMetadataFieldTime:
     strategy: "{workflowMetadataSection} [data-test-id='workflow-overview-time'][role='group']"
@@ -1553,6 +1553,18 @@ locatorMappings:
   workflowOutcomeTableGridCellFocusBorder:
     strategy: "{workflowOutcomeTableGridCell}:focus-visible outline"
     confidence: inferred
+  workflowOutcomeTableGrandTotalCreditsCell:
+    strategy: "{workflowOutcomeTableGrandTotalRow} [data-test-id='workflow-outcome-table-grand-total-credits-cell']"
+    confidence: confirmed
+  workflowOutcomeTableGrandTotalOutcomeCell:
+    strategy: "{workflowOutcomeTableGrandTotalRow} [data-test-id='workflow-outcome-table-grand-total-outcome-cell']"
+    confidence: confirmed
+  workflowOutcomeTableGrandTotalRow:
+    strategy: "{workflowOutcomeTableCompetencyMatrixLayout} [data-test-id='workflow-outcome-table-grand-total-row']"
+    confidence: confirmed
+  workflowOutcomeTableGrandTotalSummaryCell:
+    strategy: "{workflowOutcomeTableGrandTotalRow} cell whose data-test-id begins 'workflow-outcome-table-grand-total-' and is not workflowOutcomeTableGrandTotalOutcomeCell or workflowOutcomeTableGrandTotalCreditsCell"
+    confidence: confirmed
   workflowOutcomeTableGridCellPartialIndicator:
     strategy: "{workflowOutcomeTableGridCell}[aria-checked='mixed'] with partial checkmark icon"
     confidence: inferred
@@ -1653,13 +1665,13 @@ locatorMappings:
     strategy: "region with accessible name 'Outcome table' on route '/workflow/{id}/outcome-table'"
     confidence: inferred
   workflowOutcomeTableViewSettingsMenuItemCollapseOutcomes:
-    strategy: "{workflowViewSettingsMenu} role='menuitem' named 'Collapse outcomes'"
+    strategy: "{workflowViewSettingsMenu} role='menuitem' named 'Collapse all outcomes'"
     confidence: inferred
   workflowOutcomeTableViewSettingsMenuItemExpandOutcomes:
-    strategy: "{workflowViewSettingsMenu} role='menuitem' named 'Expand outcomes'"
+    strategy: "{workflowViewSettingsMenu} role='menuitem' named 'Expand all outcomes'"
     confidence: inferred
   workflowOutcomeTableViewSettingsMenuTagsSection:
-    strategy: "{workflowViewSettingsMenu} group named 'Tags'; each listed outcome tag is a role='checkbox' control named by its catalog label"
+    strategy: "{workflowViewSettingsMenu} group named 'Tags'; each listed outcome tag uses a .MuiSwitch-root visual control whose input has role='checkbox' and is named by its catalog label"
     confidence: inferred
   workflowOutcomeTree:
     strategy: null
@@ -1686,11 +1698,14 @@ locatorMappings:
     strategy: "{workflowRightSidebarOutcomesTabContent} button with text 'Edit outcomes'"
     confidence: inferred
   workflowOutcomesAssignTabEmptyState:
-    strategy: "{workflowRightSidebarOutcomesTabContent} region containing workflowOutcomesAssignTabEmptyStateAlert and workflowOutcomesAssignTabAddOutcomesButton"
+    strategy: "{workflowRightSidebarOutcomesTabContent} region containing workflowOutcomesAssignTabEmptyStateMessage and workflowOutcomesAssignTabAddOutcomesButton"
     confidence: inferred
-  workflowOutcomesAssignTabEmptyStateAlert:
-    strategy: "{workflowOutcomesAssignTabEmptyState} persistent alert"
-    confidence: inferred
+  workflowOutcomesAssignTabEmptyStateMessage:
+    strategy: "{workflowOutcomesAssignTabEmptyState} text matching 'There are currently no outcomes in this {workflow type}. Open the outcomes view to add outcomes.'"
+    confidence: confirmed
+  workflowOutcomesAssignTabHelpText:
+    strategy: "{workflowRightSidebarOutcomesTabContent} exact text 'Drag and drop to associate outcomes from parent workflows with outcomes in the current workflow. Select an outcome to highlight relevant nodes.'"
+    confidence: confirmed
   workflowOutcomesAssignTabHeading:
     strategy: "{workflowRightSidebarOutcomesTabContent} heading with text 'Outcomes'"
     confidence: inferred
@@ -1722,8 +1737,8 @@ locatorMappings:
     strategy: null
     confidence: unresolved
   workflowRichTextDescriptionEditor:
-    strategy: "rich-text editor with contenteditable region and workflowRichTextDescriptionEditorToolbar inside {workflowEditNodeFormDescriptionField}, {workflowEditOutcomeFormDescriptionField}, {projectDescriptionField}, or {workflowDescriptionField}"
-    confidence: inferred
+    strategy: "contenteditable textbox named by its Description field label inside {workflowEditNodeFormDescriptionField}, {workflowEditOutcomeFormDescriptionField}, {projectDescriptionField}, or {workflowDescriptionField}; excludes ReactQuill internal .ql-clipboard"
+    confidence: confirmed
   workflowRichTextDescriptionEditorBoldButton:
     strategy: "{workflowRichTextDescriptionEditorToolbar} bold control"
     confidence: inferred
@@ -1755,7 +1770,7 @@ locatorMappings:
     strategy: "{workflowRichTextDescriptionEditorToolbar} underline control"
     confidence: inferred
   workflowRightSidebar:
-    strategy: "[data-test-id='workflow-right-sidebar']"
+    strategy: "[data-test-id='workflow-right-sidebar'] (collapsed wrapper intentionally has zero width; assert visible collapsed presentation via workflowRightSidebarTabStrip)"
     confidence: confirmed
   workflowRightSidebarAddTab:
     strategy: "{workflowRightSidebarTabStrip} [aria-label='add tab']"
@@ -1791,10 +1806,13 @@ locatorMappings:
     strategy: "{workflowRightSidebar} IconButton at top-right of expanded panel"
     confidence: inferred
   workflowRowInsertPreDropBand:
-    strategy: null
-    confidence: unresolved
+    strategy: "During a Row-mode drag, the matching workflowSectionRow direct workflowChannel cell contains one absolute-positioned MUI Box whose ::before pseudo-element is a 6px top or bottom insertion line"
+    confidence: inferred
   workflowSectionContainer:
     strategy: "[data-section-id]"
+    confidence: confirmed
+  workflowScrollableContentRegion:
+    strategy: ".workflow-scrollable wrapping workflowView or workflowOutcomeTableView"
     confidence: confirmed
   workflowSectionContainerHoverActionsMenu:
     strategy: "[data-test-id=\"workflow-section-hover-menu\"]"
@@ -1815,6 +1833,9 @@ locatorMappings:
   workflowSectionContainerSelectedBorder:
     strategy: "{workflowSectionContainer}[data-selected=\"true\"]"
     confidence: implemented
+    confidence: inferred
+  workflowSectionReorderDropIndicator:
+    strategy: "{workflowSectionContainer} direct-child Atlaskit DropIndicator (box, type no-terminal) on the closest top or bottom edge during vertical section reorder"
     confidence: inferred
   workflowSectionDeleteDialog:
     strategy: "[aria-labelledby='delete-section-part-modal']"
@@ -1906,4 +1927,10 @@ locatorMappings:
     confidence: confirmed
   networkActivityLoader:
     strategy: '[data-testid="network-activity-loader"]'
+    confidence: confirmed
+  legacyCenteredWorkflowLoader:
+    strategy: '#container > .load-screen while an authenticated workflow route is initially loading'
+    confidence: confirmed
+  mainNavigationLoader:
+    strategy: '{mainNavigation} .load-screen'
     confidence: confirmed

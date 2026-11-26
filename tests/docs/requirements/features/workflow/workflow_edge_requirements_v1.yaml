@@ -321,6 +321,7 @@ requirements:
       - system persists changes without an explicit save control on workflowEditEdgeForm
       - workflowEditEdgeForm does not render any visible auto-save status indicator (e.g. 'Saving…' or 'Saved')
       - when owner or editor changes workflowEditEdgeFormTitleField, the title is saved without an explicit save control; workflowEdgeTitleLabel is shown on the workflowEdge in workflowView when the stored title is non-empty and is not shown when the stored title is empty
+      - when shown, workflowEdgeTitleLabel is centered on the workflowEdge path, uses centered black 12 px text, and has a white rounded background sized to contain the title; text and background share the same visual centre
       - when owner or editor changes workflowEditEdgeFormDashedLineToggle, the persisted dashed flag updates and workflowEdge in workflowView reflects dashed when the toggle is on and solid when the toggle is off
       - when another workflowEdge is selected, selection moves to that workflowEdge
       - when multiple workflowEdges share the same target workflowNode, user selects a workflowEdge by clicking a segment of that workflowEdge where the line is visible without overlap from other workflowEdges sharing that target (typically an upstream segment before the lines converge on the target workflowNode)
@@ -358,6 +359,7 @@ requirements:
       - given commenter, viewer, or user clicks a workflowEdge in workflowView, workflowEditEdgeForm opens with workflowEditEdgeFormTitleField and workflowEditEdgeFormDashedLineToggle readOnly and workflowEditEdgeFormDeleteButton disabled
       - given owner or editor has workflowEditEdgeForm open for workflowEdge E, when workflowEditEdgeFormDashedLineToggle is on, workflowEdge E is drawn dashed in workflowView; when the toggle is off, workflowEdge E is drawn solid
       - given owner or editor has workflowEditEdgeForm open for workflowEdge E, when user modifies workflowEditEdgeFormTitleField, the change is saved without an explicit save control and workflowEdge E shows workflowEdgeTitleLabel in workflowView when the stored title is non-empty
+      - given workflowEdge E has a non-empty title, workflowEdgeTitleLabel uses text-anchor middle, dominant-baseline middle, black 12 px text, and a white rounded background whose rendered bounds contain and are centred on the text
       - given owner or editor has workflowEditEdgeForm open for workflowEdge E, when user modifies an editable field on workflowEditEdgeForm, workflowEditEdgeForm does not show any visible auto-save status indicator
       - given owner or editor clears workflowEditEdgeFormTitleField on workflowEdge E, when save completes, workflowEdge E does not show workflowEdgeTitleLabel in workflowView
       - given workflowEdge E is selected, when user clicks workflowEdge F in workflowView, workflowEditEdgeForm binds to F

@@ -57,6 +57,10 @@ uiObjectDefinitions:
     meaning: Warning chip labeled 'Already in use' on workflowCard only inside workflowLinkWorkflowDialogSearchResults per workflow_edit_node_requirements_v1.yaml FR-WF-EN-008 and FR-WF-EN-009; indicates the candidate course or activity is already linked to another node in the same workflow per FR-CARD-007.
   globalMessageSnackbar:
     meaning: Application-wide transient snackbar for async success and error feedback.
+  networkActivityLoader:
+    meaning: Global foreground-network activity indicator shown while the authenticated client has one or more foreground requests in progress.
+  legacyCenteredWorkflowLoader:
+    meaning: Legacy full-content workflow loader rendered as a `.load-screen` element; prohibited during authenticated initial workflow loading by FR-CARD-004.
 
 locatorMappings:
   projectCard: "canonical_locators.yaml -> projectCard"
@@ -77,6 +81,8 @@ locatorMappings:
   workflowCardDeletePermanentlyButton: "canonical_locators.yaml -> workflowCardDeletePermanentlyButton"
   cardLinkedInUseChip: "canonical_locators.yaml -> cardLinkedInUseChip"
   globalMessageSnackbar: "canonical_locators.yaml -> globalMessageSnackbar"
+  networkActivityLoader: "canonical_locators.yaml -> networkActivityLoader"
+  legacyCenteredWorkflowLoader: "canonical_locators.yaml -> legacyCenteredWorkflowLoader"
 
 requirements:
   - id: FR-CARD-001
@@ -114,6 +120,7 @@ requirements:
       - when owner data exists, system renders cardOwnerText inside cardHeaderRegion directly below cardTitleText in the description slot with format 'Owned by {ownerName}'
       - system renders cardTypeChip from project object type mapping inside cardFooterTagsRegion within cardFooterRegion
       - when template flag is true, system renders cardTemplateChip with label 'Template' on projectCard inside cardFooterTagsRegion
+      - project workflow count equals the number of non-archived workflows belonging to the project; archived workflows are excluded from the count
       - when project workflow count is greater than zero, system renders cardWorkflowCountChip with singular/plural workflow label inside cardFooterTagsRegion
       - system renders cardFavouriteToggle bound to project favourite state inside cardFooterRegion after cardFooterTagsRegion, aligned to the trailing edge of the footer row per FIGMA-CARD-DESIGNS
 
@@ -131,6 +138,7 @@ requirements:
       - given project workflow count equals 1, cardWorkflowCountChip label matches '1 workflow' and is visible inside cardFooterTagsRegion
       - given project workflow count is greater than 1, cardWorkflowCountChip label matches '{n} workflows' and is visible inside cardFooterTagsRegion
       - given project workflow count is null or 0, cardWorkflowCountChip is not visible
+      - given a project contains N non-archived workflows and M archived workflows, cardWorkflowCountChip represents N only and does not include M
       - cardFavouriteToggle is visible on projectCard inside cardFooterRegion and is not inside cardHeaderRegion
       - given project is favourited, cardFavouriteToggle on projectCard shows yellow star
       - given project is not favourited, cardFavouriteToggle on projectCard shows grey star
@@ -239,6 +247,8 @@ requirements:
 
     uiObjects:
       - workflowCard
+      - networkActivityLoader
+      - legacyCenteredWorkflowLoader
 
     preconditions:
       - workflowCard is visible
@@ -251,11 +261,13 @@ requirements:
 
     mainFlow:
       - when user clicks workflowCard card body, system navigates to '/workflow/{id}/graph' with workflowView open
+      - while the authenticated workflow's initial data is still loading after navigation, system shows exactly one networkActivityLoader and does not show legacyCenteredWorkflowLoader; moving the global loader to the centre is outside this requirement
 
     roleBehavior: {}
 
     acceptanceCriteria:
       - given non-archived workflowCard, user clicks workflowCard card body, current route matches '/workflow/{id}/graph'
+      - given non-archived workflowCard is clicked and the initial authenticated workflow request remains pending, exactly one networkActivityLoader is visible and legacyCenteredWorkflowLoader is not rendered
 
     openQuestions: []
 

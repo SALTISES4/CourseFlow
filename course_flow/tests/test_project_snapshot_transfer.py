@@ -7,6 +7,8 @@ import pytest
 from pydantic import ValidationError
 
 from course_flow.application.project_transfer.contract import (
+    CourseMetaSnapshot,
+    ProgramMetaSnapshot,
     ProjectSnapshotBundle,
 )
 from course_flow.application.project_transfer.service import (
@@ -116,6 +118,16 @@ def test_snapshot_fingerprint_rejects_content_tampering():
 
     with pytest.raises(ValidationError, match="fingerprint_sha256"):
         ProjectSnapshotBundle.model_validate(payload)
+
+
+def test_snapshot_rejects_ponderation_minute_remainders():
+    with pytest.raises(ValidationError, match="multiple of 60"):
+        CourseMetaSnapshot(ponderation_theory_minutes=90)
+
+
+def test_snapshot_rejects_classification_minute_remainders():
+    with pytest.raises(ValidationError, match="multiple of 60"):
+        ProgramMetaSnapshot(classification_general_minutes=90)
 
 
 @pytest.mark.django_db

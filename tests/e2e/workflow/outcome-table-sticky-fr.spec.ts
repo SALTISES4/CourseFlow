@@ -1,8 +1,16 @@
 import { expect, test, type Locator, type Page } from "../../fixtures";
 import { ensurePageWorkspaceEditLock } from "../../helpers/edit-lock";
+import { mainNavigation } from "../../shared/locators/navigation";
+import {
+  workflowRightSidebarTabStrip,
+  workflowChannelsHeaderRow,
+  workflowScrollableContentRegion,
+  workflowViewTabSelector,
+} from "../../shared/locators/workflow";
 import { createOutcomeViaApi } from "./outcome-drag.helpers";
 import {
   createWorkflowNodeViaApi,
+  createWorkflowChannelViaApi,
   openOutcomeTable,
   outcomeTableGrid,
   patchOutcomeTableNodeViaApi,
@@ -25,12 +33,13 @@ type StickyMeasurement = {
 };
 
 async function measureStickyRegions(
+  scrollRegion: Locator,
   grid: Locator,
   rowHeader: Locator,
 ): Promise<StickyMeasurement> {
   const header = grid.locator(":scope > div").first();
   const [scroll, headerBox, rowHeaderBox] = await Promise.all([
-    grid.evaluate((element) => ({
+    scrollRegion.evaluate((element) => ({
       scrollLeft: element.scrollLeft,
       scrollTop: element.scrollTop,
     })),
@@ -49,15 +58,16 @@ async function measureStickyRegions(
 
 async function assertStickyOnBothAxes(
   page: Page,
+  scrollRegion: Locator,
   grid: Locator,
   rowHeader: Locator,
 ): Promise<void> {
-  await grid.evaluate((element) => {
+  await scrollRegion.evaluate((element) => {
     element.scrollLeft = 0;
     element.scrollTop = 0;
   });
-  const before = await measureStickyRegions(grid, rowHeader);
-  await grid.evaluate((element) => {
+  const before = await measureStickyRegions(scrollRegion, grid, rowHeader);
+  await scrollRegion.evaluate((element) => {
     element.scrollLeft = Math.min(
       500,
       element.scrollWidth - element.clientWidth,
@@ -69,12 +79,12 @@ async function assertStickyOnBothAxes(
     element.dispatchEvent(new Event("scroll", { bubbles: true }));
   });
   await expect
-    .poll(() => grid.evaluate((element) => element.scrollLeft))
+    .poll(() => scrollRegion.evaluate((element) => element.scrollLeft))
     .toBeGreaterThan(0);
   await expect
-    .poll(() => grid.evaluate((element) => element.scrollTop))
+    .poll(() => scrollRegion.evaluate((element) => element.scrollTop))
     .toBeGreaterThan(0);
-  const after = await measureStickyRegions(grid, rowHeader);
+  const after = await measureStickyRegions(scrollRegion, grid, rowHeader);
   expect(after.scrollLeft).toBeGreaterThan(before.scrollLeft);
   expect(after.scrollTop).toBeGreaterThan(before.scrollTop);
   expect(Math.abs(after.headerTop - before.headerTop)).toBeLessThanOrEqual(1);
@@ -82,6 +92,95 @@ async function assertStickyOnBothAxes(
     Math.abs(after.rowHeaderLeft - before.rowHeaderLeft),
   ).toBeLessThanOrEqual(1);
   await page.waitForTimeout(50);
+}
+
+async function assertWorkspaceHorizontalScrollBoundary(
+  page: Page,
+  movingContent: Locator,
+  includeWorkflowSidebar: boolean,
+): Promise<void> {
+  const scrollRegion = workflowScrollableContentRegion(page);
+  const fixedRegions = [mainNavigation(page), workflowViewTabSelector(page)];
+  if (includeWorkflowSidebar) {
+    fixedRegions.push(workflowRightSidebarTabStrip(page));
+  }
+
+  await expect(scrollRegion).toBeVisible();
+  await expect
+    .poll(() =>
+      scrollRegion.evaluate((element) => element.scrollWidth > element.clientWidth),
+    )
+    .toBe(true);
+
+  const beforeFixed = await Promise.all(fixedRegions.map((region) => region.boundingBox()));
+  const beforeScrollRegion = await scrollRegion.boundingBox();
+  const beforeMovingContent = await movingContent.boundingBox();
+  const navigationBox = beforeFixed[0];
+  expect(beforeFixed.every(Boolean)).toBe(true);
+  expect(beforeScrollRegion).toBeTruthy();
+  expect(beforeMovingContent).toBeTruthy();
+  expect(navigationBox).toBeTruthy();
+  expect(beforeScrollRegion!.x).toBeGreaterThanOrEqual(
+    navigationBox!.x + navigationBox!.width - 1,
+  );
+
+  await scrollRegion.evaluate((element) => {
+    element.scrollLeft = Math.min(500, element.scrollWidth - element.clientWidth);
+    element.dispatchEvent(new Event("scroll", { bubbles: true }));
+  });
+  await expect
+    .poll(() => scrollRegion.evaluate((element) => element.scrollLeft))
+    .toBeGreaterThan(0);
+
+  const afterFixed = await Promise.all(fixedRegions.map((region) => region.boundingBox()));
+  const afterScrollRegion = await scrollRegion.boundingBox();
+  const afterMovingContent = await movingContent.boundingBox();
+  for (let index = 0; index < beforeFixed.length; index += 1) {
+    expect(Math.abs(afterFixed[index]!.x - beforeFixed[index]!.x)).toBeLessThanOrEqual(1);
+    expect(Math.abs(afterFixed[index]!.y - beforeFixed[index]!.y)).toBeLessThanOrEqual(1);
+  }
+  expect(Math.abs(afterScrollRegion!.x - beforeScrollRegion!.x)).toBeLessThanOrEqual(1);
+  expect(afterMovingContent!.x).toBeLessThan(beforeMovingContent!.x);
+}
+
+async function assertGraphNodeCategoryHeaderSticky(page: Page): Promise<void> {
+  const scrollRegion = workflowScrollableContentRegion(page);
+  const channelHeader = workflowChannelsHeaderRow(page);
+  const sections = page.locator('[data-test-id="sections-block"]');
+  const tabs = workflowViewTabSelector(page);
+
+  await scrollRegion.evaluate((element) => {
+    element.scrollTop = 0;
+  });
+  await expect
+    .poll(() =>
+      scrollRegion.evaluate((element) => element.scrollHeight > element.clientHeight),
+    )
+    .toBe(true);
+
+  const [beforeHeader, beforeSections, tabsBox] = await Promise.all([
+    channelHeader.boundingBox(),
+    sections.boundingBox(),
+    tabs.boundingBox(),
+  ]);
+  expect(beforeHeader && beforeSections && tabsBox).toBeTruthy();
+
+  await scrollRegion.evaluate((element) => {
+    element.scrollTop = Math.min(500, element.scrollHeight - element.clientHeight);
+    element.dispatchEvent(new Event("scroll", { bubbles: true }));
+  });
+  await expect
+    .poll(() => scrollRegion.evaluate((element) => element.scrollTop))
+    .toBeGreaterThan(0);
+
+  const [afterHeader, afterSections] = await Promise.all([
+    channelHeader.boundingBox(),
+    sections.boundingBox(),
+  ]);
+  expect(afterHeader && afterSections).toBeTruthy();
+  expect(Math.abs(afterHeader!.y - beforeHeader!.y)).toBeLessThanOrEqual(1);
+  expect(afterHeader!.y).toBeGreaterThanOrEqual(tabsBox!.y + tabsBox!.height - 1);
+  expect(afterSections!.y).toBeLessThan(beforeSections!.y);
 }
 
 test("FR-WF-OT-004: sticky top and left regions remain visible after two-axis scroll in both styles", async ({
@@ -94,6 +193,8 @@ test("FR-WF-OT-004: sticky top and left regions remain visible after two-axis sc
   const graph = await fetchGraphView(page, workflow.workflowUuid);
   const firstNode = graph.nodes[0];
   expect(firstNode).toBeTruthy();
+  await createWorkflowChannelViaApi(page, workflow, "Sticky category 02");
+  await createWorkflowChannelViaApi(page, workflow, "Sticky category 03");
   await patchOutcomeTableNodeViaApi(page, firstNode!.uuid, {
     title: "Sticky node 01",
   });
@@ -111,9 +212,11 @@ test("FR-WF-OT-004: sticky top and left regions remain visible after two-axis sc
 
   await openOutcomeTable(page, workflow);
   const grid = outcomeTableGrid(page);
+  const scrollRegion = workflowScrollableContentRegion(page);
+  await assertWorkspaceHorizontalScrollBoundary(page, grid, false);
   await expect
     .poll(() =>
-      grid.evaluate(
+      scrollRegion.evaluate(
         (element) =>
           element.scrollWidth > element.clientWidth &&
           element.scrollHeight > element.clientHeight,
@@ -122,6 +225,7 @@ test("FR-WF-OT-004: sticky top and left regions remain visible after two-axis sc
     .toBe(true);
   await assertStickyOnBothAxes(
     page,
+    scrollRegion,
     grid,
     grid.getByRole("rowheader", { name: /Sticky outcome 01/ }),
   );
@@ -129,7 +233,7 @@ test("FR-WF-OT-004: sticky top and left regions remain visible after two-axis sc
   await selectOutcomeTableStyle(page, "Competency matrix");
   await expect
     .poll(() =>
-      grid.evaluate(
+      scrollRegion.evaluate(
         (element) =>
           element.scrollWidth > element.clientWidth &&
           element.scrollHeight > element.clientHeight,
@@ -138,7 +242,14 @@ test("FR-WF-OT-004: sticky top and left regions remain visible after two-axis sc
     .toBe(true);
   await assertStickyOnBothAxes(
     page,
+    scrollRegion,
     grid,
     grid.getByRole("rowheader", { name: "Sticky node 01", exact: true }),
   );
+
+  await page.goto(workflow.path);
+  const workflowView = page.locator('[data-test-id="workflow-view"]');
+  await expect(workflowView).toBeVisible();
+  await assertWorkspaceHorizontalScrollBoundary(page, workflowView, true);
+  await assertGraphNodeCategoryHeaderSticky(page);
 });

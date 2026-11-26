@@ -8,7 +8,7 @@ import {
 } from '../../helpers/edit-workflow-form';
 import {
   expectEditableWorkflowDescriptionRichTextPerFrWfEn012,
-  expectWorkflowDescriptionRichTextHtml,
+  expectWorkflowDescriptionRichTextValue,
 } from '../../helpers/workflow-description-rich-text';
 import type { WorkflowFixtureType } from '../../helpers/manifest';
 import { workflowTitle } from './workflow.locators';
@@ -96,7 +96,7 @@ test.describe('Edit workflow form — FR-WF-FORM-001-003', () => {
 
         await openEditWorkflowDialog(page, workflowType);
         await expect(workflowEditTitleField(page)).toHaveValue(original.title);
-        await expectWorkflowDescriptionRichTextHtml(
+        await expectWorkflowDescriptionRichTextValue(
           workflowEditDescriptionField(page),
           original.description ?? '',
         );
@@ -198,7 +198,7 @@ test.describe('Edit workflow form — FR-WF-FORM-001-003', () => {
 
         const persisted = await fetchWorkflowDetail(page, workflowUuid);
         expect(persisted.title).toBe(updatedTitle);
-        expect(persisted.description).toBe(updatedDescription);
+        expect(persisted.description).toBe(`<p>${updatedDescription}</p>`);
       });
 
       test('FR-WF-FORM-003: failed edit keeps dialog open, retains values, and shows failure snackbar', async ({
@@ -230,7 +230,7 @@ test.describe('Edit workflow form — FR-WF-FORM-001-003', () => {
 
         await expect(editWorkflowDialog(page)).toBeVisible();
         await expect(workflowEditTitleField(page)).toHaveValue(updatedTitle);
-        await expectWorkflowDescriptionRichTextHtml(
+        await expectWorkflowDescriptionRichTextValue(
           workflowEditDescriptionField(page),
           updatedDescription,
         );

@@ -54,7 +54,7 @@ uiObjectDefinitions:
   workflowViewSettingsMenuItemCollapseAllOutcomes:
     meaning: Menu row labeled 'Collapse all outcomes' in workflowViewSettingsMenu.
   workflowViewSettingsMenuTagsSection:
-    meaning: Tags area in workflowViewSettingsMenu listing project tags with on/off toggles.
+    meaning: Tags area in workflowViewSettingsMenu listing project tags with MUI switch controls; each switch exposes checkbox semantics to accessibility APIs while retaining switch rather than checkbox visual presentation.
   workflowJumpToTrigger:
     meaning: Jump to control on contextActionBar on the Workflow sub-view.
   workflowJumpToMenu:
@@ -86,9 +86,9 @@ uiObjectDefinitions:
   workflowOutcomeTableStyleMenuItemCompetencyMatrix:
     meaning: Table style menu row labeled 'Competency matrix' in workflowOutcomeTableStyleMenu.
   workflowOutcomeTableViewSettingsMenuItemExpandOutcomes:
-    meaning: Menu row labeled 'Expand outcomes' in workflowViewSettingsMenu when active sub-view is 'Outcome table'.
+    meaning: Menu row labeled 'Expand all outcomes' in workflowViewSettingsMenu when active sub-view is 'Outcome table'.
   workflowOutcomeTableViewSettingsMenuItemCollapseOutcomes:
-    meaning: Menu row labeled 'Collapse outcomes' in workflowViewSettingsMenu when active sub-view is 'Outcome table'.
+    meaning: Menu row labeled 'Collapse all outcomes' in workflowViewSettingsMenu when active sub-view is 'Outcome table'.
   workflowOutcomeTableViewSettingsMenuTagsSection:
     meaning: "'TAGS' area in workflowViewSettingsMenu on 'Outcome table' sub-view listing tags assigned to workflowOutcomes in the current workflow; node-only tags are excluded."
   workflowOutcomeTableSortTrigger:
@@ -453,7 +453,7 @@ requirements:
       - workflowViewSettingsMenuItemExpandAllSections, workflowViewSettingsMenuItemCollapseAllSections, workflowViewSettingsMenuItemExpandAllOutcomes, and workflowViewSettingsMenuItemCollapseAllOutcomes are discrete selectable menu rows (not switch toggles); legacy archive expand/collapse node rows and 'Show Legend' are not in product scope
       - clicking workflowViewSettingsMenuItemExpandAllSections expands all workflowSectionContainer entries in workflowView per FR-SEC-012 in tests/docs/requirements/features/workflow/workflow_edit_section_requirements_v1.yaml; clicking workflowViewSettingsMenuItemCollapseAllSections collapses all workflowSectionContainer entries in workflowView per FR-SEC-012
       - clicking workflowViewSettingsMenuItemExpandAllOutcomes expands all workflowOutcome entries in workflowOutcomeView per tests/docs/requirements/features/workflow/workflow_edit_outcome_requirements_v1.yaml; clicking workflowViewSettingsMenuItemCollapseAllOutcomes collapses all workflowOutcome entries in workflowOutcomeView
-      - when workflowViewSettingsMenuTagsSection is shown, it lists project tags from the parent project's tag catalog per FR-PROJ-OV-005 that are assigned to at least one workflowNode (Workflow sub-view) or workflowOutcome (Outcomes sub-view) in the current workflow; each listed tag has an on/off toggle — on the Workflow sub-view, turning a tag off hides workflowNode entries carrying that tag from workflowView; on the Outcomes sub-view, turning a tag off hides workflowOutcome entries carrying that tag from workflowOutcomeView; workflowNode or workflowOutcome entries with no tags assigned remain visible regardless of toggle state; when an entry carries multiple tags, it is hidden if any assigned tag matches a toggled-off tag; tag on/off toggle state in workflowViewSettingsMenuTagsSection is session-scoped only and is not persisted — refreshing the page or reopening the workflow resets all tag toggles to on (show all tagged entries)
+      - when workflowViewSettingsMenuTagsSection is shown, it lists project tags from the parent project's tag catalog per FR-PROJ-OV-005 that are assigned to at least one workflowNode (Workflow sub-view) or workflowOutcome (Outcomes sub-view) in the current workflow; each listed tag uses switch visual presentation (not a checkbox glyph) while its native input exposes role='checkbox' and checked state — on the Workflow sub-view, turning a tag off hides workflowNode entries carrying that tag from workflowView; on the Outcomes sub-view, turning a tag off hides workflowOutcome entries carrying that tag from workflowOutcomeView; workflowNode or workflowOutcome entries with no tags assigned remain visible regardless of toggle state; when an entry carries multiple tags, it is hidden if any assigned tag matches a toggled-off tag; tag on/off toggle state in workflowViewSettingsMenuTagsSection is session-scoped only and is not persisted — refreshing the page or reopening the workflow resets all tag toggles to on (show all tagged entries)
       - when tag T is deleted from the project tag catalog per FR-PROJ-OV-005, T is not listed in workflowViewSettingsMenuTagsSection the next time the actor opens View settings on the Workflow or Outcomes sub-view
 
     roleBehavior:
@@ -480,6 +480,7 @@ requirements:
       - given workflow sub-view is 'Outcomes' and workflowOutcome O has no tags assigned via workflowEditOutcomeFormTagsAutocomplete, when actor toggles one or more tags off in workflowViewSettingsMenuTagsSection, O remains visible in workflowOutcomeView
       - given workflow sub-view is 'Workflow' and workflowNode N carries tags {T1, T2, …} via workflowEditNodeFormTagsAutocomplete, when actor toggles T1 off in workflowViewSettingsMenuTagsSection, N is hidden from workflowView; when T1 is toggled back on and no other tag assigned to N matches a toggled-off tag, N is visible again in workflowView
       - given workflow sub-view is 'Outcomes' and level-1 workflowOutcome O carries tags {T1, T2, …} via workflowEditOutcomeFormTagsAutocomplete, when actor toggles T1 off in workflowViewSettingsMenuTagsSection, O is hidden from workflowOutcomeView; when T1 is toggled back on and no other tag assigned to O matches a toggled-off tag, O is visible again in workflowOutcomeView
+      - each tag control in workflowViewSettingsMenuTagsSection is visually a switch rather than a checkbox and exposes its on/off state through role='checkbox' and the checked accessibility state
       - given workflowViewSettingsMenuTagsSection previously listed tag T and owner or editor deletes T from projectTagsSection per FR-PROJ-OV-005, when actor opens View settings on the Workflow or Outcomes sub-view, T is not shown in workflowViewSettingsMenuTagsSection
 
     openQuestions: []
@@ -586,8 +587,10 @@ requirements:
 
     mainFlow:
       - when active sub-view is 'Outcome table', workflowViewSettingsTrigger is visible on contextActionBar and opens workflowViewSettingsMenu when clicked
-      - workflowViewSettingsMenu shows workflowOutcomeTableViewSettingsMenuItemExpandOutcomes labeled 'Expand outcomes' and workflowOutcomeTableViewSettingsMenuItemCollapseOutcomes labeled 'Collapse outcomes'; workflowOutcomeTableViewSettingsMenuTagsSection is shown only when at least one projectTagItem from FR-PROJ-OV-005 is assigned to at least one workflowOutcome in the current workflow; tags assigned only to workflowNode entries do not make the section visible and are not listed because Outcome Table tag filtering applies only to the outcome axis
+      - workflowViewSettingsMenu shows workflowOutcomeTableViewSettingsMenuItemExpandOutcomes labeled 'Expand all outcomes' and workflowOutcomeTableViewSettingsMenuItemCollapseOutcomes labeled 'Collapse all outcomes'; workflowOutcomeTableViewSettingsMenuTagsSection is shown only when at least one projectTagItem from FR-PROJ-OV-005 is assigned to at least one workflowOutcome in the current workflow; tags assigned only to workflowNode entries do not make the section visible and are not listed because Outcome Table tag filtering applies only to the outcome axis
       - expand and collapse behavior for workflowOutcomeTableViewSettingsMenuItemExpandOutcomes and workflowOutcomeTableViewSettingsMenuItemCollapseOutcomes follows tests/docs/requirements/features/workflow/workflow_outcome_table_requirements_v1.yaml FR-WF-OT-003
+      - after workflowOutcomeTableViewSettingsMenuItemExpandOutcomes or workflowOutcomeTableViewSettingsMenuItemCollapseOutcomes applies its action, workflowViewSettingsMenu closes and workflowViewSettingsTrigger returns to its collapsed state without requiring an outside click or Escape
+      - toggling a switch inside workflowOutcomeTableViewSettingsMenuTagsSection does not close workflowViewSettingsMenu so the actor can change multiple outcome-tag filters in one menu session; each switch exposes role='checkbox' and checked state to accessibility APIs and is not a completed menu-row action
       - workflowOutcomeTableViewSettingsMenuTagsSection lists each projectTagItem from FR-PROJ-OV-005 assigned to at least one workflowOutcome in the current workflow; toggling a tag off hides every rendered occurrence of each workflowOutcome carrying that tag from the outcome axis in both layouts, and toggling it on restores those occurrences unless another assigned tag remains off
       - when a hidden workflowOutcome is a parent, its displayed subtree is also hidden so no descendant is rendered without its ancestor; a descendant with no tags remains hidden while its ancestor is hidden under this hierarchy rule
       - when a workflowOutcome carries multiple tags, it is hidden if any assigned tag matches a toggled-off tag per FR-CAB-006; when all assigned tags are on, every occurrence allowed by FR-WF-OT-008 is visible
@@ -611,7 +614,7 @@ requirements:
         workflowViewSettingsTrigger: available
 
     acceptanceCriteria:
-      - given authenticated actor is on 'Outcome table', workflowViewSettingsTrigger is visible and its menu contains 'Expand outcomes' and 'Collapse outcomes'
+      - given authenticated actor is on 'Outcome table', workflowViewSettingsTrigger is visible and its menu contains 'Expand all outcomes' and 'Collapse all outcomes'
       - given the workflow has outcome tags in use, workflowOutcomeTableViewSettingsMenuTagsSection lists each in-use outcome tag once and does not list a tag used only by workflowNode entries
       - given the workflow has no tag assigned to a workflowOutcome, workflowOutcomeTableViewSettingsMenuTagsSection is not rendered
       - given outcome O carries a toggled-off tag, every rendered occurrence of O and O's displayed subtree is hidden in both table styles; O is restored only after every tag assigned to O is toggled on
@@ -619,6 +622,8 @@ requirements:
       - given a tag toggle hides outcome rows or columns, outcome assignments, completion status, node-derived summary values, and persisted workflow data remain unchanged
       - given actor is commenter, viewer, published-access user, or an owner or editor without the edit lock, expand, collapse, and outcome-tag controls remain enabled
       - given actor changes outcome expansion or tag toggles, that state survives table-style and workflow sub-view changes within the mounted workflow and resets to collapsed outcomes and all tags on after workflow reopen, workflow change, or page reload
+      - given actor selects 'Expand all outcomes' or 'Collapse all outcomes', the selected expansion action is applied and workflowViewSettingsMenu closes without an outside click or Escape
+      - given actor toggles an outcome-tag switch, the filter is applied and workflowViewSettingsMenu remains open for another tag-toggle selection; the control has switch visual presentation and role='checkbox' accessibility semantics
 
     openQuestions: []
 
@@ -678,6 +683,7 @@ requirements:
       - the selected sort is preserved when the actor changes between workflowOutcomeTableNormalLayout and workflowOutcomeTableCompetencyMatrixLayout or moves among sub-views within the same mounted workflow; changing table style does not reset the sort
       - the selected sort resets to workflowOutcomeTableSortMenuItemChronological when the actor leaves and later reopens the workflow, opens a different workflow, or reloads the page; the selected sort is not persisted to backend data or browser storage
       - sorting changes only the current browser presentation and remains available when the workflow is otherwise read-only; it does not require mutation permission or workflow edit-lock ownership
+      - after an enabled workflowOutcomeTableSortMenu row applies its sort, workflowOutcomeTableSortMenu closes and workflowOutcomeTableSortTrigger returns to its collapsed state without requiring an outside click or Escape
 
     roleBehavior:
       owner:
@@ -701,6 +707,7 @@ requirements:
       - given actor changes table style or leaves and returns to Outcome Table within the mounted workflow, the selected sort is preserved and changing style does not reset it
       - given actor reopens the workflow, opens another workflow, or reloads the page, selected sort is 'Chronological'
       - given the workflow is read-only or actor does not hold the edit lock, workflowOutcomeTableSortTrigger remains enabled and sorting does not persist workflow data
+      - given actor selects an enabled row in workflowOutcomeTableSortMenu, the selected sort is applied and workflowOutcomeTableSortMenu closes without an outside click or Escape
 
     openQuestions: []
 

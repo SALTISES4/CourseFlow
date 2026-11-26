@@ -8,7 +8,11 @@ export const WORKFLOW_RIGHT_SIDEBAR = '[data-test-id="workflow-right-sidebar"]';
 export const WORKFLOW_SECTION_CONTAINER = '[data-section-id]';
 export const WORKFLOW_EDIT_SECTION_FORM = '[data-test-id="workflow-edit-section-form"]';
 
-/** canonical: workflowRightSidebar */
+/**
+ * canonical: workflowRightSidebar
+ * The collapsed wrapper intentionally has zero width; use workflowRightSidebarTabStrip
+ * when asserting that the collapsed sidebar is visibly rendered.
+ */
 export function workflowRightSidebar(page: Page): Locator {
   return page.locator(WORKFLOW_RIGHT_SIDEBAR);
 }
@@ -179,6 +183,11 @@ export function workflowSidebarToggleButton(page: Page): Locator {
 /** canonical: workflowViewTabSelector */
 export function workflowViewTabSelector(page: Page): Locator {
   return page.getByRole('tablist');
+}
+
+/** canonical: workflowScrollableContentRegion — Graph/Outcome Table inner scroll viewport */
+export function workflowScrollableContentRegion(page: Page): Locator {
+  return page.locator('.workflow-scrollable');
 }
 
 export function workflowOverviewTab(page: Page): Locator {

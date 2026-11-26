@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 import { workflowSectionRow } from '../../shared/locators/workflow';
 import { sectionNodes } from './edit-section.locators';
@@ -35,6 +35,86 @@ import {
   INSERT_CHANNEL_DEFAULT_COLOUR,
   INSERT_CHANNEL_DEFAULT_TITLE,
 } from './workflow-channel-color.helpers';
+
+export type AddTabRowCellPreDropVisuals = {
+  filledHoverCount: number;
+  insertionLineCount: number;
+};
+
+/** Start an Add-tab category drag over a specific row cell without releasing. */
+export async function beginNodeCategoryDragOverRowCell(
+  page: Page,
+  categoryLabel: string,
+  sectionUuid: string,
+  rowIndex: number,
+  columnIndex: number,
+  edge: 'top' | 'bottom' = 'bottom',
+): Promise<void> {
+  const source = workflowAddTabNodeCategoryItem(page, categoryLabel);
+  const row = workflowSectionRow(page, sectionUuid, rowIndex);
+  const cell = row.locator(':scope > div').nth(columnIndex);
+
+  await source.scrollIntoViewIfNeeded();
+  await cell.scrollIntoViewIfNeeded();
+
+  const sourceBox = await source.boundingBox();
+  const cellBox = await cell.boundingBox();
+  if (!sourceBox || !cellBox) {
+    throw new Error('Add-tab drag source or target row cell not visible.');
+  }
+
+  const startX = sourceBox.x + sourceBox.width / 2;
+  const startY = sourceBox.y + sourceBox.height / 2;
+  const targetX = cellBox.x + cellBox.width / 2;
+  const targetY = cellBox.y + cellBox.height * (edge === 'top' ? 0.25 : 0.75);
+
+  await page.mouse.move(startX, startY);
+  await page.mouse.down();
+  await page.mouse.move(startX - 12, startY, { steps: 4 });
+  await page.mouse.move(targetX, targetY, { steps: 20 });
+}
+
+/** Read the rendered Row-mode line and the prohibited filled cell-hover visual. */
+export async function addTabRowCellPreDropVisuals(
+  cell: Locator,
+): Promise<AddTabRowCellPreDropVisuals> {
+  return cell.evaluate((root) => {
+    const elements = [root, ...root.querySelectorAll<HTMLElement>('*')];
+    let filledHoverCount = 0;
+    let insertionLineCount = 0;
+
+    for (const element of elements) {
+      const style = getComputedStyle(element);
+      const before = getComputedStyle(element, '::before');
+      const rect = element.getBoundingClientRect();
+      const visible = rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden';
+      if (!visible) {
+        continue;
+      }
+
+      if (
+        style.position === 'absolute' &&
+        before.content !== 'none' &&
+        before.content !== 'normal' &&
+        Number.parseFloat(before.height) === 6 &&
+        before.backgroundColor !== 'rgba(0, 0, 0, 0)'
+      ) {
+        insertionLineCount += 1;
+      }
+
+      if (
+        style.position === 'absolute' &&
+        style.backgroundColor !== 'rgba(0, 0, 0, 0)' &&
+        Math.abs(rect.width - root.getBoundingClientRect().width) < 1 &&
+        Math.abs(rect.height - root.getBoundingClientRect().height) < 1
+      ) {
+        filledHoverCount += 1;
+      }
+    }
+
+    return { filledHoverCount, insertionLineCount };
+  });
+}
 
 /** Drag a node category from Add tab onto a registered section row drop target. */
 export async function dragNodeCategoryOntoSection(

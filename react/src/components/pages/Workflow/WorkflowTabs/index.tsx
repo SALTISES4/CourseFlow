@@ -117,6 +117,7 @@ const WorkflowTabs = ({
       <ExpandCollapseMenu
         graphUuid={workflow.graphUuid}
         sectionIds={sectionIdsOrdered}
+        workflowType={workflowType}
       />
     </Stack>
   )
