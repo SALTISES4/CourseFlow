@@ -144,6 +144,7 @@ export async function withLibraryObjectFavouriteState(
 /** Read visible sidebar Favourites rows (title + resolved link pathname). */
 export async function readSidebarFavouriteEntries(page: Page): Promise<SidebarFavouriteEntry[]> {
   const links = favouritedItemLinks(page);
+  await expect(links.first()).toBeVisible();
   const linkCount = await links.count();
   const entries: SidebarFavouriteEntry[] = [];
 

@@ -43,6 +43,8 @@ uiObjectDefinitions:
     meaning: Row link in relatedWorkflowList; visible link text is that workflow's workflowTitle.
   workflowTitle:
     meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml.
+  mainNavigationLoader:
+    meaning: Legacy `.load-screen` loading presentation inside mainNavigation; prohibited while favouritesSection or workflow-context relatedWorkflowList data loads.
 
 locatorMappings:
   mainNavigation: "canonical_locators.yaml -> mainNavigation"
@@ -60,6 +62,7 @@ locatorMappings:
   containsSection: "canonical_locators.yaml -> containsSection"
   relatedWorkflowList: "canonical_locators.yaml -> relatedWorkflowList"
   relatedWorkflowLink: "canonical_locators.yaml -> relatedWorkflowLink"
+  mainNavigationLoader: "canonical_locators.yaml -> mainNavigationLoader"
 
 requirements:
   - id: FR-NAV-001
@@ -85,6 +88,7 @@ requirements:
       - exploreNavItem
       - favouritesSection
       - helpAndSupportLink
+      - mainNavigationLoader
 
     preconditions:
       - documentPreconditions for this file hold
@@ -96,6 +100,7 @@ requirements:
       - mainNavigationPanel shows brandLockup at the top
       - mainNavigation shows homeNavItem, myLibraryNavItem, exploreNavItem, and helpAndSupportLink
       - when user has at least one favourited project, mainNavigation shows favouritesSection
+      - while favouritesSection or workflow-context relatedWorkflowList data is loading, mainNavigation remains usable and does not render mainNavigationLoader; those optional sections remain absent until their data is available
       - when the combined primary, favourites, contains, and appears-in navigation sections exceed the available mainNavigation height, those sections share one vertical scroll region while brandLockup and helpAndSupportLink remain fixed
 
     roleBehavior: {}
@@ -108,6 +113,7 @@ requirements:
       - myLibraryNavItem is visible with label 'My library'
       - exploreNavItem is visible with label 'Explore'
       - helpAndSupportLink is visible with label 'Help and support'
+      - given the favourites or workflow-context related-workflows request is pending, mainNavigationLoader is not rendered inside mainNavigation
       - given user has at least one favourited project, favouritesSection is visible
       - given user has zero favourited projects, favouritesSection is not visible in mainNavigation
       - given user has zero favourited projects, viewAllLink is not visible in mainNavigation

@@ -73,6 +73,10 @@ uiObjectDefinitions:
     meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_node_visual_requirements_v1.yaml (FR-WF-NODE-001).
   workflowEdge:
     meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edge_requirements_v1.yaml.
+  workflowScrollableContentRegion:
+    meaning: Inner horizontal and vertical scroll viewport containing workflowView.
+  workflowViewTabSelector:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml.
 
 locatorMappings:
   workflowView: "canonical_locators.yaml -> workflowView"
@@ -93,6 +97,8 @@ locatorMappings:
   workflowEditChannelFormColorField: "canonical_locators.yaml -> workflowEditChannelFormColorField"
   workflowChannelReorderDropIndicator: "canonical_locators.yaml -> workflowChannelReorderDropIndicator"
   workflowChannelReorderSourceDimming: "canonical_locators.yaml -> workflowChannelReorderSourceDimming"
+  workflowScrollableContentRegion: "canonical_locators.yaml -> workflowScrollableContentRegion"
+  workflowViewTabSelector: "canonical_locators.yaml -> workflowViewTabSelector"
   workflowChannelReorderDragPreview: "canonical_locators.yaml -> workflowChannelReorderDragPreview"
 
 requirements:
@@ -169,6 +175,8 @@ requirements:
       - workflowChannelHeader
       - workflowChannelHeaderColorIndicator
       - workflowChannelHeaderTitleText
+      - workflowScrollableContentRegion
+      - workflowViewTabSelector
 
     preconditions:
       - workflow contains one or more workflowChannels in left-to-right order
@@ -184,6 +192,7 @@ requirements:
       - when the channel has no title, workflowChannelHeaderTitleText shows 'Untitled node category' (same rule for every channel — default channels created with FR-WF-ADD-003, channels inserted per FR-CHAN-004, and channels duplicated per FR-CHAN-005)
       - when the title shown on workflowChannelHeaderTitleText exceeds the available header width, workflowChannelHeaderTitleText truncates with an ellipsis ('...')
       - title and colour for a newly inserted channel are defined in FR-CHAN-004 only
+      - workflowChannelsHeaderRow remains sticky at the top of workflowScrollableContentRegion during vertical workflowView scrolling, immediately below workflowViewTabSelector; workflow sections and nodes continue scrolling beneath it
 
     roleBehavior: {}
 
@@ -193,6 +202,7 @@ requirements:
       - given the channel has no title, workflowChannelHeaderTitleText shows 'Untitled node category'
       - given a channel title longer than the workflowChannelHeaderTitleText display width allows on one line, workflowChannelHeaderTitleText shows a truncated prefix followed by '...' and does not wrap to a second line
       - when channel order changes via lateral reorder, workflowChannelsHeaderRow reflects the new left-to-right order without changing workflowChannel identity; node and edge behavior per FR-CHAN-008
+      - given workflowView content exceeds the available height, changing workflowScrollableContentRegion.scrollTop moves workflowSectionContainer content while workflowChannelsHeaderRow retains its viewport position immediately below workflowViewTabSelector
 
     openQuestions: []
 
@@ -232,6 +242,7 @@ requirements:
     mainFlow:
       - system persists changes without an explicit save control on workflowEditChannelForm
       - workflowEditChannelForm does not render any visible auto-save status indicator (e.g. 'Saving…' or 'Saved')
+      - workflowEditChannelFormTitleField continuously retains the user's latest local text while an earlier auto-save request is pending or completing; an older response never replaces newer unsaved or saved text
       - when the user clears workflowEditChannelFormTitleField, the channel has no title; workflowChannelHeaderTitleText shows 'Untitled node category' per FR-CHAN-002 and workflowEditChannelFormTitleField is blank
       - when the channel has a title that exceeds available header width, workflowChannelHeaderTitleText truncates with '...' per FR-CHAN-002 and workflowEditChannelFormTitleField shows the full stored title
       - after save, workflowChannelHeaderTitleText updates per FR-CHAN-002, workflowEditChannelFormTitleField shows the saved title (blank when the channel has no title), and workflowChannelHeaderColorIndicator updates to the saved colour
@@ -258,6 +269,7 @@ requirements:
 
     acceptanceCriteria:
       - when owner or editor changes the channel title, the title is saved without an explicit save control; workflowChannelHeaderTitleText updates per FR-CHAN-002 (truncates with '...' on one line when the title exceeds available header width) and workflowEditChannelFormTitleField shows the saved title
+      - given owner or editor continues typing after an auto-save request has started, when that earlier request completes before or after the newer save, workflowEditChannelFormTitleField never reverts to the earlier request value and the latest complete title persists
       - given workflowEditChannelForm is open and actor is owner or editor, when user modifies an editable field on workflowEditChannelForm, workflowEditChannelForm does not show any visible auto-save status indicator
       - given workflowEditChannelForm is open for a channel whose title exceeds available header width, workflowChannelHeaderTitleText shows a truncated prefix followed by '...' per FR-CHAN-002 and workflowEditChannelFormTitleField shows the full stored title
       - given owner or editor clears workflowEditChannelFormTitleField on any channel, when save completes, the channel has no title; workflowChannelHeaderTitleText shows 'Untitled node category' per FR-CHAN-002 and workflowEditChannelFormTitleField is blank

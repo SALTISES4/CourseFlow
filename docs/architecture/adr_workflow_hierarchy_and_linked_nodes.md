@@ -116,6 +116,7 @@ Do **not** rewrite historical FR IDs in this ADR; use this table when implementi
 ## References
 
 - Typed meta ERD: [ADR: Typed meta for workflows and grid nodes](adr_node_and_workflow_typed_meta.md)
+- Architecture debt: [TD-0001 — Workflow Overview rollups repeatedly traverse linked hierarchies](technical-debt.md)
 - Hierarchy helpers: `course_flow/core/hierarchy.py`
 - Model: `course_flow/core/models/node.py`
 - FR terminology (authoring): `tests/docs/requirements/terminology_workflow_hierarchy_and_nodes.md`

@@ -73,9 +73,20 @@ const OutcomeTableView = ({
         sx={{ p: 0 }}
         data-test-id="workflow-outcome-table-view"
       >
-        {publicView && <PresentationControls graphUuid={workflow.graphUuid} />}
+        {publicView && (
+          <PresentationControls
+            graphUuid={workflow.graphUuid}
+            workflowType={workflowType}
+          />
+        )}
         {viewType === 'matrix' && (
-          <Styled.TableWrap className="view-matrix">
+          <Styled.TableWrap
+            className="view-matrix"
+            role="grid"
+            aria-label={t('outcomeTable.gridLabel')}
+            data-test-id="workflow-outcome-table-grid"
+            data-layout="competency-matrix"
+          >
             <TableHeaderMatrix
               workflowType={workflowType}
               table={table}
@@ -85,7 +96,13 @@ const OutcomeTableView = ({
           </Styled.TableWrap>
         )}
         {viewType === 'normal' && (
-          <Styled.TableWrap className="view-normal">
+          <Styled.TableWrap
+            className="view-normal"
+            role="grid"
+            aria-label={t('outcomeTable.gridLabel')}
+            data-test-id="workflow-outcome-table-grid"
+            data-layout="normal"
+          >
             <TablheHeaderNormal table={table} />
             <TableBodyNormal table={table} projectTagsMap={projectTagsMap} />
           </Styled.TableWrap>

@@ -61,7 +61,8 @@ import {
   workflowNodeLinkedOutcomesPopover,
   workflowOutcomesAssignTabAddOutcomesButton,
   workflowOutcomesAssignTabEditOutcomesButton,
-  workflowOutcomesAssignTabEmptyStateAlert,
+  workflowOutcomesAssignTabEmptyStateMessage,
+  workflowOutcomesAssignTabHelpText,
   workflowOutcomesAssignTabOutcomeRow,
   workflowOutcomesAssignTabUntaggedGroupTitle,
 } from './workflow-assign-outcome.locators';
@@ -160,6 +161,7 @@ test.describe('Assign outcomes tab — populated state (FR-WF-AO-002, FR-WF-AO-0
   }) => {
     await expect(workflowRightSidebarOutcomesTabContent(page)).toBeVisible();
     await expect(workflowOutcomesAssignTabOutcomeRow(page, E2E_SEED_OUTCOME_HEADER)).toBeVisible();
+    await expect(workflowOutcomesAssignTabHelpText(page)).toHaveCount(0);
     await expect(workflowOutcomesAssignTabEditOutcomesButton(page)).toBeVisible();
     await expect(workflowOutcomesAssignTabEditOutcomesButton(page)).toBeEnabled();
   });
@@ -452,11 +454,11 @@ test.describe('Assign outcomes tab — empty state (FR-WF-AO-001)', () => {
     await openWorkflowOutcomesTab(page);
   });
 
-  test('FR-WF-AO-001: empty state shows Outcomes heading, alert, and Add outcomes button', async ({
+  test('FR-WF-AO-001: empty state shows Outcomes heading, message, and Add outcomes button', async ({
     page,
   }) => {
     await expect(workflowRightSidebarOutcomesTabContent(page)).toBeVisible();
-    await expect(workflowOutcomesAssignTabEmptyStateAlert(page)).toBeVisible();
+    await expect(workflowOutcomesAssignTabEmptyStateMessage(page)).toBeVisible();
     await expect(
       page.getByText(
         /There are currently no outcomes in this activity\. Open the outcomes view to add outcomes\./,
@@ -591,6 +593,60 @@ test.describe('Linked outcomes badge and popover (FR-WF-AO-007, FR-WF-AO-008, FR
     const nodeUuid = await firstWorkflowNodeUuid(page);
     await openLinkedOutcomesPopover(page, nodeUuid, 1);
     await expect(workflowNodeLinkedOutcomeRow(page, E2E_SEED_OUTCOME_HEADER)).toBeVisible();
+  });
+
+  test('FR-WF-AO-009: top-level and nested rows follow tree ordinal order, not assignment order', async ({
+    page,
+    workflow,
+  }) => {
+    const nodeUuid = await secondWorkflowNodeUuid(page);
+    const rootOutcome = workflow.firstOutcome();
+    const secondRootTitle = `E2E ordinal root ${Date.now()}`;
+    const firstChildTitle = `E2E ordinal child A ${Date.now()}`;
+    const secondChildTitle = `E2E ordinal child B ${Date.now()}`;
+    let secondRootUuid = '';
+    let firstChildUuid = '';
+    let secondChildUuid = '';
+
+    await prepareGraphAfterApiSetup(page, workflow.path, async () => {
+      firstChildUuid = await createOutcomeViaApi(page, workflow.graphUuid, {
+        title: firstChildTitle,
+        parentUuid: rootOutcome.uuid,
+        insertIndex: 0,
+      });
+      secondChildUuid = await createOutcomeViaApi(page, workflow.graphUuid, {
+        title: secondChildTitle,
+        parentUuid: rootOutcome.uuid,
+        insertIndex: 1,
+      });
+      secondRootUuid = await createOutcomeViaApi(page, workflow.graphUuid, {
+        title: secondRootTitle,
+        parentUuid: null,
+        insertIndex: 1,
+      });
+      await linkOutcomesToNodeViaApi(page, nodeUuid, [
+        secondRootUuid,
+        secondChildUuid,
+        firstChildUuid,
+        rootOutcome.uuid,
+      ]);
+    });
+
+    await openLinkedOutcomesPopoverForNode(page, nodeUuid);
+    await revealLinkedPopoverOutcomeRows(page, E2E_SEED_OUTCOME_HEADER);
+
+    const expectedRowTexts = [
+      `1. ${E2E_OUTCOME_TITLE}`,
+      `1.1. ${firstChildTitle}`,
+      `1.2. ${secondChildTitle}`,
+      `2. ${secondRootTitle}`,
+    ];
+    const expectedRows = new Set(expectedRowTexts);
+    const actualRowTexts = (await workflowNodeLinkedOutcomesPopover(page).locator('p').allTextContents())
+      .map((text) => text.trim())
+      .filter((text) => expectedRows.has(text));
+
+    expect(actualRowTexts).toEqual(expectedRowTexts);
   });
 
   test('FR-WF-AO-009: linked outcome rows use their hierarchy-level colour', async ({
@@ -838,7 +894,7 @@ test.describe('Outcome delete and duplicate — node assignments (FR-WF-EO-011, 
 
     await page.goto(workflow.path);
     await openWorkflowOutcomesTab(page);
-    await expect(workflowOutcomesAssignTabEmptyStateAlert(page)).toBeVisible({ timeout: 15_000 });
+    await expect(workflowOutcomesAssignTabEmptyStateMessage(page)).toBeVisible({ timeout: 15_000 });
     await expect(workflowNodeLinkedOutcomesBadge(page, nodeUuid, 1)).toHaveCount(0);
 
     await expect
@@ -906,7 +962,7 @@ test.describe('Outcome delete and duplicate — node assignments (FR-WF-EO-011, 
     });
 
     await openAssignTabOnWorkflowGraph(page, workflow.path);
-    await expect(workflowOutcomesAssignTabEmptyStateAlert(page)).toHaveCount(0);
+    await expect(workflowOutcomesAssignTabEmptyStateMessage(page)).toHaveCount(0);
     await expect(workflowOutcomesAssignTabOutcomeRow(page, E2E_SEED_OUTCOME_HEADER)).toBeVisible();
     await expect(
       workflowOutcomesAssignTabOutcomeRow(page, new RegExp(E2E_OUTCOME_CHILD_A_TITLE)),
@@ -945,7 +1001,7 @@ test.describe('Outcome delete and duplicate — node assignments (FR-WF-EO-011, 
     });
 
     await openAssignTabOnWorkflowGraph(page, workflow.path);
-    await expect(workflowOutcomesAssignTabEmptyStateAlert(page)).toBeVisible({ timeout: 15_000 });
+    await expect(workflowOutcomesAssignTabEmptyStateMessage(page)).toBeVisible({ timeout: 15_000 });
     await expect(workflowNodeLinkedOutcomesBadge(page, firstNodeUuid, 1)).toHaveCount(0);
     await expect(workflowNodeLinkedOutcomesBadge(page, secondNodeUuid, 1)).toHaveCount(0);
   });
@@ -985,7 +1041,7 @@ test.describe('Outcome delete and duplicate — node assignments (FR-WF-EO-011, 
     });
 
     await openAssignTabOnWorkflowGraph(page, workflow.path);
-    await expect(workflowOutcomesAssignTabEmptyStateAlert(page)).toHaveCount(0);
+    await expect(workflowOutcomesAssignTabEmptyStateMessage(page)).toHaveCount(0);
     await expect(workflowOutcomesAssignTabOutcomeRow(page, E2E_SEED_OUTCOME_HEADER)).toHaveCount(0);
     await expect(
       workflowOutcomesAssignTabOutcomeRow(page, new RegExp(E2E_OUTCOME_CHILD_A_TITLE)),

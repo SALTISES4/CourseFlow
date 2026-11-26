@@ -115,6 +115,10 @@ export const TableBody = styled(Box, { target: 'table-body' })(({ theme }) => ({
   width: 'fit-content'
 }))
 
+export const SemanticGroup = styled(Box)({
+  display: 'contents'
+})
+
 export const BodyLegendWrap = styled(Box, {
   target: 'legend-wrap'
 })(({ theme }) => ({
@@ -230,35 +234,28 @@ export const CheckmarkCell = styled(Box)(({ theme }) => ({
   justifyContent: 'center',
   boxShadow: `inset 1px 1px 0 0 ${theme.palette.divider}`,
 
-  // hide the checkbox rectangle for the elements in "empty" state
-  '&:not(:has(input)):not(:hover) span': {
-    opacity: 0,
-    transform: 'scale(0.85)'
-  },
-
-  '&:hover span': {
-    borderColor: theme.palette.primary.main
-  },
-  '& label': {
+  '& button': {
+    appearance: 'none',
+    border: 0,
+    background: 'transparent',
     position: 'relative',
     width: '100%',
     height: '100%',
     display: 'flex',
     padding: '6px 8px',
-    cursor: 'pointer'
-  },
-  '& input': {
-    position: 'absolute',
-    left: 0,
-    opacity: 0,
-    '& ~ span': {
-      color: '#8AD6AD'
+    cursor: 'pointer',
+    '&:disabled': {
+      cursor: 'default'
     },
-    '&:checked ~ span': {
-      color: theme.palette.primary.dark
+    '&:focus-visible': {
+      outline: `2px solid ${theme.palette.primary.main}`,
+      outlineOffset: '-2px'
+    },
+    '&:not(:disabled):hover span': {
+      borderColor: theme.palette.primary.main
     }
   },
-  '& span': {
+  '& button span': {
     display: 'flex',
     width: '100%',
     height: '100%',
@@ -267,8 +264,23 @@ export const CheckmarkCell = styled(Box)(({ theme }) => ({
     border: '1px solid #EEF2FD',
     borderRadius: theme.shape.borderRadius,
     backgroundColor: theme.palette.common.white,
-    transition: `opacity 0.1s ease, transform 0.1s ease`
-  }
+    transition: `opacity 0.1s ease, transform 0.1s ease`,
+    '&[data-status="empty"]': {
+      opacity: 0,
+      transform: 'scale(0.85)'
+    },
+    '&[data-status="partial"]': {
+      color: '#8AD6AD'
+    },
+    '&[data-status="full"]': {
+      color: theme.palette.primary.dark
+    }
+  },
+  '& button:not(:disabled):hover span[data-status="empty"], & button:focus-visible span[data-status="empty"]':
+    {
+      opacity: 1,
+      transform: 'scale(1)'
+    }
 }))
 
 export const TableCell = styled(CheckmarkCell, { target: 'table-cell' })(

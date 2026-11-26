@@ -8,13 +8,13 @@ on run argv
 
         tell current window
             tell current session
-                write text "cd " & quoted form of repoRoot & " && just frontend-dev"
+                write text "cd " & quoted form of repoRoot & " && just toolchain::frontend-dev"
             end tell
 
-            create tab with default profile
-            tell session 1 of last tab
-                write text "cd " & quoted form of repoRoot & " && just docker-logs"
-            end tell
+--            create tab with default profile
+--            tell session 1 of last tab
+--                write text "cd " & quoted form of repoRoot & " && just docker-logs"
+--            end tell
         end tell
     end tell
 end run

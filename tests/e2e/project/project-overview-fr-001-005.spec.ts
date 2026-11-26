@@ -1,7 +1,19 @@
 import { test, expect } from '../../fixtures';
+import { authenticatedApiRequest } from '../../helpers/api';
 import { loginAs } from '../../helpers/auth';
 import { gotoAuthenticatedShell } from '../../helpers/navigation';
-import { getProjectPath, loadWorkflowManifest } from '../../helpers/manifest';
+import {
+  getPrimaryWorkflow,
+  getProjectPath,
+  loadWorkflowManifest,
+} from '../../helpers/manifest';
+import { waitForProjectWorkflowsLoaded } from '../../helpers/project-workflows';
+import { libraryWorkflowCardByUuid } from '../../shared/locators/cards';
+import {
+  createProjectOverviewTag,
+  openFirstNodeEditForm,
+} from '../workflow/edit-node.helpers';
+import { workflowEditNodeFormTagsField } from '../workflow/workflow-graph.locators';
 import {
   ADD_CONTRIBUTORS_DIALOG_COPY,
   ADD_CONTRIBUTORS_SNACKBAR_MESSAGES,
@@ -56,10 +68,14 @@ import {
   E2E_CONTRIBUTOR_EDITOR_EMAIL,
   E2E_CONTRIBUTOR_STUDENT_EMAIL,
   projectMetadataAddContributorsButton,
+  projectMetadataBlock,
   projectMetadataFieldCreatedOn,
+  projectMetadataPermissionsPanel,
+  projectOverviewTab,
   projectPermissionsPanelContributorEmail,
   projectTitle,
   projectTagsSection,
+  projectWorkflowsTab,
   publishProjectConfirmationModal,
   publishProjectConfirmationModalCancelButton,
   publishProjectConfirmationModalConfirmButton,
@@ -107,6 +123,48 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
   test('FR-PROJ-OV-001: overview view renders required metadata', async ({ page }) => {
     await expectProjectOverviewMetadataLabelsPerFrProjOv001(page);
     await expect(projectMetadataFieldCreatedOn(page)).toHaveCount(0);
+  });
+
+  test('FR-PROJ-OV-001: Overview labels, permission list, and visibility warning use 16 px gaps', async ({
+    page,
+  }) => {
+    const descriptionBlock = projectMetadataBlock(page, 'Description');
+    const descriptionLabel = descriptionBlock.getByText('Description', {
+      exact: true,
+    });
+    const descriptionContent = descriptionLabel.locator(
+      'xpath=following-sibling::*[1]',
+    );
+    const contributorsLabel = projectMetadataPermissionsPanel(page);
+    const contributorsContent = contributorsLabel.locator(
+      'xpath=following-sibling::*[1]',
+    );
+
+    for (const [label, content] of [
+      [descriptionLabel, descriptionContent],
+      [contributorsLabel, contributorsContent],
+    ] as const) {
+      const [labelBox, contentBox] = await Promise.all([
+        label.boundingBox(),
+        content.boundingBox(),
+      ]);
+      expect(labelBox).not.toBeNull();
+      expect(contentBox).not.toBeNull();
+      expect(contentBox!.y - (labelBox!.y + labelBox!.height)).toBeCloseTo(
+        16,
+        0,
+      );
+    }
+
+    const permissionList = contributorsContent.getByRole('list');
+    const visibilityWarning = contributorsContent.getByRole('alert');
+    const [listBox, warningBox] = await Promise.all([
+      permissionList.boundingBox(),
+      visibilityWarning.boundingBox(),
+    ]);
+    expect(listBox).not.toBeNull();
+    expect(warningBox).not.toBeNull();
+    expect(warningBox!.y - (listBox!.y + listBox!.height)).toBeCloseTo(16, 0);
   });
 
   test('FR-PROJ-OV-001: description block reflects project API value', async ({ page }) => {
@@ -561,5 +619,55 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
     await expect(projectTagsSection(page)).toBeVisible();
     await expect(addNewTagInput(page)).toBeVisible();
     await expect(addNewTagInput(page)).toHaveAttribute('placeholder', 'Add new tag');
+  });
+
+  test('FR-PROJ-OV-005: newly created tag is immediately available in an already-visited child workflow', async ({
+    page,
+  }) => {
+    const workflow = getPrimaryWorkflow(manifest);
+    const tagLabel = `E2E immediate project tag ${Date.now()}`;
+
+    await projectWorkflowsTab(page).click();
+    await waitForProjectWorkflowsLoaded(page);
+    const initialTagsResponse = page.waitForResponse(
+      (response) =>
+        response.url().endsWith(`/api/project/${manifest.project_uuid}/tags`) &&
+        response.request().method() === 'GET' &&
+        response.status() === 200,
+    );
+    await libraryWorkflowCardByUuid(page, workflow.workflow_uuid).click();
+    await initialTagsResponse;
+
+    await page.goBack();
+    await waitForProjectWorkflowsLoaded(page);
+    await projectOverviewTab(page).click();
+    await waitForProjectOverviewLoaded(page);
+
+    const createResponsePromise = page.waitForResponse(
+      (response) =>
+        response.url().endsWith(`/api/project/${manifest.project_uuid}/tags`) &&
+        response.request().method() === 'POST' &&
+        response.status() === 200,
+    );
+    await createProjectOverviewTag(page, tagLabel);
+    const createdTag = (await (await createResponsePromise).json()) as { id: number };
+
+    try {
+      await projectWorkflowsTab(page).click();
+      await waitForProjectWorkflowsLoaded(page);
+      await libraryWorkflowCardByUuid(page, workflow.workflow_uuid).click();
+      await openFirstNodeEditForm(page);
+      await workflowEditNodeFormTagsField(page).click();
+      await expect(
+        page.getByRole('option', { name: tagLabel, exact: true }),
+      ).toBeVisible();
+    } finally {
+      const deleteResponse = await authenticatedApiRequest(
+        page,
+        'DELETE',
+        `/api/project/${manifest.project_uuid}/tags/${createdTag.id}`,
+      );
+      expect(deleteResponse.ok(), await deleteResponse.text()).toBeTruthy();
+    }
   });
 });

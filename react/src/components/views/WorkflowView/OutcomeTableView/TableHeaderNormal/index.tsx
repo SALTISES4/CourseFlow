@@ -1,7 +1,9 @@
 import { OutcomeTable } from '@cf/features/graph/state/selectors/outcomeTable.selectors'
 import { useReferenceLabels } from '@cf/i18n/referenceLabels'
 import { displaySystemTitle } from '@cf/i18n/systemTitles'
-import { NodeTitle } from '@cfViews/WorkflowView/GraphView/components/Section/Cell/CellNode/useNodeTitle'
+import useNodeTitle from '@cfViews/WorkflowView/GraphView/components/Section/Cell/CellNode/useNodeTitle'
+import Tooltip from '@mui/material/Tooltip'
+import { Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import * as Styled from '../styles'
@@ -33,31 +35,46 @@ const TableHeader = ({ table }: { table: OutcomeTable }) => {
     const groupNodes = table.groups[index].nodes.map((n) => n.uuid)
 
     return (
-      <>
-        <Styled.HeaderLegendWrap key={group.uuid}>
+      <Fragment key={group.uuid}>
+        <Styled.HeaderLegendWrap role="group" aria-label={groupTitle}>
           <Styled.TableLegend>{groupTitle}</Styled.TableLegend>
         </Styled.HeaderLegendWrap>
         {groupNodes.map((nodeUuid) => {
           const node = table.entities.nodes[nodeUuid]
           const color = table.board.columns.colors[node.channelUuid ?? '']
 
-          return (
-            <Styled.HeaderLegendWrap key={nodeUuid}>
-              <Styled.TableLegend color={color}>
-                <NodeTitle node={node} />
-              </Styled.TableLegend>
-            </Styled.HeaderLegendWrap>
-          )
+          return <NodeHeader key={nodeUuid} node={node} color={color} />
         })}
-      </>
+      </Fragment>
     )
   })
 
   return (
-    <Styled.TableHeader>
-      <Styled.HeaderLegendWrap />
+    <Styled.TableHeader role="row">
+      <Styled.HeaderLegendWrap aria-hidden />
       {groups}
     </Styled.TableHeader>
+  )
+}
+
+const NodeHeader = ({
+  node,
+  color
+}: {
+  node: OutcomeTable['entities']['nodes'][string]
+  color: string | undefined
+}) => {
+  const title = useNodeTitle(node)
+  return (
+    <Tooltip placement="top" arrow disableInteractive title={title}>
+      <Styled.HeaderLegendWrap
+        role="columnheader"
+        aria-label={title}
+        tabIndex={0}
+      >
+        <Styled.TableLegend color={color}>{title}</Styled.TableLegend>
+      </Styled.HeaderLegendWrap>
+    </Tooltip>
   )
 }
 

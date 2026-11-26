@@ -552,9 +552,9 @@ def test_patch_program_course_node_meta_persists_local_fields(client: Client, us
         data={
             "timeRequiredMinutes": 210,
             "credits": 4,
-            "ponderationTheoryMinutes": 90,
+            "ponderationTheoryMinutes": 60,
             "ponderationPracticeMinutes": 120,
-            "ponderationIndividualMinutes": 150,
+            "ponderationIndividualMinutes": 180,
             "specificEducation": True,
         },
         content_type="application/json",
@@ -565,15 +565,44 @@ def test_patch_program_course_node_meta_persists_local_fields(client: Client, us
     updated = response.json()["changes"]["nodes"]["updated"][0]
     assert updated["timeRequiredMinutes"] == 210
     assert updated["credits"] == 4
-    assert updated["ponderationTheoryMinutes"] == 90
+    assert updated["ponderationTheoryMinutes"] == 60
     assert updated["ponderationPracticeMinutes"] == 120
-    assert updated["ponderationIndividualMinutes"] == 150
+    assert updated["ponderationIndividualMinutes"] == 180
     assert updated["specificEducation"] is True
 
     node.refresh_from_db()
     assert node.coursemeta.time_required_minutes == 210
     assert node.coursemeta.credits == 4
     assert node.coursemeta.specific_education is True
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "field_name",
+    [
+        "ponderationTheoryMinutes",
+        "ponderationPracticeMinutes",
+        "ponderationIndividualMinutes",
+    ],
+)
+def test_patch_program_course_node_rejects_ponderation_minute_remainders(
+    client: Client, user, field_name: str
+):
+    raw = _issue_token_for(user)
+    wf_uuid = _create_graph(client, raw, workflow_type="program")
+    section, channel, workflow = _section_and_channel(wf_uuid)
+    node = create_grid_node(
+        section=section, channel=channel, workflow=workflow, section_row=0
+    )
+
+    response = client.patch(
+        f"/api/node/{node.uuid}/meta",
+        data={field_name: 90},
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+
+    assert response.status_code == 422
 
 
 @pytest.mark.django_db

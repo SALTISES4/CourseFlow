@@ -26,11 +26,16 @@ const TableHeader = ({
   const extraColumns = table.extraColumns[workflowType]
 
   return (
-    <Styled.TableHeader>
-      <Styled.HeaderLegendWrap />
+    <Styled.TableHeader role="row">
+      <Styled.HeaderLegendWrap aria-hidden />
       {table.tagGroups.map((group, index) => {
         const found = projectTagsMap[group.uuid]
-        const groupTitle = found ? found.label : group.title
+        const groupTitle =
+          group.uuid === -1
+            ? table.tagGroups.length > 1
+              ? t('outcomes.untagged')
+              : ''
+            : (found?.label ?? group.title)
 
         return (
           <Fragment key={group.uuid}>
@@ -39,7 +44,7 @@ const TableHeader = ({
                 tagLabel
                 className={index === 0 ? 'tag-offset' : ''}
               >
-                <Styled.TableLegend>{t(groupTitle as any)}</Styled.TableLegend>
+                <Styled.TableLegend>{groupTitle}</Styled.TableLegend>
               </Styled.HeaderLegendWrap>
             )}
             {group.outcomes.map((outcomeUuid) => (
@@ -57,12 +62,17 @@ const TableHeader = ({
       {extraColumns.map((group) => (
         <Fragment key={group.labelKey}>
           {'columns' in group ? (
-            <>
+            <Styled.SemanticGroup role="group" aria-label={t(group.labelKey)}>
               <Styled.HeaderLegendWrap tagLabel>
                 <Styled.TableLegend>{t(group.labelKey)}</Styled.TableLegend>
               </Styled.HeaderLegendWrap>
               {group.columns.map((column) => (
-                <Styled.HeaderLegendWrap key={column.labelKey}>
+                <Styled.HeaderLegendWrap
+                  key={column.labelKey}
+                  role="columnheader"
+                  aria-label={t(column.labelKey)}
+                  tabIndex={0}
+                >
                   <Styled.TableLegend
                     className={`legend-extra ${column.className}`}
                     data-test-id={column.headerTestId}
@@ -71,9 +81,14 @@ const TableHeader = ({
                   </Styled.TableLegend>
                 </Styled.HeaderLegendWrap>
               ))}
-            </>
+            </Styled.SemanticGroup>
           ) : (
-            <Styled.HeaderLegendWrap sx={{ marginLeft: 2 }}>
+            <Styled.HeaderLegendWrap
+              sx={{ marginLeft: 2 }}
+              role="columnheader"
+              aria-label={t(group.labelKey)}
+              tabIndex={0}
+            >
               <Styled.TableLegend
                 className={`legend-extra ${group.className}`}
                 data-test-id={group.headerTestId}
@@ -114,7 +129,11 @@ const TableHeaderOutcome = ({
 
   return (
     <>
-      <Styled.HeaderLegendWrap>
+      <Styled.HeaderLegendWrap
+        role="columnheader"
+        aria-label={`${outcome.prefix} ${outcomeTitle}`}
+        tabIndex={0}
+      >
         <Styled.TableLegend sx={{ background: 'transparent', padding: 0 }}>
           <OutcomeHeader
             uuid={uuid}

@@ -1,8 +1,9 @@
 # Normalized requirements: workflow 'Outcome table' sub-view
 # Status: Active functional requirements.
 # Source: tests/docs/__ARCHIVE/functional-requirements.md (Outcome table row in sidebar matrix — values missing in export); Figma CourseFlow-2.0 frames (see designEvidenceLinkTable); engineering interview 2026-06-25
+# Product decision: 2026-11-26 presents program Classification and Ponderation values as whole hours; Classification retains exact Time minutes and rounds only after canonical-minute aggregation.
 # ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
-# Scope (this file): 'Outcome table' sub-view content on route '/workflow/{id}/outcome-table' for course and program workflows; 'Normal' and 'Competency matrix' style presentations; outcome tag grouping on the grid; Competency matrix summary columns; expand/collapse; Normal outcome-style cell semantics; assignment toggling from table cells; sticky scroll regions. Out of scope: Advanced outcome-style cell semantics (I/D/A indicators) and activity workflows. Header tab entry is governed by tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml FR-WF-HEADER-003; authenticated contextActionBar controls are governed by tests/docs/requirements/features/global/context_action_bar_requirements_v1.yaml FR-CAB-008 through FR-CAB-010.
+# Scope (this file): 'Outcome table' sub-view content on route '/workflow/{id}/outcome-table' for course and program workflows; 'Normal' and 'Competency matrix' style presentations; outcome tag grouping on the grid; Competency matrix summary columns and Grand total row; expand/collapse; Normal outcome-style cell semantics; assignment toggling from table cells; sticky scroll regions. Out of scope: Advanced outcome-style cell semantics (I/D/A indicators) and activity workflows. Header tab entry is governed by tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml FR-WF-HEADER-003; authenticated contextActionBar controls are governed by tests/docs/requirements/features/global/context_action_bar_requirements_v1.yaml FR-CAB-008 through FR-CAB-010.
 # Cross-reference:
 #   - tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml (workflowOutcomeTableTab, tab enablement, and navigation — FR-WF-HEADER-003)
 #   - tests/docs/requirements/features/global/context_action_bar_requirements_v1.yaml ('View settings', table style, and 'Sort' on contextActionBar — FR-CAB-008, FR-CAB-009, FR-CAB-010)
@@ -18,7 +19,7 @@
 #   - tests/docs/requirements/features/global/workspace_access_requirements_v1.yaml (denied access — FR-WS-ACCESS-002)
 #   - tests/docs/requirements/features/global/workspace_edit_lock_requirements_v1.yaml (workflow mutation controls require the current edit lock — FR-WS-LOCK-001 onward)
 #   - tests/docs/requirements/features/workflow/workflow_public_link_requirements_v1.yaml (anonymous read-only Outcome Table access — FR-WF-PUBLIC-002)
-#   - tests/docs/requirements/features/workflow/workflow_duration_requirements_v1.yaml (canonical-minute arithmetic and one-decimal-hours display for node and section duration values — FR-WF-DURATION-001 through FR-WF-DURATION-003)
+#   - tests/docs/requirements/features/workflow/workflow_duration_requirements_v1.yaml (canonical-minute arithmetic, decimal Time presentation, and whole-hour Ponderation/Classification presentation — FR-WF-DURATION-001 through FR-WF-DURATION-003)
 
 documentPreconditions:
   - actor is one of (a) authenticated owner, editor, commenter, or viewer with an explicit contributor role on the parent project of the workflow, (b) authenticated user (published-access, no explicit contributor role) viewing a workflow whose parent project is published, or (c) anonymousViewer viewing a workflow whose workflow-specific public-link mode is enabled per tests/docs/requirements/features/workflow/workflow_public_link_requirements_v1.yaml FR-WF-PUBLIC-002
@@ -77,6 +78,12 @@ uiObjectDefinitions:
     meaning: Visible focus outline on an actionable workflowOutcomeTableGridCell when it has keyboard focus matching :focus-visible.
   workflowOutcomeTableTruncatedLabelTooltip:
     meaning: Tooltip showing the full localized label for a truncated workflowOutcomeTableOutcomeRowLabel, workflowOutcomeTableColumnHeader, or workflowOutcomeTableNodeRowLabel on pointer hover or keyboard focus.
+  workflowScrollableContentRegion:
+    meaning: Inner horizontal and vertical scroll viewport containing workflowOutcomeTableView.
+  mainNavigation:
+    meaning: Canonical definition in tests/docs/requirements/features/navigation/main_navigation_requirements_v1.yaml.
+  workflowViewTabSelector:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml.
   workflowOutcomeTableTotalHoursColumn:
     meaning: Read-only summary column labeled 'Total hours' in 'Competency matrix' style workflowOutcomeTableGrid.
   workflowOutcomeTableProgramClassificationHeaderGroup:
@@ -97,6 +104,14 @@ uiObjectDefinitions:
     meaning: Program-only read-only column labeled 'Total hours' under workflowOutcomeTableProgramPonderationHeaderGroup.
   workflowOutcomeTableProgramCreditsColumn:
     meaning: Program-only read-only column labeled 'Credits' in 'Competency matrix' style workflowOutcomeTableGrid.
+  workflowOutcomeTableGrandTotalRow:
+    meaning: Final read-only row labeled 'Grand total' at the bottom of workflowOutcomeTableCompetencyMatrixLayout; summarizes applicable node metadata across the whole workflow.
+  workflowOutcomeTableGrandTotalOutcomeCell:
+    meaning: Empty read-only cell in workflowOutcomeTableGrandTotalRow aligned under one workflowOutcome column; it never presents assignment or completion state.
+  workflowOutcomeTableGrandTotalSummaryCell:
+    meaning: Read-only cell in workflowOutcomeTableGrandTotalRow aligned under an applicable duration/classification summary column and displaying the whole-workflow total for that column.
+  workflowOutcomeTableGrandTotalCreditsCell:
+    meaning: Empty read-only cell in workflowOutcomeTableGrandTotalRow aligned under workflowOutcomeTableProgramCreditsColumn; Credits are intentionally not totalled in this row.
   workflowEditNodeFormCreditsField:
     meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml.
   workflowEditNodeFormPonderationTheoryField:
@@ -172,6 +187,10 @@ locatorMappings:
   workflowOutcomeTableProgramPonderationIndividualColumn: "canonical_locators.yaml -> workflowOutcomeTableProgramPonderationIndividualColumn"
   workflowOutcomeTableProgramPonderationTotalHoursColumn: "canonical_locators.yaml -> workflowOutcomeTableProgramPonderationTotalHoursColumn"
   workflowOutcomeTableProgramCreditsColumn: "canonical_locators.yaml -> workflowOutcomeTableProgramCreditsColumn"
+  workflowOutcomeTableGrandTotalRow: "canonical_locators.yaml -> workflowOutcomeTableGrandTotalRow"
+  workflowOutcomeTableGrandTotalOutcomeCell: "canonical_locators.yaml -> workflowOutcomeTableGrandTotalOutcomeCell"
+  workflowOutcomeTableGrandTotalSummaryCell: "canonical_locators.yaml -> workflowOutcomeTableGrandTotalSummaryCell"
+  workflowOutcomeTableGrandTotalCreditsCell: "canonical_locators.yaml -> workflowOutcomeTableGrandTotalCreditsCell"
   workflowView: "canonical_locators.yaml -> workflowView"
   workflowOutcomeTree: "canonical_locators.yaml -> workflowOutcomeTree"
   workflowSectionHeader: "canonical_locators.yaml -> workflowSectionHeader"
@@ -196,6 +215,9 @@ locatorMappings:
   workflowRightSidebarOutcomesTab: "canonical_locators.yaml -> workflowRightSidebarOutcomesTab"
   workflowOutcomesAssignTabOutcomeRow: "canonical_locators.yaml -> workflowOutcomesAssignTabOutcomeRow"
   workflowOutcomesAssignTabTagGroup: "canonical_locators.yaml -> workflowOutcomesAssignTabTagGroup"
+  workflowScrollableContentRegion: "canonical_locators.yaml -> workflowScrollableContentRegion"
+  mainNavigation: "canonical_locators.yaml -> mainNavigation"
+  workflowViewTabSelector: "canonical_locators.yaml -> workflowViewTabSelector"
 
 requirements:
   - id: FR-WF-OT-001
@@ -246,6 +268,9 @@ requirements:
       - within each workflowOutcomeTableSectionGroupBand, the leftmost column is workflowOutcomeTableSectionOutcomeCell (one read-only cell per workflowOutcome row, assignment rollup per FR-WF-OT-006) followed by workflowOutcomeTableColumnHeader entries for each workflowNode in that section
       - each workflowOutcomeTableOutcomeRowLabel shows workflowOutcomeHeaderTitle with hierarchical numbering per FR-WF-EO-007
       - each workflowOutcomeTableColumnHeader for a workflowNode shows the workflowNode title from workflowView, workflowOutcomeTableNodeChannelColorBand on the left edge coloured per the node's parent workflowChannel per FR-CHAN-003, and is angled
+      - the angled column-header region is approximately 200 px high; implementations may use a tolerant 200–240 px rendered range so long labels remain readable without creating excessive empty vertical space
+      - each workflowOutcomeTableColumnHeader shares the same horizontal column anchor as its workflowOutcomeTableGridCell entries, so the angled heading and the cells for that workflowNode remain aligned
+      - every workflowOutcomeTableOutcomeTagGroupBand closes with a continuous one-pixel solid bottom divider across the assignment-cell region, including the first rendered tag group and the final tag group
       - when a workflowOutcomeTableOutcomeRowLabel or workflowOutcomeTableColumnHeader is visually truncated, pointer hover or keyboard focus shows workflowOutcomeTableTruncatedLabelTooltip containing the full localized label; no tooltip is attached to workflowOutcomeTableGridCell
       - each workflowOutcomeTableSectionGroupBand displays workflowSectionTitleText for the corresponding workflowSectionContainer in workflowView on the 'Workflow' sub-view
 
@@ -256,6 +281,8 @@ requirements:
       - given section S contains nodes, S's group starts with one read-only section-rollup column followed by one column for each node in the selected FR-CAB-009 order
       - given an outcome row, its sticky row header shows the full hierarchical numbered outcome title and each node column header shows the node title and its channel colour stripe
       - given a truncated outcome row label or node column header, pointer hover and keyboard focus show the full localized label in workflowOutcomeTableTruncatedLabelTooltip and no assignment cell opens that tooltip
+      - given Normal style renders, the column-header row is between 200 px and 240 px high and every node header's untransformed column anchor is horizontally aligned with that node's assignment cells
+      - given one or more outcome tag groups render, each group's final outcome row has a continuous one-pixel solid bottom divider across its assignment-cell region; the first group is not missing this divider
       - given Normal style renders, workflowOutcomeTableGrid exposes role='grid', tag and section bands expose named groups, outcome labels expose rowheader semantics, and node headers expose columnheader semantics
 
     openQuestions: []
@@ -323,6 +350,8 @@ requirements:
       - each workflowOutcomeTableSectionRow displays workflowSectionTitleText for the corresponding workflowSectionContainer in workflowView on the 'Workflow' sub-view
       - each workflowOutcomeTableNodeRowLabel shows the workflowNode title from workflowView and workflowOutcomeTableNodeChannelColorBand on the left edge coloured per the node's parent workflowChannel per FR-CHAN-003
       - each workflowOutcomeTableColumnHeader for a workflowOutcome shows workflowOutcomeHeaderTitle with hierarchical numbering per FR-WF-EO-007 and is angled
+      - the angled column-header region is approximately 200 px high; implementations may use a tolerant 200–240 px rendered range so long labels remain readable without creating excessive empty vertical space
+      - each workflowOutcomeTableColumnHeader shares the same horizontal column anchor as its workflowOutcomeTableGridCell entries, so the angled heading and the cells for that workflowOutcome remain aligned
       - when a workflowOutcomeTableNodeRowLabel or workflowOutcomeTableColumnHeader is visually truncated, pointer hover or keyboard focus shows workflowOutcomeTableTruncatedLabelTooltip containing the full localized label; no tooltip is attached to workflowOutcomeTableGridCell
       - on course workflows, workflowOutcomeTableCompetencyMatrixLayout includes read-only workflowOutcomeTableTotalHoursColumn only; column values and section totals per FR-WF-OT-009
       - on program workflows, workflowOutcomeTableCompetencyMatrixLayout includes read-only workflowOutcomeTableProgramClassificationHeaderGroup spanning workflowOutcomeTableProgramGeneralEducationColumn and workflowOutcomeTableProgramSpecificEducationColumn; workflowOutcomeTableProgramPonderationHeaderGroup spanning workflowOutcomeTableProgramPonderationTheoryColumn, workflowOutcomeTableProgramPonderationPracticalColumn, workflowOutcomeTableProgramPonderationIndividualColumn, and workflowOutcomeTableProgramPonderationTotalHoursColumn; and workflowOutcomeTableProgramCreditsColumn; workflowOutcomeTableProgramClassificationHeaderGroup and workflowOutcomeTableProgramPonderationHeaderGroup are group separators only, not data columns; column values and section totals per FR-WF-OT-010
@@ -336,6 +365,7 @@ requirements:
       - given a course workflow, Competency matrix renders the Total hours summary column and does not render program-only summary groups or columns
       - given a program workflow, Competency matrix renders Classification with General education and Specific education, Ponderation with Theory, Practical, Individual work, and Total hours, plus Credits
       - given a truncated node row label or outcome column header, pointer hover and keyboard focus show the full localized label in workflowOutcomeTableTruncatedLabelTooltip and no assignment cell opens that tooltip
+      - given Competency matrix style renders, the column-header row is between 200 px and 240 px high and every outcome header's untransformed column anchor is horizontally aligned with that outcome's assignment cells
 
     openQuestions: []
 
@@ -433,23 +463,84 @@ requirements:
       - system renders summary columns in workflowOutcomeTableCompetencyMatrixLayout on a program workflow
 
     mainFlow:
-      - per workflowNode row, workflowOutcomeTableProgramGeneralEducationColumn cell displays workflowEditNodeFormTimeField when workflowEditNodeFormSpecificEducationSwitch is OFF and is empty when ON; workflowOutcomeTableProgramSpecificEducationColumn cell displays workflowEditNodeFormTimeField when ON and is empty when OFF; a displayed unset time value uses an em dash and an explicit zero uses the localized zero-duration value
-      - per workflowNode row, workflowOutcomeTableProgramPonderationTheoryColumn cell displays workflowEditNodeFormPonderationTheoryField; workflowOutcomeTableProgramPonderationPracticalColumn cell displays workflowEditNodeFormPonderationPracticeField; workflowOutcomeTableProgramPonderationIndividualColumn cell displays workflowEditNodeFormPonderationIndividualField; each set duration uses localized hours with exactly one fractional digit per FR-WF-DURATION-002 and FR-WF-DURATION-003 and each unset duration displays an em dash
-      - workflowOutcomeTableProgramPonderationTotalHoursColumn cell sums canonical integer minutes for each set Theory, Practical, and Individual duration, treats an unset component as zero when at least one component is set, and presents localized hours with exactly one fractional digit; when all three components are unset, it displays an em dash
+      - per workflowNode row, workflowOutcomeTableProgramGeneralEducationColumn cell displays workflowEditNodeFormTimeField rounded to the nearest whole hour when workflowEditNodeFormSpecificEducationSwitch is OFF and is empty when ON; workflowOutcomeTableProgramSpecificEducationColumn cell displays that rounded Time when ON and is empty when OFF; a displayed unset time value uses an em dash and an explicit zero uses the localized zero-duration value; exact canonical Time minutes remain unchanged
+      - per workflowNode row, workflowOutcomeTableProgramPonderationTheoryColumn cell displays workflowEditNodeFormPonderationTheoryField; workflowOutcomeTableProgramPonderationPracticalColumn cell displays workflowEditNodeFormPonderationPracticeField; workflowOutcomeTableProgramPonderationIndividualColumn cell displays workflowEditNodeFormPonderationIndividualField; each set value uses localized whole hours and each unset value displays an em dash
+      - workflowOutcomeTableProgramPonderationTotalHoursColumn cell sums canonical integer minutes for each set Theory, Practical, and Individual value, treats an unset component as zero when at least one component is set, and presents localized whole hours; when all three components are unset, it displays an em dash
       - workflowOutcomeTableProgramCreditsColumn cell displays workflowEditNodeFormCreditsField numerically; an unset credit value displays an em dash and an explicit zero displays 0
       - on workflowOutcomeTableSectionRow for workflowSectionContainer S, each program summary column cell sums the per-node values shown in that column for all workflowNode entries in S; unset values contribute zero when at least one value in that column is set, and an all-unset column total displays an em dash
-      - every duration-valued section total sums canonical integer-minute contributions and presents localized hours with exactly one fractional digit per FR-WF-DURATION-002 and FR-WF-DURATION-003; credit totals remain numeric
+      - every section total sums canonical integer-minute contributions before formatting; program Classification and Ponderation totals present localized whole hours, while Total Time presents localized hours with exactly one fractional digit; credit totals remain numeric
+      - whole-hour Classification presentation rounds minute remainders 0 through 29 down and 30 through 59 up; rounding never changes the canonical minutes used by arithmetic, persistence, or API responses
 
     roleBehavior: {}
 
     acceptanceCriteria:
       - given a program node has Time T and Specific education OFF, T appears under General education and its Specific education cell is empty; given the switch is ON, T appears under Specific education and its General education cell is empty
       - given a displayed classification duration is unset, its applicable cell displays an em dash; given explicit zero, it displays the localized zero-duration value
-      - given a program node has Theory 2,640 minutes, Practical 600 minutes, and unset Individual work, the three component cells show 44.0 hours, 10.0 hours, and an em dash and the node's Ponderation Total hours displays 54.0 hours
+      - given a program node has Theory 2,640 minutes, Practical 600 minutes, and unset Individual work, the three component cells show 44 hours, 10 hours, and an em dash and the node's Ponderation Total hours displays 54 hours
       - given all three ponderation components for a node are unset, that node's Ponderation Total hours displays an em dash
       - given a program node has unset Credits, its Credits cell displays an em dash; given explicit 0, it displays 0
       - given a section summary column contains at least one set value, unset values contribute zero and its total equals the sum of the set values; given every value in the column is unset, its total displays an em dash
-      - given a duration-valued section sum exceeds 23 hours, it remains displayed as total localized hours with exactly one fractional digit; credit totals remain numeric
+      - given a section sum exceeds 23 hours, it remains displayed as total localized hours; program Classification and Ponderation use whole hours, Total Time uses exactly one fractional digit, and credit totals remain numeric
+
+    openQuestions: []
+
+  - id: FR-WF-OT-012
+    title: Whole-workflow Grand total row in 'Competency matrix' style
+
+    designEvidence:
+      - FIGMA-WF-OT-COMPETENCY-MATRIX-GRAND-TOTAL
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+      - anonymousViewer
+
+    uiObjects:
+      - workflowOutcomeTableCompetencyMatrixLayout
+      - workflowOutcomeTableGrandTotalRow
+      - workflowOutcomeTableGrandTotalOutcomeCell
+      - workflowOutcomeTableGrandTotalSummaryCell
+      - workflowOutcomeTableGrandTotalCreditsCell
+      - workflowOutcomeTableTotalHoursColumn
+      - workflowOutcomeTableProgramGeneralEducationColumn
+      - workflowOutcomeTableProgramSpecificEducationColumn
+      - workflowOutcomeTableProgramPonderationTheoryColumn
+      - workflowOutcomeTableProgramPonderationPracticalColumn
+      - workflowOutcomeTableProgramPonderationIndividualColumn
+      - workflowOutcomeTableProgramPonderationTotalHoursColumn
+      - workflowOutcomeTableProgramCreditsColumn
+      - workflowNode
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - workflowOutcomeTableCompetencyMatrixLayout is active per FR-WF-OT-002
+
+    trigger:
+      - system renders workflowOutcomeTableCompetencyMatrixLayout
+
+    mainFlow:
+      - workflowOutcomeTableGrandTotalRow is the final row at the bottom of workflowOutcomeTableCompetencyMatrixLayout and displays the literal label 'Grand total'
+      - every workflowOutcome column, including currently expanded descendant columns, has one aligned workflowOutcomeTableGrandTotalOutcomeCell; every such cell is empty and never displays workflowOutcomeTableGridCellCompleteIndicator, workflowOutcomeTableGridCellPartialIndicator, or any other assignment value
+      - on a course workflow, workflowOutcomeTableGrandTotalRow displays one workflowOutcomeTableGrandTotalSummaryCell under workflowOutcomeTableTotalHoursColumn containing the sum of canonical integer-minute workflowEditNodeFormTimeField values across every workflowNode in the workflow
+      - on a program workflow, workflowOutcomeTableGrandTotalRow displays workflowOutcomeTableGrandTotalSummaryCell values under General education, Specific education, Theory, Practical, Individual work, and Ponderation Total hours; each value sums the same per-node canonical integer-minute contribution used by FR-WF-OT-010 across every workflowNode in the workflow
+      - every Grand total sums canonical integer minutes before formatting; program Classification and Ponderation totals render localized whole hours, Total Time renders localized hours with exactly one fractional digit, and canonical minutes are never rendered directly as if they were hours
+      - within an applicable Grand total column, unset values contribute zero when at least one workflowNode has a set value; when every applicable workflowNode value is unset, the cell displays an em dash; when the column applies to no workflowNode, the cell is empty
+      - workflowOutcomeTableGrandTotalCreditsCell is empty; Credits are not included in the Grand total row
+      - Grand total values are derived from workflowNode metadata and are independent of current Outcome Table sort/group presentation
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given Competency matrix is active, workflowOutcomeTableGrandTotalRow is the final row and is labeled 'Grand total'
+      - given any visible workflowOutcome column, its aligned workflowOutcomeTableGrandTotalOutcomeCell in workflowOutcomeTableGrandTotalRow is empty and contains no assignment indicator
+      - given a course workflow with node Time values of 2,640 and 600 minutes, the Grand total under Total hours displays 54.0 hours, not 3,240 hours or the raw value 3240
+      - given a program workflow with General education 2,670 minutes and Specific education 570 minutes, the corresponding Grand total cells display 45 and 10 hours while their canonical totals remain 2,670 and 570 minutes
+      - given program Theory 2,640 minutes, Practical 600 minutes, and all Individual work values unset, the Grand total cells display Theory 44, Practical 10, Individual work as an em dash, and Ponderation Total hours 54
+      - given a program workflow has numeric Credits values, workflowOutcomeTableGrandTotalCreditsCell remains empty
+      - given actor changes Outcome Table sorting/grouping without changing node metadata, every Grand total value remains unchanged
 
     openQuestions: []
 
@@ -547,8 +638,8 @@ requirements:
       - level-1 and level-2 workflowOutcome entries that have at least one direct child in workflowOutcomeTree expose workflowOutcomeHeaderToggle on workflowOutcomeTableOutcomeRowLabel when 'Normal' style is active and on workflowOutcomeTableColumnHeader when 'Competency matrix' style is active
       - on first entry to 'Outcome table' in a newly opened workflow, every expandable workflowOutcome is collapsed
       - when workflowOutcomeHeaderToggle on level-1 or level-2 workflowOutcome P is expanded, descendant workflowOutcome rows or columns nested under P are visible in workflowOutcomeTableGrid; when collapsed, those descendants are hidden
-      - clicking workflowOutcomeTableViewSettingsMenuItemExpandOutcomes labeled 'Expand outcomes' sets every workflowOutcomeHeaderToggle in the active layout to expanded
-      - clicking workflowOutcomeTableViewSettingsMenuItemCollapseOutcomes labeled 'Collapse outcomes' sets every workflowOutcomeHeaderToggle in the active layout to collapsed
+      - clicking workflowOutcomeTableViewSettingsMenuItemExpandOutcomes labeled 'Expand all outcomes' sets every workflowOutcomeHeaderToggle in the active layout to expanded
+      - clicking workflowOutcomeTableViewSettingsMenuItemCollapseOutcomes labeled 'Collapse all outcomes' sets every workflowOutcomeHeaderToggle in the active layout to collapsed
       - expansion state is shared between workflowOutcomeTableNormalLayout and workflowOutcomeTableCompetencyMatrixLayout and is preserved while the actor changes table style or moves among sub-views within the same mounted workflow
       - expansion state resets to every expandable workflowOutcome collapsed when the actor leaves and later reopens the workflow, opens a different workflow, or reloads the page; expansion state is not persisted to backend data or browser storage
 
@@ -557,7 +648,7 @@ requirements:
     acceptanceCriteria:
       - given actor first enters Outcome Table in a newly opened workflow, every expandable level-1 and level-2 outcome is collapsed
       - given actor expands outcome P, every descendant nested under P becomes visible on the outcome axis; collapsing P hides those descendants in either table style
-      - given actor selects 'Expand outcomes', every expandable outcome is expanded; selecting 'Collapse outcomes' collapses every expandable outcome
+      - given actor selects 'Expand all outcomes', every expandable outcome is expanded; selecting 'Collapse all outcomes' collapses every expandable outcome
       - given actor changes between Normal and Competency matrix or moves among sub-views in the mounted workflow, each outcome's expansion state is preserved
       - given actor reopens the workflow, opens another workflow, or reloads the page, every expandable outcome resets to collapsed
       - given actor has read-only workflow access, individual and global expand/collapse controls remain actionable because they do not persist data
@@ -587,6 +678,9 @@ requirements:
       - workflowOutcomeTableColumnHeader
       - workflowOutcomeTableNodeRowLabel
       - workflowOutcomeTableOutcomeTagGroupBand
+      - workflowScrollableContentRegion
+      - mainNavigation
+      - workflowViewTabSelector
 
     preconditions:
       - documentPreconditions for this file hold
@@ -601,6 +695,7 @@ requirements:
       - in workflowOutcomeTableNormalLayout, vertical scroll keeps workflowOutcomeTableColumnHeader row sticky at the top
       - in workflowOutcomeTableCompetencyMatrixLayout, horizontal scroll keeps workflowOutcomeTableNodeRowLabel column sticky on the left
       - in workflowOutcomeTableCompetencyMatrixLayout, vertical scroll keeps workflowOutcomeTableColumnHeader row including workflowOutcomeTableOutcomeTagGroupBand bands sticky at the top
+      - horizontal overflow is confined to workflowScrollableContentRegion; scrolling table content does not move mainNavigation or workflowViewTabSelector and does not allow table content to overlap mainNavigation
 
     roleBehavior: {}
 
@@ -610,6 +705,7 @@ requirements:
       - given Competency matrix width exceeds the viewport, horizontal scrolling keeps node row labels fixed at the left while outcome and summary columns move beneath the scroll region
       - given Competency matrix height exceeds the viewport, vertical scrolling keeps outcome column headers and their outcome-tag group bands fixed at the top while node rows move beneath them
       - given both axes are scrolled, the applicable sticky top and left regions remain visible and do not scroll out with the body cells
+      - given workflowOutcomeTableView overflows horizontally, changing workflowScrollableContentRegion.scrollLeft moves the table content while mainNavigation and workflowViewTabSelector retain their viewport positions and the scroll viewport remains entirely to the right of mainNavigation
 
     openQuestions: []
 
@@ -862,5 +958,7 @@ designEvidenceLinkTable:
     url: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=7199-53892
   - key: FIGMA-WF-OT-PROGRAM-COMPETENCY-MATRIX-SCROLLED-RIGHT
     url: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=7199-53997
+  - key: FIGMA-WF-OT-COMPETENCY-MATRIX-GRAND-TOTAL
+    url: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=7935-31511
   - key: FIGMA-WF-OT-VIEW-SETTINGS-DEFAULT
     url: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=7199-37068

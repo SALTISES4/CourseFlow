@@ -5,11 +5,13 @@ import { loginAsWorkflowContributor, expectReadOnlyWorkflowEditEdgeForm } from '
 import {
   clickWorkflowEdge,
   dragWorkflowEdgeFromHandleToHandle,
+  dragWorkflowEdgeReconnectSource,
   dragWorkflowEdgeReconnectTarget,
   firstClickableWorkflowEdgeId,
 } from './edge.helpers';
 import {
   workflowEdge,
+  workflowEdgeTitleLabel,
   workflowEditEdgeFormDeleteButton,
   workflowEditEdgeFormHeading,
   workflowEditEdgeFormTitleField,
@@ -32,6 +34,7 @@ import {
   workflowRightSidebar,
   workflowRightSidebarContentPanel,
   workflowRightSidebarEditTab,
+  workflowRightSidebarTabStrip,
 } from '../../shared/locators/workflow';
 
 test.use({
@@ -64,6 +67,13 @@ async function firstClickableSeedEdge(
   }
   return edge;
 }
+
+const CANONICAL_EDGE_PORT = {
+  top: '0',
+  right: '1',
+  bottom: '2',
+  left: '3',
+} as const;
 
 test.describe('Workflow edge — select and edit (FR-WF-EDGE-004)', () => {
   test.beforeEach(async ({ page, workflow }) => {
@@ -115,6 +125,43 @@ test.describe('Workflow edge — select and edit (FR-WF-EDGE-004)', () => {
         return updated?.lineType ?? '';
       })
       .not.toBe(edge.lineType);
+
+    const edgeTitle = workflowEdgeTitleLabel(
+      page,
+      edgeIdString(edge),
+      'E2E edge title',
+    );
+    await expect(edgeTitle).toBeVisible();
+    await expect(edgeTitle).toHaveAttribute('text-anchor', 'middle');
+    await expect(edgeTitle).toHaveAttribute('dominant-baseline', 'middle');
+    await expect(edgeTitle).toHaveAttribute('font-size', '12');
+    await expect(edgeTitle).toHaveAttribute('fill', '#000');
+
+    const titleBackground = edgeTitle.locator('..').locator('rect').first();
+    await expect(titleBackground).toHaveAttribute('fill', 'white');
+    await expect(titleBackground).toHaveAttribute('rx', '5');
+    await expect(titleBackground).toHaveAttribute('ry', '5');
+    await expect
+      .poll(async () => {
+        const [textBox, backgroundBox] = await Promise.all([
+          edgeTitle.boundingBox(),
+          titleBackground.boundingBox(),
+        ]);
+        if (!textBox || !backgroundBox) return null;
+        return (
+          backgroundBox.width >= textBox.width &&
+          backgroundBox.height >= textBox.height &&
+          Math.abs(
+            backgroundBox.x + backgroundBox.width / 2 -
+              (textBox.x + textBox.width / 2),
+          ) <= 1 &&
+          Math.abs(
+            backgroundBox.y + backgroundBox.height / 2 -
+              (textBox.y + textBox.height / 2),
+          ) <= 1
+        );
+      })
+      .toBe(true);
   });
 });
 
@@ -135,7 +182,8 @@ test.describe('Workflow edge — delete (FR-WF-EDGE-002)', () => {
 
     await expect(workflowEdge(page, edgeId)).toHaveCount(0, { timeout: 15_000 });
     await expect(workflowRightSidebarContentPanel(page)).toBeHidden();
-    await expect(workflowRightSidebar(page)).toBeVisible();
+    await expect(workflowRightSidebar(page)).toHaveCount(1);
+    await expect(workflowRightSidebarTabStrip(page)).toBeVisible();
 
     const after = await fetchGraphView(page, workflowUuid);
     expect(after.edges.some((item) => item.id === edge.id)).toBe(false);
@@ -203,6 +251,82 @@ test.describe('Workflow edge — create (FR-WF-EDGE-001)', () => {
 });
 
 test.describe('Workflow edge — reconnect (FR-WF-EDGE-003)', () => {
+  test('FR-WF-EDGE-003: owner changes the departure handle on the same source workflowNode', async ({
+    page,
+    workflow,
+  }) => {
+    await gotoWorkflowGraph(page, workflow.path);
+
+    const workflowUuid = workflowUuidFromPath(workflow.path);
+    const graph = await fetchGraphView(page, workflowUuid);
+    const edge = await firstClickableSeedEdge(page, graph);
+    const replacementHandle = (['top', 'right', 'bottom', 'left'] as const).find(
+      (handle) => CANONICAL_EDGE_PORT[handle] !== edge.sourcePort,
+    );
+    expect(replacementHandle).toBeTruthy();
+
+    await dragWorkflowEdgeReconnectSource(
+      page,
+      edgeIdString(edge),
+      edge.sourceNodeUuid,
+      replacementHandle!,
+    );
+
+    await expect
+      .poll(async () => {
+        const after = await fetchGraphView(page, workflowUuid);
+        return after.edges.find((item) => item.id === edge.id);
+      })
+      .toMatchObject({
+        sourceNodeUuid: edge.sourceNodeUuid,
+        sourcePort: CANONICAL_EDGE_PORT[replacementHandle!],
+        targetNodeUuid: edge.targetNodeUuid,
+        targetPort: edge.targetPort,
+      });
+  });
+
+  test('FR-WF-EDGE-003: owner reconnects workflowEdge source to a different workflowNode', async ({
+    page,
+    workflow,
+  }) => {
+    await gotoWorkflowGraph(page, workflow.path);
+
+    const workflowUuid = workflowUuidFromPath(workflow.path);
+    const graph = await fetchGraphView(page, workflowUuid);
+    const edge = await firstClickableSeedEdge(page, graph);
+    const replacementSource = graph.nodes.find(
+      (node) =>
+        node.uuid !== edge.sourceNodeUuid &&
+        node.uuid !== edge.targetNodeUuid &&
+        !graph.edges.some(
+          (candidate) =>
+            candidate.id !== edge.id &&
+            candidate.sourceNodeUuid === node.uuid &&
+            candidate.targetNodeUuid === edge.targetNodeUuid,
+        ),
+    )?.uuid;
+    expect(replacementSource).toBeTruthy();
+
+    await dragWorkflowEdgeReconnectSource(
+      page,
+      edgeIdString(edge),
+      replacementSource!,
+      'bottom',
+    );
+
+    await expect
+      .poll(async () => {
+        const after = await fetchGraphView(page, workflowUuid);
+        return after.edges.find((item) => item.id === edge.id);
+      })
+      .toMatchObject({
+        sourceNodeUuid: replacementSource,
+        sourcePort: CANONICAL_EDGE_PORT.bottom,
+        targetNodeUuid: edge.targetNodeUuid,
+        targetPort: edge.targetPort,
+      });
+  });
+
   test('FR-WF-EDGE-003: owner reconnects workflowEdge target to a different workflowNode', async ({
     page,
     workflow,

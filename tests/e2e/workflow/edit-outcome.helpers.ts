@@ -1,5 +1,6 @@
 import { expect, type Page } from '@playwright/test';
 import { getProjectPath } from '../../helpers/manifest';
+import { expectRichTextItalicAndUnderlineGlyphs } from '../../helpers/workflow-description-rich-text';
 import { hoverWorkflowOutcomeHeader } from './comments-tab.helpers';
 import { createProjectOverviewTag } from './edit-node.helpers';
 import {
@@ -36,8 +37,11 @@ export async function expectEditableWorkflowEditOutcomeFormRichTextDescription(
   await expect(workflowRichTextDescriptionEditor(page)).toHaveAttribute('contenteditable', 'true');
   await expect(workflowRichTextDescriptionEditorToolbar(page)).toBeVisible();
   await expect(workflowRichTextDescriptionEditorBoldButton(page)).toBeVisible();
-  await expect(workflowRichTextDescriptionEditorItalicButton(page)).toBeVisible();
-  await expect(workflowRichTextDescriptionEditorUnderlineButton(page)).toBeVisible();
+  const italicButton = workflowRichTextDescriptionEditorItalicButton(page);
+  const underlineButton = workflowRichTextDescriptionEditorUnderlineButton(page);
+  await expect(italicButton).toBeVisible();
+  await expect(underlineButton).toBeVisible();
+  await expectRichTextItalicAndUnderlineGlyphs(italicButton, underlineButton);
   await expect(workflowRichTextDescriptionEditorSuperscriptButton(page)).toBeVisible();
   await expect(workflowRichTextDescriptionEditorSubscriptButton(page)).toBeVisible();
   await expect(workflowRichTextDescriptionEditorBulletListButton(page)).toBeVisible();

@@ -1,5 +1,9 @@
 import { getWorkflowOptions } from '@cf/api/gen/@tanstack/react-query.gen'
-import { ProjectPermission, WorkflowPermission } from '@cf/api/gen/types.gen'
+import {
+  ProjectPermission,
+  WorkflowPermission,
+  WorkflowType
+} from '@cf/api/gen/types.gen'
 import {
   hasPermission,
   useWorkspacePermissions
@@ -150,10 +154,12 @@ const ActionMenu = () => {
 
 const ExpandCollapseMenu = ({
   graphUuid,
-  sectionIds
+  sectionIds,
+  workflowType
 }: {
   graphUuid: string
   sectionIds: string[]
+  workflowType: WorkflowType
 }) => {
   const { t } = useTranslation('workflow')
   const workflowViewType = useWorkflowViewTypeFromRoute()
@@ -341,7 +347,7 @@ const ExpandCollapseMenu = ({
   return (
     <>
       {workflowViewType === WorkflowViewType.OUTCOME_TABLE && (
-        <OutcomeTableToolbar />
+        <OutcomeTableToolbar workflowType={workflowType} />
       )}
       <SimpleMenu
         id="actions-menu"

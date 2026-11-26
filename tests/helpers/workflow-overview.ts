@@ -30,20 +30,19 @@ import {
   projectOwnerRoleControl,
 } from '../e2e/project/project.locators';
 
-/**
- * FR duration-type display (FR-WF-OV-003/004/006 ACs) — values render with an hours unit
- * (e.g. '5 hours'), not a bare numeric `type=number` value.
- */
+/** FR-WF-OV-004/006 — Ponderation and Classification use one whole-hours input. */
 export async function expectOverviewDurationFieldDisplaysHours(
   field: Locator,
   hours?: number,
 ): Promise<void> {
   await expect(field).toBeVisible();
+  await expect(field).toHaveAttribute('type', 'number');
+  await expect(field).toHaveAttribute('step', '1');
   if (hours === undefined) {
-    await expect(field).toHaveValue(/^\d+(\.\d+)?\s+hours?$/i);
+    await expect(field).toHaveValue(/^\d*$/);
     return;
   }
-  await expect(field).toHaveValue(new RegExp(`^${hours}\\s+hours?$`, 'i'));
+  await expect(field).toHaveValue(String(hours));
 }
 
 /** Figma-authoritative Time control — separate Hours and Minutes fields. */
@@ -206,7 +205,7 @@ export async function expectTimeReadOnlyWhenAutoCalculateOnPerFrWfOv003(
 
 /**
  * FR-WF-OV-004 — course: Theory, Practical, and Individual are editable (no Auto-calculate switch).
- * Ponderation fields are duration-type (display hours unit per FR ACs).
+ * Ponderation fields accept one non-negative integer hour value.
  */
 export async function expectCoursePonderationFieldsEditablePerFrWfOv004(
   page: Page,
@@ -242,7 +241,7 @@ export async function expectPonderationEditableWhenAutoCalculateOffPerFrWfOv004(
 
 /**
  * FR-WF-OV-004 — program: Ponderation Auto-calculate ON → Theory/Practical/Individual read-only.
- * Calculated ponderation totals are duration-type (e.g. '25 hours').
+ * Calculated ponderation totals remain one whole-hour value.
  */
 export async function expectPonderationReadOnlyWhenAutoCalculateOnPerFrWfOv004(
   page: Page,
@@ -318,7 +317,7 @@ export async function expectClassificationEditableWhenAutoCalculateOffPerFrWfOv0
 
 /**
  * FR-WF-OV-006 — program: Classification Auto-calculate ON → General/Specific read-only.
- * Calculated classification totals are duration-type (e.g. '2 hours').
+ * Exact calculated minutes are rounded to the nearest hour for UI display only.
  */
 export async function expectClassificationReadOnlyWhenAutoCalculateOnPerFrWfOv006(
   page: Page,

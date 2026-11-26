@@ -77,8 +77,8 @@ const commonFr = {
     french: 'Français'
   },
   duration: {
-    placeholder: 'hhh:mm',
     hours: 'Heures',
+    hourUnit: 'h',
     minutes: 'Minutes',
     hoursInvalid: 'Saisissez un nombre entier d’heures.',
     minutesInvalid: 'Saisissez un nombre de minutes entre 0 et 59.'

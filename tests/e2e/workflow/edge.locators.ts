@@ -18,6 +18,16 @@ export function workflowEdgeClickTarget(page: Page, edgeId: string): Locator {
   return workflowEdge(page, edgeId).locator('path[style*="cursor: pointer"]');
 }
 
+/** canonical: workflowEdgeTitleLabel — SVG text and its sibling background rect. */
+export function workflowEdgeTitleLabel(
+  page: Page,
+  edgeId: string,
+  title?: string,
+): Locator {
+  const labels = workflowEdge(page, edgeId).locator('text');
+  return title ? labels.filter({ hasText: title }) : labels;
+}
+
 /** canonical: workflowNodeEdgeHandle* — SVG circle handles on node hover */
 export function workflowNodeEdgeHandle(
   page: Page,

@@ -171,7 +171,70 @@ test.describe("FR-WF-HEADER-003: Outcome table eligibility and routing", () => {
   });
 });
 
-test.describe("FR-CAB-009/010 and FR-WF-OT-003/011: presentation lifecycle", () => {
+test.describe("FR-CAB-008/009/010 and FR-WF-OT-003/011: presentation lifecycle", () => {
+  test("FR-CAB-008/009: completed View settings and Sort actions dismiss their menus", async ({
+    page,
+    workflow,
+  }) => {
+    const rootUuid = await createEligibleOutcomeTable(
+      page,
+      workflow,
+      "Dismissal root",
+    );
+    await createOutcomeViaApi(page, workflow.graphUuid, {
+      title: "Dismissal child",
+      parentUuid: rootUuid,
+    });
+    await openEligibleOutcomeTable(page, workflow);
+
+    const grid = outcomeTableGrid(page);
+    const viewSettingsTrigger = page.locator("#actions-menu-button");
+    await expect(viewSettingsTrigger).toHaveAccessibleName("View settings");
+    const childCell = grid.getByRole("checkbox", {
+      name: /Dismissal child — Untitled node/,
+    });
+
+    await expect(childCell).toHaveCount(0);
+    await viewSettingsTrigger.click();
+    await expect(viewSettingsTrigger).toHaveAttribute("aria-expanded", "true");
+    await page
+      .getByRole("menuitem", { name: "Expand all outcomes", exact: true })
+      .click();
+    await expect(childCell).toBeVisible();
+    await expect(viewSettingsTrigger).toHaveAttribute("aria-expanded", "false");
+    await expect(
+      page.getByRole("menuitem", {
+        name: "Expand all outcomes",
+        exact: true,
+      }),
+    ).toBeHidden();
+
+    await viewSettingsTrigger.click();
+    await page
+      .getByRole("menuitem", { name: "Collapse all outcomes", exact: true })
+      .click();
+    await expect(childCell).toHaveCount(0);
+    await expect(viewSettingsTrigger).toHaveAttribute("aria-expanded", "false");
+
+    const sortTrigger = page.locator("#outcome-table-sort-button");
+    await expect(sortTrigger).toHaveAccessibleName("Sort");
+    await sortTrigger.click();
+    await expect(sortTrigger).toHaveAttribute("aria-expanded", "true");
+    await page
+      .getByRole("menuitem", { name: "Node category", exact: true })
+      .click();
+    await expect(sortTrigger).toHaveAttribute("aria-expanded", "false");
+    await expect(
+      page.getByRole("menuitem", { name: "Node category", exact: true }),
+    ).toBeHidden();
+
+    await sortTrigger.click();
+    await expect(
+      page.getByRole("menuitem", { name: "Node category", exact: true }),
+    ).toBeDisabled();
+    await page.keyboard.press("Escape");
+  });
+
   test("course defaults, state preservation, and reload reset follow the FR lifecycle", async ({
     page,
     workflow,

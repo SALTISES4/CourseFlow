@@ -42,6 +42,19 @@ export async function sectionOrderUuids(page: Page): Promise<string[]> {
   );
 }
 
+/** Atlaskit DropIndicator rendered on a destination section during vertical reorder. */
+export function sectionReorderDropIndicator(page: Page, sectionUuid: string): Locator {
+  return sectionContainer(page, sectionUuid).locator(
+    ':scope > div[style*="--stroke-color"][style*="--terminal-display"]',
+  );
+}
+
+export function sectionReorderDropIndicators(page: Page): Locator {
+  return sectionContainers(page).locator(
+    ':scope > div[style*="--stroke-color"][style*="--terminal-display"]',
+  );
+}
+
 /** Node uuids rendered inside a section (`#node-{uuid}`). */
 export async function sectionNodeUuids(page: Page, sectionUuid: string): Promise<string[]> {
   return sectionNodes(page, sectionUuid).evaluateAll((nodes) =>

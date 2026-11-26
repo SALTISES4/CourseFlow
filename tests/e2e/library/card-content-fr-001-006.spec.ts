@@ -3,6 +3,7 @@ import { authenticatedApiRequest } from '../../helpers/api';
 import {
   cleanupLibraryLifecycleFixture,
   createArchivedWorkflowFixture,
+  createProjectWorkflowCountFixture,
 } from '../../helpers/library-lifecycle';
 import { expectProjectCardClickNavigatesToWorkflowsView } from '../../helpers/card-navigation';
 import {
@@ -13,6 +14,7 @@ import {
   type ProjectCollectionAssetEntry,
 } from '../../helpers/manifest';
 import { gotoExplore, gotoFavourites, gotoLibrary } from '../../helpers/navigation';
+import { networkActivityLoader } from '../../shared/locators/workspace-edit-lock';
 import {
   archiveToggle,
   cardArchivedChip,
@@ -32,7 +34,7 @@ import {
   cardTitleText,
   cardWorkflowCountChip,
   cardWorkflowCountChipLabel,
-  E2E_FIXTURE_TEMPLATE_WORKFLOW_TITLES,
+  E2E_FIXTURE_ACTIVE_TEMPLATE_WORKFLOW_TITLES,
   E2E_FIXTURE_WORKFLOW_DESCRIPTION,
   E2E_FIXTURE_WORKFLOW_TITLE,
   expectFollowsInDocumentOrder,
@@ -262,6 +264,22 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
       );
     });
 
+    test('project workflow count excludes archived workflows', async ({ page }) => {
+      const fixture = await createProjectWorkflowCountFixture(page, 'FR-CARD-001 count');
+
+      try {
+        const { card, searchBody } = await showLibraryProjectCard(page, fixture.projectTitle);
+        const projectItem = searchBody.items.find(
+          (item) => item.uuid === fixture.projectUuid && item.contentType === 'project',
+        );
+
+        expect(projectItem?.workflowCount).toBe(1);
+        await expect(cardWorkflowCountChip(card)).toHaveText('1 workflow');
+      } finally {
+        await cleanupLibraryLifecycleFixture(page, fixture);
+      }
+    });
+
     test('workflow cards show mapped content and layout regions', async ({ page }) => {
       await showLibraryWorkflowCards(page);
 
@@ -304,6 +322,50 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
       await expect(card).toBeVisible();
       await cardTitleText(card).click();
       await expect(page).toHaveURL(new RegExp(`${workflow.workflow_path.replace(/\//g, '\\/')}/?$`));
+    });
+
+    test('clicking workflow card does not show a centered workflow spinner', async ({
+      page,
+    }) => {
+      await showLibraryWorkflowCards(page);
+
+      let releaseWorkflowRequest!: () => void;
+      const workflowRequestHeld = new Promise<void>((resolve) => {
+        releaseWorkflowRequest = resolve;
+      });
+      const workflowApiPath = `/api/workflow/${workflow.workflow_uuid}`;
+
+      await page.route(`**${workflowApiPath}`, async (route) => {
+        if (
+          route.request().method() === 'GET' &&
+          new URL(route.request().url()).pathname === workflowApiPath
+        ) {
+          await workflowRequestHeld;
+        }
+        await route.continue();
+      });
+
+      const card = libraryWorkflowCardByUuid(page, workflow.workflow_uuid);
+      await expect(card).toBeVisible();
+
+      const workflowRequestStarted = page.waitForRequest(
+        (request) =>
+          request.method() === 'GET' && new URL(request.url()).pathname === workflowApiPath,
+      );
+
+      try {
+        await cardTitleText(card).click();
+        await workflowRequestStarted;
+
+        await expect(networkActivityLoader(page)).toBeVisible();
+        await expect(page.locator('#container > .load-screen')).toHaveCount(0);
+      } finally {
+        releaseWorkflowRequest();
+      }
+
+      await expect(page).toHaveURL(
+        new RegExp(`${workflow.workflow_path.replace(/\//g, '\\/')}/?$`),
+      );
     });
   });
 
@@ -561,7 +623,7 @@ test.describe('FR-CARD-002: cardTemplateChip on template workflowCard', () => {
     );
   });
 
-  for (const title of E2E_FIXTURE_TEMPLATE_WORKFLOW_TITLES) {
+  for (const title of E2E_FIXTURE_ACTIVE_TEMPLATE_WORKFLOW_TITLES) {
     test(`template workflowCard "${title}" shows Template chip`, async ({ page }) => {
       const card = libraryWorkflowCardByTitle(page, title);
       await expect(card).toBeVisible();

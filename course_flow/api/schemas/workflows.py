@@ -1,5 +1,6 @@
 from datetime import datetime
 from enum import Enum
+from typing import Annotated
 from uuid import UUID
 
 from pydantic import Field
@@ -8,6 +9,8 @@ from course_flow.api.common.schemas import CamelSchema
 from course_flow.api.schemas.auth import UserSummaryOut
 from course_flow.api.schemas.permissions import PermissionContextOut
 from course_flow.core.enum import WorkflowType
+
+WholeHoursInMinutes = Annotated[int, Field(ge=0, multiple_of=60)]
 
 
 class WorkflowTypeIn(str, Enum):
@@ -45,14 +48,14 @@ class WorkflowOverviewMetadataIn(CamelSchema):
     calculate_time_automatically: bool | None = None
     time_minutes: int | None = Field(default=None, ge=0)
     calculate_ponderation_automatically: bool | None = None
-    theory_time_minutes: int | None = Field(default=None, ge=0)
-    practical_time_minutes: int | None = Field(default=None, ge=0)
-    individual_time_minutes: int | None = Field(default=None, ge=0)
+    theory_time_minutes: WholeHoursInMinutes | None = None
+    practical_time_minutes: WholeHoursInMinutes | None = None
+    individual_time_minutes: WholeHoursInMinutes | None = None
     calculate_credits_automatically: bool | None = None
     credits: int | None = Field(default=None, ge=0)
     calculate_classification_automatically: bool | None = None
-    general_time_minutes: int | None = Field(default=None, ge=0)
-    specific_time_minutes: int | None = Field(default=None, ge=0)
+    general_time_minutes: WholeHoursInMinutes | None = None
+    specific_time_minutes: WholeHoursInMinutes | None = None
 
 
 class WorkflowOverviewMetadataOut(CamelSchema):

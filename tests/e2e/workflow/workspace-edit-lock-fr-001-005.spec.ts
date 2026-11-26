@@ -73,6 +73,51 @@ async function refreshWorkflowLock(
   expect(lock.state).toBe('held');
 }
 
+test('FR-WS-LOCK-003: card lock tag is hidden only for the lock holder identity', async ({
+  browser,
+  page,
+  workflow,
+}, testInfo) => {
+  await page.goto(workflowOverviewPath(workflow.path));
+  await expect(workflowOverviewView(page)).toBeVisible();
+
+  const ownerLock = await readWorkflowLock(page, workflow.workflowUuid);
+  expect(ownerLock.state).toBe('held');
+  expect(ownerLock.holder).not.toBeNull();
+  const ownerProfile = await fetchMyProfileSettings(page);
+
+  await page.goto(`/project/${workflow.manifest.project_uuid}/workflows`);
+  const ownerCard = libraryWorkflowCardByUuid(page, workflow.workflowUuid);
+  await expect(ownerCard).toBeVisible({ timeout: 15_000 });
+  await expect(cardEditLockTag(ownerCard)).toHaveCount(0);
+  await refreshWorkflowLock(page, workflow.workflowUuid);
+
+  const editorContext = await browser.newContext({
+    baseURL: testInfo.project.use.baseURL,
+    storageState: { cookies: [], origins: [] },
+  });
+  const editorPage = await editorContext.newPage();
+  await loginAsWorkflowContributor(editorPage, workflow, 'editor');
+  const editorProfile = await fetchMyProfileSettings(editorPage);
+
+  try {
+    await patchMyProfileSettings(editorPage, {
+      firstName: ownerProfile.firstName,
+      lastName: ownerProfile.lastName,
+      languagePreference: 'en',
+    });
+    await editorPage.goto(`/project/${workflow.manifest.project_uuid}/workflows`);
+    const editorCard = libraryWorkflowCardByUuid(editorPage, workflow.workflowUuid);
+    await expect(editorCard).toBeVisible({ timeout: 15_000 });
+    await expect(cardEditLockTag(editorCard)).toHaveText(
+      `${ownerLock.holder!.displayName} is currently editing`,
+    );
+  } finally {
+    await patchMyProfileSettings(editorPage, editorProfile);
+    await editorContext.close();
+  }
+});
+
 test('FR-WS-LOCK-001/003/004/005: card tag, confirmed takeover, and prior-editor warning match the design', async ({
   browser,
   page,

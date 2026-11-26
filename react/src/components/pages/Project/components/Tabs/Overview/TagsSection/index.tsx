@@ -1,4 +1,8 @@
 import {
+  getProjectQueryKey,
+  listProjectTagsQueryKey
+} from '@cf/api/gen/@tanstack/react-query.gen'
+import {
   createProjectTag,
   deleteProjectTag,
   updateProjectTag
@@ -7,6 +11,7 @@ import { ProjectPermission, TagListItemOut } from '@cf/api/gen/types.gen'
 import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import * as SC from '@cfViews/WorkflowView/OverviewView/styles'
 import Grid from '@mui/material/Grid'
+import { useQueryClient } from '@tanstack/react-query'
 import { produce } from 'immer'
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -22,6 +27,22 @@ const Tags = ({ projectUuid, data }: PropsType) => {
   const { t } = useTranslation('project')
   const [state, setState] = useState<TagListItemOut[]>(data)
   const canEdit = useResourcePermission(ProjectPermission.EDIT_PROJECT)
+  const queryClient = useQueryClient()
+
+  const syncProjectTags = useCallback(
+    (tags: TagListItemOut[]) => {
+      const tagsQueryKey = listProjectTagsQueryKey({
+        path: { uuid: projectUuid }
+      })
+      setState(tags)
+      queryClient.setQueryData(tagsQueryKey, tags)
+      void queryClient.invalidateQueries({ queryKey: tagsQueryKey })
+      void queryClient.invalidateQueries({
+        queryKey: getProjectQueryKey({ path: { uuid: projectUuid } })
+      })
+    },
+    [projectUuid, queryClient]
+  )
 
   const onChange = useCallback(
     (id: string, value: string, createNew: boolean) => {
@@ -37,8 +58,8 @@ const Tags = ({ projectUuid, data }: PropsType) => {
             body: { label: cleanValue },
             throwOnError: true
           })
-          setState((current) =>
-            [...current, created].sort((left, right) =>
+          syncProjectTags(
+            [...state, created].sort((left, right) =>
               left.label.localeCompare(right.label)
             )
           )
@@ -55,8 +76,8 @@ const Tags = ({ projectUuid, data }: PropsType) => {
           body: { label: cleanValue },
           throwOnError: true
         })
-        setState(
-          produce((draft) => {
+        syncProjectTags(
+          produce(state, (draft) => {
             const target = draft.find((tag) => tag.id === tagId)
             if (target) {
               target.label = updated.label
@@ -65,7 +86,7 @@ const Tags = ({ projectUuid, data }: PropsType) => {
         )
       })()
     },
-    [projectUuid, state]
+    [projectUuid, state, syncProjectTags]
   )
 
   const onTagDelete = useCallback(
@@ -76,10 +97,10 @@ const Tags = ({ projectUuid, data }: PropsType) => {
           path: { uuid: projectUuid, tag_id: tagId },
           throwOnError: true
         })
-        setState((oldTags) => oldTags.filter((tag) => tag.id !== tagId))
+        syncProjectTags(state.filter((tag) => tag.id !== tagId))
       })()
     },
-    [projectUuid]
+    [projectUuid, state, syncProjectTags]
   )
 
   if (!state) {

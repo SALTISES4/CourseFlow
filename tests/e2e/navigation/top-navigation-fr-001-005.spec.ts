@@ -151,6 +151,36 @@ test.describe('Top navigation — workflow context (FR-TOP-005)', () => {
     await expect(returnLink).toContainText(/Return to/);
     await expect(returnLink).toContainText(manifest.project_title);
 
+    const viewSettings = page.locator('#actions-menu-button');
+    const jumpTo = page.locator('#jump-to-menu-button');
+    await expect(viewSettings).toBeVisible();
+    await expect(jumpTo).toBeVisible();
+    const typography = async (selector: typeof returnLink) =>
+      selector.evaluate((element) => {
+        const style = getComputedStyle(element);
+        return {
+          fontFamily: style.fontFamily,
+          fontSize: style.fontSize,
+          fontWeight: style.fontWeight,
+          lineHeight: style.lineHeight,
+          letterSpacing: style.letterSpacing,
+          textTransform: style.textTransform,
+        };
+      });
+    const returnTypography = await typography(returnLink);
+    expect(await typography(viewSettings)).toEqual(returnTypography);
+    expect(await typography(jumpTo)).toEqual(returnTypography);
+
+    const chevron = returnLink.locator('svg[data-testid="ChevronLeftIcon"]');
+    await expect(chevron).toBeVisible();
+    await expect(
+      returnLink.locator('svg[data-testid="ArrowBackIosIcon"]'),
+    ).toHaveCount(0);
+    const chevronBox = await chevron.boundingBox();
+    expect(chevronBox).not.toBeNull();
+    expect(chevronBox!.width).toBeLessThanOrEqual(20);
+    expect(chevronBox!.height).toBeLessThanOrEqual(20);
+
     await returnLink.click();
     await expect(page).toHaveURL(
       new RegExp(`/project/${manifest.project_uuid}/workflows/?$`),

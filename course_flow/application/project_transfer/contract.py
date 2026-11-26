@@ -25,6 +25,7 @@ Sha256 = Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
 ShortText = Annotated[str, Field(max_length=200)]
 PositiveSmallInteger = Annotated[int, Field(ge=0, le=32767)]
 NonNegativeInteger = Annotated[int, Field(ge=0)]
+WholeHoursInMinutes = Annotated[int, Field(ge=0, multiple_of=60)]
 UniqueValue = TypeVar("UniqueValue", bound=Hashable)
 
 
@@ -81,9 +82,9 @@ class CourseMetaSnapshot(SnapshotModel):
     kind: Literal["course"] = "course"
     calculate_time: bool = False
     time_required_minutes: NonNegativeInteger | None = None
-    ponderation_theory_minutes: NonNegativeInteger | None = None
-    ponderation_practice_minutes: NonNegativeInteger | None = None
-    ponderation_individual_minutes: NonNegativeInteger | None = None
+    ponderation_theory_minutes: WholeHoursInMinutes | None = None
+    ponderation_practice_minutes: WholeHoursInMinutes | None = None
+    ponderation_individual_minutes: WholeHoursInMinutes | None = None
     credits: Annotated[int | None, Field(ge=0)] = None
     specific_education: bool = False
     classification: Annotated[str, Field(max_length=255)] = ""
@@ -98,12 +99,12 @@ class ProgramMetaSnapshot(SnapshotModel):
     calculate_ponderation: str = ""
     calculate_classification: str = ""
     time_required_minutes: NonNegativeInteger | None = None
-    ponderation_theory_minutes: NonNegativeInteger | None = None
-    ponderation_practice_minutes: NonNegativeInteger | None = None
-    ponderation_individual_minutes: NonNegativeInteger | None = None
+    ponderation_theory_minutes: WholeHoursInMinutes | None = None
+    ponderation_practice_minutes: WholeHoursInMinutes | None = None
+    ponderation_individual_minutes: WholeHoursInMinutes | None = None
     credits: Annotated[int | None, Field(ge=0)] = None
-    classification_general_minutes: NonNegativeInteger | None = None
-    classification_specific_minutes: NonNegativeInteger | None = None
+    classification_general_minutes: WholeHoursInMinutes | None = None
+    classification_specific_minutes: WholeHoursInMinutes | None = None
 
 
 class TaskMetaSnapshot(SnapshotModel):

@@ -17,6 +17,8 @@ uiObjectDefinitions:
     meaning: Ordered section block in workflowView that contains the section node grid.
   workflowSectionContainerSelectedBorder:
     meaning: Selection outline on the workflowSectionContainer wrapper when workflowRightSidebar is bound to that workflowSectionContainer (Edit or Comments tab); parallel role to workflowChannelHeaderSelectedBorder per FR-CHAN-009 and workflowNodeSelectedBorder per FR-WF-NODE-002.
+  workflowSectionReorderDropIndicator:
+    meaning: Horizontal line indicator shown on the closest top or bottom edge of a valid destination workflowSectionContainer only during an in-flight vertical section reorder drag.
   workflowSectionRow:
     meaning: Horizontal row band inside a workflowSectionContainer spanning all workflowChannels.
   workflowSectionHeader:
@@ -80,6 +82,7 @@ locatorMappings:
   workflowView: "canonical_locators.yaml -> workflowView"
   workflowSectionContainer: "canonical_locators.yaml -> workflowSectionContainer"
   workflowSectionContainerSelectedBorder: "canonical_locators.yaml -> workflowSectionContainerSelectedBorder"
+  workflowSectionReorderDropIndicator: "canonical_locators.yaml -> workflowSectionReorderDropIndicator"
   workflowSectionRow: "canonical_locators.yaml -> workflowSectionRow"
   workflowSectionHeader: "canonical_locators.yaml -> workflowSectionHeader"
   workflowSectionNumberLabel: "canonical_locators.yaml -> workflowSectionNumberLabel"
@@ -227,6 +230,7 @@ requirements:
     mainFlow:
       - system persists changes without an explicit save control on workflowEditSectionForm
       - workflowEditSectionForm does not render any visible auto-save status indicator (e.g. 'Saving…' or 'Saved')
+      - workflowEditSectionFormTitleField continuously retains the user's latest local text while an earlier auto-save request is pending or completing; an older response never replaces newer unsaved or saved text
       - workflowSectionHeader updates to reflect the persisted title after save per FR-SEC-002
 
     roleBehavior:
@@ -243,6 +247,7 @@ requirements:
 
     acceptanceCriteria:
       - when owner or editor changes workflowEditSectionFormTitleField, the title persists without an explicit save control and workflowSectionHeader reflects the persisted title per FR-SEC-002
+      - given owner or editor continues typing after an auto-save request has started, when that earlier request completes before or after the newer save, workflowEditSectionFormTitleField never reverts to the earlier request value and the latest complete title persists
       - given workflowEditSectionForm is open and actor is owner or editor, when user modifies workflowEditSectionFormTitleField, workflowEditSectionForm does not show any visible auto-save status indicator
       - given workflowEditSectionFormTitleField is cleared, when save completes, workflowSectionHeader shows workflowSectionNumberLabel only per FR-SEC-002 (no workflowSectionTitleText, no placeholder)
 
@@ -412,6 +417,7 @@ requirements:
       - workflowSectionContainer
       - workflowSectionHeader
       - workflowSectionNumberLabel
+      - workflowSectionReorderDropIndicator
       - workflowChannel
       - workflowSectionRow
       - workflowNode
@@ -427,7 +433,9 @@ requirements:
     mainFlow:
       - drag source — owner or editor initiates vertical reorder by dragging workflowSectionHeader for workflowSectionContainer S; commenter, viewer, and user cannot initiate section reorder drag
       - when owner or editor starts a vertical section reorder drag, every workflowSectionContainer in workflowView collapses to workflowSectionHeader-only presentation (including the drag-source section); workflowSectionRow bands and workflowNode cells under each header are not shown
+      - while the pointer is over a valid top or bottom insert position on a destination workflowSectionContainer, workflowSectionReorderDropIndicator is shown at that closest edge
       - when the drag finalizes or aborts, every workflowSectionContainer returns to expanded presentation and workflowSectionRow / workflowNode content is shown again; any manual collapse state per FR-SEC-011 or bulk collapse state per FR-SEC-012 is cleared
+      - when the drag finalizes or aborts, workflowSectionReorderDropIndicator is removed from every workflowSectionContainer; no marker remains at the completed or abandoned destination
       - workflowSectionContainer keeps the same identity; only its top-to-bottom index in workflowView changes
       - system recalculates workflowSectionNumberLabel on every workflowSectionHeader per FR-SEC-002
       - every workflowNode that was inside the reordered workflowSectionContainer before the reorder remains inside that same workflowSectionContainer after the reorder with unchanged workflowChannel and workflowSectionRow assignments
@@ -449,12 +457,14 @@ requirements:
       - given workflowView contains at least two workflowSectionContainers and workflowSectionContainer S is empty, owner or editor can still vertically reorder S via drag-and-drop
       - given actor is commenter, viewer, or user, workflowSectionHeader is not a drag source for vertical reorder
       - given owner or editor starts a vertical section reorder drag, every workflowSectionContainer in workflowView shows workflowSectionHeader only until the drag finalizes or aborts
+      - given owner or editor drags a workflowSectionHeader over a valid insert position on another workflowSectionContainer, workflowSectionReorderDropIndicator is visible at the closest top or bottom edge for the duration of that in-flight target
       - given workflowSectionContainer S moves from top-to-bottom index K to index M by vertical reorder, every workflowNode that was in S before the reorder is still in S after the reorder at the same workflowChannel and workflowSectionRow coordinates relative to S
       - given owner or editor vertically reorders a workflowSectionContainer, no workflowNode is removed or created, no workflowNode changes workflowChannel or workflowSectionRow assignment, and no workflowChannel is inserted or removed solely as a result of the reorder
       - given workflowNode A in workflowSectionContainer S is connected by a workflowEdge to workflowNode B in a different workflowSectionContainer, when S is vertically reordered, that workflowEdge still exists with the same source workflowNode A, target workflowNode B, and metadata
       - given owner or editor vertically reorders a workflowSectionContainer, every other workflowEdge that existed before the reorder (within-section and cross-section) still exists with the same source workflowNode, target workflowNode, and metadata
       - given owner or editor vertically reorders a workflowSectionContainer, workflowSectionNumberLabel values on all workflowSectionHeaders reflect the new contiguous order per FR-SEC-002
       - given workflowSectionContainer S was manually collapsed per FR-SEC-011 or all sections were bulk-collapsed per FR-SEC-012, when owner or editor finalizes or aborts a vertical section reorder drag, S and every other workflowSectionContainer are expanded
+      - given owner or editor finalizes or aborts a vertical section reorder drag, no workflowSectionReorderDropIndicator remains visible or rendered in workflowView
 
     openQuestions: []
 

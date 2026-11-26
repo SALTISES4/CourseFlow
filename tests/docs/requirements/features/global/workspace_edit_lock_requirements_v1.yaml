@@ -47,7 +47,7 @@ outOfScope:
 
 uiObjectDefinitions:
   cardEditLockTag:
-    meaning: Lock-icon tag on an editable project or workflow library card while an active lock exists; shows exact English text '{displayName} is currently editing'.
+    meaning: Lock-icon tag on an editable project or workflow library card while an active lock held by a different user exists; shows exact English text '{displayName} is currently editing'. The current holder's own cards omit the tag.
   workspaceEditLockTakeoverButton:
     meaning: Primary lock-icon call-to-action in the workspace top action bar while another user holds the lock; has exact English label 'Take over editing'.
   workspaceEditLockTakeoverDialog:
@@ -210,17 +210,18 @@ requirements:
       - workflow creation remains available to an actor with the project's create-workflow permission and does not require takeover of the project edit lock
       - workspaceEditLockTakeoverButton remains visible in the top action bar while a different user holds the unexpired lock
       - workspaceEditLockTakeoverButton is visible and enabled with a lock icon and exact English label 'Take over editing'
-      - an editable project or workflow card with an active lock shows cardEditLockTag with a lock icon and exact English text '{displayName} is currently editing' using the holder's display name; public/read-only library results do not disclose the lock holder
+      - an editable project or workflow card with an active lock held by a different user shows cardEditLockTag with a lock icon and exact English text '{displayName} is currently editing' using the holder's display name; the holder's own card omits cardEditLockTag, and public/read-only library results do not disclose the lock holder
+      - whether the holder is the current user is determined by user identity, not by comparing mutable or non-unique display names
       - while the actor remains on the page without taking over, the client polls lock status at least once every 15 seconds
       - if a later poll finds no unexpired lock, the system atomically attempts acquisition for the waiting actor; if acquisition succeeds, it reloads current server state before enabling edits and removes workspaceEditLockTakeoverButton
       - if another eligible actor acquires the newly available lock first, this actor remains read-only and the takeover action remains available for the actual holder's lock
 
     roleBehavior:
       owner:
-        cardEditLockTag: visibleOnEditableLibraryCardsWithActiveLock
+        cardEditLockTag: visibleOnEditableLibraryCardsWithActiveLockHeldByDifferentUser
         workspaceEditLockTakeoverButton: enabled
       editor:
-        cardEditLockTag: visibleOnEditableLibraryCardsWithActiveLock
+        cardEditLockTag: visibleOnEditableLibraryCardsWithActiveLockHeldByDifferentUser
         workspaceEditLockTakeoverButton: enabled
 
     acceptanceCriteria:
@@ -228,6 +229,8 @@ requirements:
       - given user A holds the workflow edit lock for W, when eligible user B opens any authenticated route matching '/workflow/{id}/*' for W, B sees readable workflow content, cannot perform shared-resource mutations, and sees workspaceEditLockTakeoverButton in the top action bar
       - workspaceEditLockTakeoverButton shows exactly 'Take over editing' in English and 'Prendre le contrôle de la modification' in French
       - given A's display name is 'Alex Smith', an editable library card for A's actively locked resource shows 'Alex Smith is currently editing' in English and 'Alex Smith modifie actuellement' in French
+      - given A holds the active lock, A's own editable library card does not show cardEditLockTag
+      - given A holds the active lock and eligible user B has the same display name as A, B's editable library card still shows cardEditLockTag because A and B are different users
       - given B remains on the locked page and does not request takeover, B checks lock status at least once every 15 seconds
       - given A's lock expires while B remains on the page, when B next polls and atomically acquires the resource, B's page reloads current server state, workspaceEditLockTakeoverButton is removed, and edit controls become actionable only after the reload succeeds
       - given A holds the project lock for P and B holds the workflow lock for child workflow W, A may remain project editor and B may remain workflow editor because the resources have independent lock scopes

@@ -88,7 +88,19 @@ test.describe('view-settings-fr-cab-006', () => {
         tagsVisible: true,
       });
       await openWorkflowViewSettingsMenu(page);
-      await expect(workflowViewSettingsMenuTagToggle(page, tagLabel)).toBeVisible();
+      const tagToggle = workflowViewSettingsMenuTagToggle(page, tagLabel);
+      await expect(tagToggle).toBeVisible();
+      await expect(tagToggle).toHaveAttribute('type', 'checkbox');
+      await expect(
+        tagToggle.locator(
+          'xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " MuiSwitch-root ")][1]',
+        ),
+      ).toBeVisible();
+      await expect(
+        tagToggle.locator(
+          'xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " MuiCheckbox-root ")]',
+        ),
+      ).toHaveCount(0);
       await page.keyboard.press('Escape');
     });
   });

@@ -1,10 +1,11 @@
-import { ContextClassification } from '@cf/api/gen'
+import { ContextClassification, TagListItemOut } from '@cf/api/gen'
 import type { OutcomeCheckmarkStatus } from '@cf/components/views/WorkflowView/OutcomeTableView/Checkmark'
 import type { RootState } from '@cf/redux/store'
 import type { ParseKeys } from 'i18next'
 import { createSelector, lruMemoize } from 'reselect'
 
 import {
+  selectAllTags,
   selectChannelsOrderedByGraphUuid,
   selectNodeEntitiesByGraphUuid,
   selectSectionsOrderedByGraphUuid
@@ -57,7 +58,11 @@ type ExtraColumnLabelKey = Extract<
 type ExtraColumnLeaf = {
   labelKey: ExtraColumnLabelKey
   className?: string
-  format?: 'durationHours'
+  format?: 'durationHours' | 'wholeHours'
+  grandTotal?: {
+    include: boolean
+    testId: string
+  }
   headerTestId?: string
   nodeTestId?: string
   sectionTestId?: string
@@ -97,6 +102,14 @@ const createExtraColumnValues = (): ExtraColumnValues => ({
   ponderationIndividualMinutes: {}
 })
 
+const selectProjectTagLabels = createSelector([selectAllTags], (tags) =>
+  tags.map<TagListItemOut>((tag) => ({
+    id: Number(tag.tagId),
+    label: tag.label,
+    translationPlural: tag.translationPlural
+  }))
+)
+
 const selectOutcomeTableUi = (state: RootState) => state.graph.outcomeTableUi
 const selectExpandMode = (state: RootState) =>
   selectOutcomeTableUi(state).expandMode
@@ -116,24 +129,34 @@ export const selectIsOutcomeExpanded = createSelector(
   }
 )
 
-const selectOutcomeTableGroupBy = (
-  state: RootState
-): OutcomeTableUiState['sortType'] => {
-  const { viewType, sortType } = state.graph.outcomeTableUi
-  return !sortType || viewType === 'matrix' ? 'time' : sortType
-}
+type OutcomeTableSortType = NonNullable<OutcomeTableUiState['sortType']>
+
+const selectOutcomeTableSortType = (state: RootState): OutcomeTableSortType =>
+  state.graph.outcomeTableUi.sortType ?? 'time'
 
 const makeSelectOutcomeTable = lruMemoize(
   (graphUuid: string) =>
     createSelector(
       [
         (state: RootState) => selectGraphBoard(state, graphUuid),
-        (state: RootState) => selectOutcomeTagGroups(state, graphUuid),
-        (state: RootState) => selectOutcomeTagGroupsTree(state, graphUuid),
+        (state: RootState) =>
+          selectOutcomeTagGroups(
+            state,
+            graphUuid,
+            selectProjectTagLabels(state),
+            state.graph.graphUi.hiddenOutcomeTagIds
+          ),
+        (state: RootState) =>
+          selectOutcomeTagGroupsTree(
+            state,
+            graphUuid,
+            selectProjectTagLabels(state),
+            state.graph.graphUi.hiddenOutcomeTagIds
+          ),
         selectSectionsOrderedByGraphUuid(graphUuid),
         selectChannelsOrderedByGraphUuid(graphUuid),
         selectNodeEntitiesByGraphUuid(graphUuid),
-        selectOutcomeTableGroupBy
+        selectOutcomeTableSortType
       ],
       (
         graphBoard,
@@ -142,46 +165,27 @@ const makeSelectOutcomeTable = lruMemoize(
         sections,
         channels,
         nodes,
-        groupBy
+        sortType
       ): OutcomeTable => {
-        let groupedBy: OutcomeTable['groupedBy'] = 'sections'
         const extraColumnValues = createExtraColumnValues()
-
-        let preparedGroups: PreparedGroup[] = []
-        switch (groupBy) {
-          case 'category':
-            preparedGroups = prepareGroupsByChannel(
-              graphBoard,
-              channels,
-              nodes,
-              outcomeTree.outcomes,
-              extraColumnValues
-            )
-            groupedBy = 'channels'
-            break
-          case 'context':
-            preparedGroups = prepareGroupsByContext(
-              graphBoard,
-              nodes,
-              outcomeTree.outcomes,
-              extraColumnValues
-            )
-            groupedBy = 'context'
-            break
-          default:
-            preparedGroups = prepareGroupsBySection(
-              graphBoard,
-              nodes,
-              outcomeTree.outcomes,
-              extraColumnValues
-            )
-        }
+        const preparedGroups = prepareGroupsBySection(
+          graphBoard,
+          channels,
+          nodes,
+          outcomeTree.outcomes,
+          extraColumnValues,
+          sortType
+        )
 
         const extraCourseColumns: ExtraColumn[] = [
           {
             labelKey: 'outcomeTable.summary.totalHours',
             className: 'bg-dark',
             format: 'durationHours',
+            grandTotal: {
+              include: true,
+              testId: 'workflow-outcome-table-grand-total-hours-cell'
+            },
             headerTestId: 'workflow-outcome-table-total-hours-column',
             nodeTestId: 'workflow-outcome-table-total-hours-cell',
             sectionTestId: 'workflow-outcome-table-section-total-hours-total',
@@ -195,7 +199,12 @@ const makeSelectOutcomeTable = lruMemoize(
             columns: [
               {
                 labelKey: 'outcomeTable.summary.generalEducation',
-                format: 'durationHours',
+                format: 'wholeHours',
+                grandTotal: {
+                  include: true,
+                  testId:
+                    'workflow-outcome-table-grand-total-general-education-cell'
+                },
                 nodeTestId: 'workflow-outcome-table-general-education-cell',
                 sectionTestId:
                   'workflow-outcome-table-section-general-education-total',
@@ -203,7 +212,12 @@ const makeSelectOutcomeTable = lruMemoize(
               },
               {
                 labelKey: 'outcomeTable.summary.specificEducation',
-                format: 'durationHours',
+                format: 'wholeHours',
+                grandTotal: {
+                  include: true,
+                  testId:
+                    'workflow-outcome-table-grand-total-specific-education-cell'
+                },
                 nodeTestId: 'workflow-outcome-table-specific-education-cell',
                 sectionTestId:
                   'workflow-outcome-table-section-specific-education-total',
@@ -216,21 +230,33 @@ const makeSelectOutcomeTable = lruMemoize(
             columns: [
               {
                 labelKey: 'outcomeTable.summary.theory',
-                format: 'durationHours',
+                format: 'wholeHours',
+                grandTotal: {
+                  include: true,
+                  testId: 'workflow-outcome-table-grand-total-theory-cell'
+                },
                 nodeTestId: 'workflow-outcome-table-theory-cell',
                 sectionTestId: 'workflow-outcome-table-section-theory-total',
                 values: extraColumnValues.ponderationTheoryMinutes
               },
               {
                 labelKey: 'outcomeTable.summary.practical',
-                format: 'durationHours',
+                format: 'wholeHours',
+                grandTotal: {
+                  include: true,
+                  testId: 'workflow-outcome-table-grand-total-practical-cell'
+                },
                 nodeTestId: 'workflow-outcome-table-practical-cell',
                 sectionTestId: 'workflow-outcome-table-section-practical-total',
                 values: extraColumnValues.ponderationPracticalMinutes
               },
               {
                 labelKey: 'outcomeTable.summary.individualWork',
-                format: 'durationHours',
+                format: 'wholeHours',
+                grandTotal: {
+                  include: true,
+                  testId: 'workflow-outcome-table-grand-total-individual-cell'
+                },
                 nodeTestId: 'workflow-outcome-table-individual-cell',
                 sectionTestId:
                   'workflow-outcome-table-section-individual-total',
@@ -239,7 +265,12 @@ const makeSelectOutcomeTable = lruMemoize(
               {
                 labelKey: 'outcomeTable.summary.totalHours',
                 className: 'bg-dark',
-                format: 'durationHours',
+                format: 'wholeHours',
+                grandTotal: {
+                  include: true,
+                  testId:
+                    'workflow-outcome-table-grand-total-ponderation-hours-cell'
+                },
                 nodeTestId: 'workflow-outcome-table-ponderation-total-cell',
                 sectionTestId:
                   'workflow-outcome-table-section-ponderation-total-total',
@@ -250,6 +281,10 @@ const makeSelectOutcomeTable = lruMemoize(
           {
             labelKey: 'outcomeTable.summary.credits',
             className: 'bg-dark',
+            grandTotal: {
+              include: false,
+              testId: 'workflow-outcome-table-grand-total-credits-cell'
+            },
             nodeTestId: 'workflow-outcome-table-credits-cell',
             sectionTestId: 'workflow-outcome-table-section-credits-total',
             values: extraColumnValues.totalCredits
@@ -261,7 +296,7 @@ const makeSelectOutcomeTable = lruMemoize(
           board: graphBoard,
           outcomeTree,
           groups: preparedGroups,
-          groupedBy,
+          groupedBy: 'sections',
           extraColumns: {
             course: extraCourseColumns,
             program: extraProgramColumns
@@ -440,99 +475,56 @@ function prepareGroup(
 
 function prepareGroupsBySection(
   graphBoard: GraphBoard,
-  nodes: Record<string, NodeEntity>,
-  outcomes: Outcomes,
-  extraColumnValues: ExtraColumnValues
-): PreparedGroup[] {
-  return graphBoard.sections.map((section) =>
-    prepareGroup(section.uuid, getOrderedNodeUuids(section), {
-      nodes,
-      outcomes,
-      extraColumnValues
-    })
-  )
-}
-
-function prepareGroupsByChannel(
-  graphBoard: GraphBoard,
   channels: ChannelEntity[],
   nodes: Record<string, NodeEntity>,
   outcomes: Outcomes,
-  extraColumnValues: ExtraColumnValues
+  extraColumnValues: ExtraColumnValues,
+  sortType: OutcomeTableSortType
 ): PreparedGroup[] {
-  const nodeUuidsByChannel: Record<string, string[]> = {}
-
-  for (const section of graphBoard.sections) {
-    for (const nodeUuid of getOrderedNodeUuids(section)) {
-      const { channelUuid } = nodes[nodeUuid]
-      if (!channelUuid) {
-        continue
-      }
-
-      if (!nodeUuidsByChannel[channelUuid]) {
-        nodeUuidsByChannel[channelUuid] = []
-      }
-      nodeUuidsByChannel[channelUuid].push(nodeUuid)
-    }
+  const channelOrder = new Map(
+    channels.map((channel, index) => [channel.uuid, index])
+  )
+  const contextOrder: Partial<Record<ContextClassification, number>> = {
+    [ContextClassification.NONE]: 0,
+    [ContextClassification.FORMATIVE]: 1,
+    [ContextClassification.SUMMATIVE]: 2,
+    [ContextClassification.COMPREHENSIVE]: 3
   }
 
-  return channels.map((channel) => {
-    const nodeUuids = nodeUuidsByChannel[channel.uuid] ?? []
-    return prepareGroup(channel.uuid, nodeUuids, {
+  return graphBoard.sections.map((section) => {
+    const nodeUuids = getOrderedNodeUuids(section)
+    const chronologicalOrder = new Map(
+      nodeUuids.map((nodeUuid, index) => [nodeUuid, index])
+    )
+
+    if (sortType !== 'time') {
+      nodeUuids.sort((a, b) => {
+        const nodeA = nodes[a]
+        const nodeB = nodes[b]
+        const rankA =
+          sortType === 'category'
+            ? (channelOrder.get(nodeA.channelUuid ?? '') ?? Number.MAX_VALUE)
+            : (contextOrder[
+                nodeA.contextClassification ?? ContextClassification.NONE
+              ] ?? Number.MAX_VALUE)
+        const rankB =
+          sortType === 'category'
+            ? (channelOrder.get(nodeB.channelUuid ?? '') ?? Number.MAX_VALUE)
+            : (contextOrder[
+                nodeB.contextClassification ?? ContextClassification.NONE
+              ] ?? Number.MAX_VALUE)
+
+        return (
+          rankA - rankB ||
+          (chronologicalOrder.get(a) ?? 0) - (chronologicalOrder.get(b) ?? 0)
+        )
+      })
+    }
+
+    return prepareGroup(section.uuid, nodeUuids, {
       nodes,
       outcomes,
       extraColumnValues
     })
   })
-}
-
-const contextDisplayOrder = [
-  ContextClassification.NONE,
-  ContextClassification.INDIVIDUAL_WORK,
-  ContextClassification.WORK_IN_GROUPS,
-  ContextClassification.IN_THE_CLASSROOM,
-  ContextClassification.FORMATIVE,
-  ContextClassification.SUMMATIVE,
-  ContextClassification.COMPREHENSIVE
-]
-
-function prepareGroupsByContext(
-  graphBoard: GraphBoard,
-  nodes: Record<string, NodeEntity>,
-  outcomes: ReturnType<typeof selectOutcomeTagGroupsTree>['outcomes'],
-  extraColumnValues: ExtraColumnValues
-): PreparedGroup[] {
-  const nodeUuidsByContext: Partial<Record<ContextClassification, string[]>> =
-    {}
-
-  for (const section of graphBoard.sections) {
-    for (const nodeUuid of getOrderedNodeUuids(section)) {
-      const contextClassification =
-        nodes[nodeUuid]?.contextClassification ?? ContextClassification.NONE
-
-      if (!nodeUuidsByContext[contextClassification]) {
-        nodeUuidsByContext[contextClassification] = []
-      }
-      nodeUuidsByContext[contextClassification].push(nodeUuid)
-    }
-  }
-
-  const groups: PreparedGroup[] = []
-
-  for (const contextGroup of contextDisplayOrder) {
-    const nodeUuids = nodeUuidsByContext[contextGroup] ?? []
-    if (nodeUuids.length === 0) {
-      continue
-    }
-
-    groups.push(
-      prepareGroup(contextGroup, nodeUuids, {
-        nodes,
-        outcomes,
-        extraColumnValues
-      })
-    )
-  }
-
-  return groups
 }

@@ -44,7 +44,7 @@ uiObjectDefinitions:
   passwordResetPage:
     meaning: Canonical definition in tests/docs/requirements/features/auth/password_reset_requirements_v1.yaml.
   backToProjectLink:
-    meaning: Navigation link in returnLinksRegion on workflow routes; label includes 'Return to' and the parent project projectTitle.
+    meaning: Small primary navigation link in returnLinksRegion on workflow routes; label includes 'Return to' and the parent project projectTitle, uses the same button typography as the workflow 'View settings' and 'Jump to' controls, and has a compact leading left-chevron icon.
   projectTitle:
     meaning: Canonical definition in tests/docs/requirements/features/project/project_header_requirements_v1.yaml.
 
@@ -229,12 +229,15 @@ requirements:
 
     mainFlow:
       - backToProjectLink is visible in returnLinksRegion with label including 'Return to' and the parent project projectTitle
+      - backToProjectLink uses the same font family, font size, font weight, line height, letter spacing, and text transformation as the small workflow 'View settings' and 'Jump to' controls
+      - backToProjectLink uses one compact leading left-chevron icon no larger than 20 px in either rendered dimension; it does not use the wider iOS back-arrow glyph
       - given user clicks backToProjectLink, application navigates to route pattern '/project/{id}/workflows' for the parent project
 
     roleBehavior: {}
 
     acceptanceCriteria:
       - backToProjectLink is visible in returnLinksRegion with label including 'Return to' and parent project projectTitle
+      - backToProjectLink typography matches the visible workflow 'View settings' and 'Jump to' controls and its leading icon is a left chevron no larger than 20 px
       - given user clicks backToProjectLink, current route matches '/project/{id}/workflows' for the parent project
       - given workflow workspace access preconditions do not hold on a workflow route, assert per tests/docs/requirements/features/global/workspace_access_requirements_v1.yaml FR-WS-ACCESS-002
 

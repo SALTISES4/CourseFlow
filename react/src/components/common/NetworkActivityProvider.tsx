@@ -74,10 +74,10 @@ const NetworkActivityProvider = () => {
     return () => window.clearTimeout(timeout)
   }, [requestCount])
 
-  return <>{isLoading && <Loader />}</>
+  return <>{isLoading && <NetworkActivityLoader />}</>
 }
 
-const Loader = () => (
+export const NetworkActivityLoader = () => (
   <div
     data-testid="network-activity-loader"
     style={{

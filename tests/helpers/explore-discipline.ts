@@ -178,6 +178,9 @@ export async function installExploreDisciplineSearchMock(page: Page): Promise<vo
 export async function expectDisciplineFilterCatalogue(page: Page): Promise<void> {
   await openDisciplineFilterPopover(page);
 
+  await expect(disciplineFilterCheckboxOptions(page)).toHaveCount(
+    DISCIPLINE_CATALOGUE_AZ.length,
+  );
   const labels = await disciplineFilterOptionLabels(page);
   expect(labels).toEqual([...DISCIPLINE_CATALOGUE_AZ]);
 

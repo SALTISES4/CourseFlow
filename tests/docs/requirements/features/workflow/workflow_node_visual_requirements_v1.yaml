@@ -93,6 +93,12 @@ uiObjectDefinitions:
     meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_right_sidebar_requirements_v1.yaml.
   workflowRightSidebarEditTab:
     meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_right_sidebar_requirements_v1.yaml.
+  workflowScrollableContentRegion:
+    meaning: Inner horizontal and vertical scroll viewport containing workflowView.
+  mainNavigation:
+    meaning: Canonical definition in tests/docs/requirements/features/navigation/main_navigation_requirements_v1.yaml.
+  workflowViewTabSelector:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml.
 
 locatorMappings:
   workflowView: "canonical_locators.yaml -> workflowView"
@@ -119,6 +125,9 @@ locatorMappings:
   workflowNodeEdgeHandleBottom: "canonical_locators.yaml -> workflowNodeEdgeHandleBottom"
   workflowNodeEdgeHandleLeft: "canonical_locators.yaml -> workflowNodeEdgeHandleLeft"
   workflowEdge: "canonical_locators.yaml -> workflowEdge"
+  workflowScrollableContentRegion: "canonical_locators.yaml -> workflowScrollableContentRegion"
+  mainNavigation: "canonical_locators.yaml -> mainNavigation"
+  workflowViewTabSelector: "canonical_locators.yaml -> workflowViewTabSelector"
 
 requirements:
   - id: FR-WF-NODE-001
@@ -156,6 +165,9 @@ requirements:
       - workflowEditNodeFormTaskTypeSelect
       - workflowEditNodeFormTimeField
       - workflowRightSidebar
+      - workflowScrollableContentRegion
+      - mainNavigation
+      - workflowViewTabSelector
 
     preconditions:
       - workflowView is rendered
@@ -175,6 +187,7 @@ requirements:
       - when no workflowNodeMeta tag would render for a workflowNode, workflowNodeMeta is not rendered for that workflowNode
       - when workflowNodeMetaContextTag and workflowNodeMetaTaskTag are both present, they are left-aligned within workflowNodeMeta; when workflowNodeMetaTimeTag is present, it is right-aligned within workflowNodeMeta
       - out of scope — per-value icon glyphs and accessible names for workflowNodeMetaContextTag and workflowNodeMetaTaskTag; tag presence and layout per field applicability are in scope
+      - horizontal overflow in workflowView is confined to workflowScrollableContentRegion; scrolling the canvas does not move mainNavigation, workflowViewTabSelector, or workflowRightSidebar and does not allow canvas content to overlap mainNavigation
 
     roleBehavior:
       owner:
@@ -205,6 +218,7 @@ requirements:
       - given workflowNodeLinkedWorkflowIndicator is rendered, the new-tab navigation outcome for the linked workflow route conforms to FR-WS-ACCESS-002 when that FR's preconditions apply to the linked workflow; otherwise the new tab shows the linked workflow workspace and the original tab does not change workflowRightSidebar selection
       - given a workflowNode is rendered in workflowView, workflowEditNodeFormDescriptionField, workflowEditNodeFormTagsAutocomplete, workflowEditNodeFormCreditsField, workflowEditNodeFormPonderationGroup, and workflowEditNodeFormSpecificEducationSwitch are not shown on that workflowNode
       - given a workflowNode, workflowNodeMeta tag presence conforms to field applicability and persisted values per FR-WF-EN-002 through FR-WF-EN-006; when workflowNodeMeta is rendered, workflowNodeMetaContextTag and workflowNodeMetaTaskTag are left-aligned within workflowNodeMeta and workflowNodeMetaTimeTag is right-aligned when present
+      - given workflowView overflows horizontally, changing workflowScrollableContentRegion.scrollLeft moves the canvas content while mainNavigation, workflowViewTabSelector, and workflowRightSidebar retain their viewport positions and the scroll viewport remains entirely to the right of mainNavigation
       - given parent workflow type is activity and workflowEditNodeFormActivityContextSelect for the workflowNode is 'None' or unset, workflowNodeMetaContextTag is not rendered for that workflowNode
       - given parent workflow type is activity and workflowEditNodeFormTaskTypeSelect for the workflowNode is 'None' or unset, workflowNodeMetaTaskTag is not rendered for that workflowNode
       - given parent workflow type is course and workflowEditNodeFormCourseContextSelect for the workflowNode is 'None' or unset, workflowNodeMetaContextTag is not rendered for that workflowNode
@@ -348,6 +362,7 @@ requirements:
       - workflowNodeHoverActionsMenu visibility is driven by pointer position only; keyboard focus on the workflowNode or on controls inside workflowNodeHoverActionsMenu does not substitute for pointer hover and does not show the menu when the pointer is outside that combined hover region
       - when the pointer leaves both the workflowNode and workflowNodeHoverActionsMenu anchored to that workflowNode, workflowNodeHoverActionsMenu hides
       - at most one workflowNodeHoverActionsMenu is visible at a time in workflowView
+      - workflowNodeHoverActionsMenu is positioned inside the upper-right of workflowNode; it does not overlap or intercept workflowNodeEdgeHandleTop or workflowNodeLinkedOutcomesBadge, and each action button uses hover background colour #E9EEF0
       - showing or hiding workflowNodeHoverActionsMenu on a workflowNode does not remove workflowEdge instances from the canvas; workflowEdges that are part of the loaded workflow remain displayed (edge styling and emphasis are deferred to the workflow-edge requirements file)
 
     roleBehavior:
@@ -370,6 +385,8 @@ requirements:
       - given workflowNodeHoverActionsMenu is visible on workflowNode N, when the user moves the pointer off workflowNode N and off workflowNodeHoverActionsMenu on that node, workflowNodeHoverActionsMenu hides
       - given actor is owner, editor, or commenter, when the pointer is not within the combined pointer-hover region of workflowNode N and workflowNodeHoverActionsMenu anchored to workflowNode N, keyboard focus on workflowNode N alone does not cause workflowNodeHoverActionsMenu to become visible
       - given the user hovers workflowNode A then moves the pointer onto workflowNode B, workflowNodeHoverActionsMenu on workflowNode A hides and workflowNodeHoverActionsMenu on workflowNode B becomes visible (subject to FR-WF-NODE-005 roleBehavior: at least one menu item is active for the actor on that node)
+      - given workflowNodeHoverActionsMenu, workflowNodeEdgeHandleTop, and workflowNodeLinkedOutcomesBadge are visible on the same workflowNode, their bounding boxes do not overlap; the top handle and linked-outcomes badge remain directly pointer-actionable without forcing the pointer through a hover-menu control
+      - given the pointer hovers a workflowNodeHoverActionsMenu action button, its computed background colour is #E9EEF0
       - given owner or editor is dragging an existing workflowNode per FR-WF-MV-001, workflowNodeHoverActionsMenu is not rendered on any placed workflowNode in workflowView for the duration of the drag
       - given owner or editor finalizes or aborts a move drag per FR-WF-MV-001, hover-based visibility on a workflowNode resumes per FR-WF-NODE-004 and FR-WF-NODE-005 when the pointer hovers that workflowNode
       - given owner or editor is dragging from workflowRightSidebarAddTabContent per FR-WF-ADD-003, workflowNodeHoverActionsMenu is not rendered on any placed workflowNode in workflowView for the duration of the drag, including while workflowManualPlacementDialog is open after a valid 'Manual'-mode release per FR-WF-ADD-006
@@ -484,6 +501,7 @@ requirements:
 
     mainFlow:
       - for owner and editor, workflowNodeEdgeHandles on workflowNode N is shown if and only if the pointer is in N's combined pointer-hover region per FR-WF-NODE-004; selection chrome per FR-WF-NODE-002 and workflowNodeOutcomeHighlightBorder per FR-WF-NODE-003 do not substitute for pointer hover and do not suppress handles when N is hovered
+      - workflowNodeEdgeHandleTop remains pointer-actionable while workflowNodeHoverActionsMenu is visible per FR-WF-NODE-004
       - dragging from a handle to author or edit workflow edges is out of scope here (workflow-edge requirements file)
 
     roleBehavior:

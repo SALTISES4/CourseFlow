@@ -1,7 +1,7 @@
 # Functional requirements: workflow duration fields
 # Status: Accepted
-# Version: 3.0
-# Source: product decisions recorded 2026-11-16 and Figma-authoritative Time controls confirmed 2026-11-24.
+# Version: 4.0
+# Source: product decisions recorded 2026-11-16, 2026-11-24, and 2026-11-26.
 # Scope: all duration-valued workflow and node fields, including Time,
 #   Ponderation, Classification, linked-workflow mirrors, calculated totals,
 #   outcome tables, and compact graph-node metadata.
@@ -16,12 +16,13 @@ durationSemantics:
   persistedValueRule: A duration is stored and transported as one nullable, non-negative integer containing total minutes. No unit field is stored or exposed.
   calculationRule: Duration arithmetic, equality, copying, linking, and automatic totals operate on total integer minutes without presentation rounding.
   timeInputRule: Node-sidebar and Overview Time controls use separate Hours and Minutes numeric fields backed by one canonical minute value. They are duration controls and must not use time-of-day types or 24-hour clock behaviour.
-  otherDurationInputRule: Ponderation and Classification controls retain their hosting feature's hhh:mm masked input until an authoritative design changes those controls.
+  wholeHoursInputRule: Every editable Ponderation and Classification child field uses one non-negative whole-number Hours input. The UI multiplies the entered value by 60 before persistence; users cannot enter minutes or fractional hours.
+  wholeHoursPersistenceRule: Manually persisted and imported Ponderation and Classification child values must be divisible by 60. Automatic Classification remains an exact integer-minute calculation from Time and is not rounded in the calculation or API response.
   inputRange:
     timeHours: any non-negative whole number whose conversion remains a safe integer
-    maskedHours: 000 through 999 for unchanged hhh:mm controls
+    wholeHours: any non-negative whole number whose conversion remains a safe integer
     minutes: 0 through 59
-  displayRule: Graph-node Time tags render exact canonical minutes as '[hours] H [minutes] M'. Outcome-table and other unchanged non-form duration surfaces remain localized decimal hours with exactly one fractional digit.
+  displayRule: Graph-node Time tags render exact canonical minutes as '[hours] H [minutes] M'. Ponderation and Classification surfaces render one integer hour value. When an automatically calculated Classification value contains a minute remainder, the UI rounds to the nearest hour for display only, with 30 through 59 remainder minutes rounding up. Time-specific outcome-table values retain localized decimal-hour presentation.
   requirednessRule: This shared contract does not make a hosting field required. Empty values persist as null unless the hosting calculation explicitly treats an empty contribution as zero.
 
 compatibilityConstraints:
@@ -34,7 +35,7 @@ uiObjectDefinitions:
   workflowDurationField:
     meaning: One logical duration control identified by its hosting field label and backed by one canonical integer-minute value.
   workflowDurationInput:
-    meaning: The input presentation chosen by the hosting feature; Time uses separate Hours and Minutes fields, while unchanged Ponderation and Classification fields use hhh:mm.
+    meaning: The input presentation chosen by the hosting feature; Time uses separate Hours and Minutes fields, while Ponderation and Classification child fields use one whole-number Hours input.
   workflowDurationValidationMessage:
     meaning: Localized validation feedback associated with an invalid duration input.
 
@@ -45,7 +46,7 @@ locatorMappings:
 
 requirements:
   - id: FR-WF-DURATION-001
-    title: Duration forms accept exact hours and minutes without unit selection
+    title: Time and whole-hour metadata fields use distinct input contracts
 
     designEvidence: []
     actors: [owner, editor, commenter, viewer, user]
@@ -65,7 +66,9 @@ requirements:
       - entering Hours 1 and Minutes 30 produces a canonical value of 90 minutes
       - entering Hours 0 and Minutes 10 produces a canonical value of 10 minutes
       - a non-integer component or a Minutes component greater than 59 is invalid and is not persisted
-      - unchanged Ponderation and Classification workflowDurationFields retain their hosting hhh:mm masked presentation
+      - each editable Ponderation or Classification child workflowDurationField contains one numeric Hours input with whole-number step 1 and no Minutes input
+      - entering 51 in a Ponderation or Classification Hours input produces a canonical value of 3,060 minutes
+      - a negative or fractional Ponderation or Classification Hours value is invalid and is not persisted
       - clearing an optional duration persists null
       - read-only and disabled behaviour follows the hosting feature
 
@@ -74,6 +77,8 @@ requirements:
       - given an editable Time duration, entering Hours 0 and Minutes 10 and leaving the control persists 10 minutes
       - given an invalid Hours or Minutes value, no replacement duration is persisted
       - given both components of an optional Time duration are cleared, null is persisted
+      - given an editable Ponderation or Classification child field, entering 51 and leaving the control persists 3,060 minutes and reopening displays 51
+      - given a fractional Ponderation or Classification Hours value, no replacement value is persisted
       - no duration form renders a selectable time unit or a time-of-day control
 
     openQuestions: []
@@ -94,7 +99,9 @@ requirements:
     mainFlow:
       - persistence and APIs use nullable non-negative integer total minutes
       - no model, database, API, or snapshot field carries a time unit
+      - workflow Overview writes, node metadata writes, and project snapshot imports reject manually supplied Ponderation or Classification child values that are not divisible by 60
       - automatic totals sum integer minutes before presentation formatting
+      - automatic Classification sums each program node's exact Time minutes into the General or Specific bucket selected by that node's Specific education boolean; legacy classification strings do not select the bucket
       - linked-workflow mirroring and workflow copying preserve the exact integer-minute value
       - equality and mismatch warnings compare integer minutes
 
@@ -103,11 +110,13 @@ requirements:
       - given a 90-minute linked workflow duration, its mirror receives exactly 90 minutes
       - presentation rounding never changes the persisted minute value
       - generated API contracts expose integer-minute fields and no time-unit field
+      - given a manual or imported Ponderation or Classification child value of 90 minutes, validation rejects it because it is not divisible by 60
+      - given an automatically calculated Classification contribution of 90 minutes, the calculation and API response retain exactly 90 minutes
 
     openQuestions: []
 
   - id: FR-WF-DURATION-003
-    title: Duration displays preserve exact minutes using their authoritative host format
+    title: Duration displays use their authoritative Time or whole-hour format
 
     designEvidence: []
     actors: [owner, editor, commenter, viewer, user]
@@ -123,21 +132,33 @@ requirements:
     mainFlow:
       - compact graph-node Time metadata converts canonical minutes to whole Hours plus remainder Minutes and renders '[hours] H [minutes] M'
       - linked read-only Time controls render separate Hours and Minutes inputs like editable Time controls
-      - outcome-table cells whose headers identify hours render the localized numeric value with one fractional digit
-      - other unchanged non-form duration displays divide canonical minutes by 60 for presentation only and render exactly one fractional digit using the active locale
+      - editable and read-only Ponderation and Classification child fields render one integer Hours value
+      - Ponderation values are exact whole hours because their persisted minute values are divisible by 60
+      - automatically calculated Classification values divide exact canonical minutes by 60 and round to the nearest integer for UI presentation only; remainder minutes 0 through 29 round down and 30 through 59 round up
+      - program outcome-table Ponderation and Classification cells and totals use the same whole-hour presentation; sums operate on canonical minutes before the final display rounding
+      - Time-specific outcome-table cells whose headers identify hours render the localized numeric value with one fractional digit
 
     acceptanceCriteria:
       - 10 minutes on a graph node displays as '0 H 10 M'
       - 315 minutes on a graph node displays as '5 H 15 M'
       - 315 minutes in a linked read-only Time control displays Hours 5 and Minutes 15
       - 10 minutes in an outcome-table hours cell displays as the localized equivalent of 0.2 hours
-      - changing locale changes decimal-hour formatting without changing canonical minutes or graph-node H/M values
+      - a Ponderation value of 3,060 minutes displays as the integer 51
+      - an automatically calculated Classification value of 89 minutes displays as 1 hour, while 90 minutes displays as 2 hours; both API values remain unchanged
+      - changing locale changes applicable number formatting without changing canonical minutes, graph-node H/M values, or whole-hour rounding
 
     openQuestions: []
 
 openQuestions: []
 
 changelog:
+  - version: '4.0'
+    date: '2026-11-26'
+    changes:
+      - Replaced Ponderation and Classification hhh:mm masks with one whole-number Hours input per child field.
+      - Required manual and imported Ponderation and Classification minute values to be divisible by 60 while retaining integer-minute storage.
+      - Kept automatic Classification calculations exact in minutes and defined nearest-hour UI presentation.
+      - Defined Specific education as the Classification bucket selector and retired legacy classification strings from that calculation.
   - version: '3.0'
     date: '2026-11-24'
     changes:

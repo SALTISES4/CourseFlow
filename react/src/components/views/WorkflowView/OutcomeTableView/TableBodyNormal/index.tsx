@@ -1,3 +1,5 @@
+import { WorkflowPermission } from '@cf/api/gen/types.gen'
+import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import {
   OutcomeTable,
   selectIsOutcomeExpanded
@@ -7,8 +9,10 @@ import {
   linkNodeOutcome,
   unlinkNodeOutcome
 } from '@cf/features/graph/state/thunks/graphMutations.thunks'
+import { displaySystemTitle } from '@cf/i18n/systemTitles'
 import { AppDispatch, RootState } from '@cf/redux/store'
 import OutcomeHeader from '@cfPages/Workflow/Sidebar/components/OutcomesTab/Outcome/Header'
+import useNodeTitle from '@cfViews/WorkflowView/GraphView/components/Section/Cell/CellNode/useNodeTitle'
 import useOutcomeTitle from '@cfViews/WorkflowView/OutcomeEditView/useOutcomeTitle'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -26,27 +30,43 @@ const TableBody = ({
   projectTagsMap: ProjectTagsMap
 }) => {
   const { t } = useTranslation('workflow')
+  const canAssignOutcomes = useResourcePermission(
+    WorkflowPermission.ASSIGN_OUTCOMES
+  )
   return (
     <Styled.TableBody>
       {table.tagGroups.map((group) => {
         const found = projectTagsMap[group.uuid]
-        const groupTitle = found ? found.label : group.title
+        const groupTitle =
+          group.uuid === -1
+            ? table.tagGroups.length > 1
+              ? t('outcomes.untagged')
+              : ''
+            : (found?.label ?? group.title)
 
         return (
-          <Styled.TagGroup key={group.uuid}>
+          <Styled.TagGroup
+            key={group.uuid}
+            role="rowgroup"
+            aria-label={groupTitle || t('outcomes.title')}
+            data-test-id="workflow-outcome-table-tag-group"
+          >
             {groupTitle && (
-              <Styled.BodyRow className="tag-header-row">
+              <Styled.BodyRow className="tag-header-row" role="row">
                 <Styled.BodyLegendWrap>
-                  <Styled.TableLegend>
-                    {t(groupTitle as any)}
-                  </Styled.TableLegend>
+                  <Styled.TableLegend>{groupTitle}</Styled.TableLegend>
                 </Styled.BodyLegendWrap>
                 <Styled.BodyLegendWrap />
               </Styled.BodyRow>
             )}
 
             {group.outcomes.map((outcomeUuid) => (
-              <TagGroupRow key={outcomeUuid} table={table} uuid={outcomeUuid} />
+              <TagGroupRow
+                key={outcomeUuid}
+                table={table}
+                uuid={outcomeUuid}
+                readOnly={!canAssignOutcomes}
+              />
             ))}
           </Styled.TagGroup>
         )
@@ -57,12 +77,15 @@ const TableBody = ({
 
 const TagGroupRow = ({
   table,
-  uuid
+  uuid,
+  readOnly
 }: {
   table: OutcomeTable
   uuid: string
+  readOnly: boolean
 }) => {
   const dispatch = useDispatch<AppDispatch>()
+  const { t } = useTranslation('workflow')
   const outcome = table.outcomeTree.outcomes[uuid]
   const expanded = useSelector((state: RootState) =>
     selectIsOutcomeExpanded(state, outcome.uuid)
@@ -72,40 +95,24 @@ const TagGroupRow = ({
     title: outcome.title,
     titleCopyCount: outcome.titleCopyCount
   })
+  const outcomeDisplayTitle = `${outcome.prefix} ${outcomeTitle}`
 
   const onOutcomeToggleClick = useCallback(() => {
     dispatch(outcomeTableUiActions.outcomeExpand({ uuid: uuid }))
   }, [dispatch, uuid])
 
-  const onCheckmarkClick = (
-    nodeUuid: string,
-    status: OutcomeCheckmarkStatus
-  ) => {
-    return () => {
-      // if the existing status is full, we're unlinking this and the children outcomes
-      // otherwise, partial or empty will trigger the linking
-      const action = status === 'full' ? 'unlink' : 'link'
-
-      const params = {
-        graphUuid: table.board.uuid,
-        nodeUuid,
-        outcomeUuid: outcome.uuid
-      }
-
-      dispatch(
-        action === 'link' ? linkNodeOutcome(params) : unlinkNodeOutcome(params)
-      )
-    }
-  }
-
   return (
     <>
-      <Styled.BodyRow>
-        <Styled.BodyLegendWrap>
+      <Styled.BodyRow role="row">
+        <Styled.BodyLegendWrap
+          role="rowheader"
+          aria-label={outcomeDisplayTitle}
+          tabIndex={0}
+        >
           <OutcomeHeader
             uuid={uuid}
             level={outcome.level}
-            title={`${outcome.prefix} ${outcomeTitle}`}
+            title={outcomeDisplayTitle}
             tooltip={outcome.tooltipTitle}
             collapsed={!expanded}
             showToggle={!!outcome.children.length}
@@ -115,32 +122,90 @@ const TagGroupRow = ({
         </Styled.BodyLegendWrap>
 
         <Styled.CheckmarkGroup className="checkmarks-group">
-          {table.groups.map((group) => (
-            <Styled.CheckmarkGroup key={group.uuid}>
-              <Checkmark
-                readOnly
-                sx={{ backgroundColor: '#eef2fd' }}
-                value={group.completion[outcome.uuid] ?? 'empty'}
-              />
-              {group.nodes.map((node) => {
-                const status = node.completion[outcome.uuid] ?? 'empty'
-                return (
-                  <Checkmark
+          {table.groups.map((group, groupIndex) => {
+            const section = table.entities.sections[groupIndex]
+            const sectionTitle = displaySystemTitle(
+              t,
+              section,
+              t('systemLabels.sectionNumber', {
+                number: (section?.position ?? 0) + 1
+              })
+            )
+            return (
+              <Styled.CheckmarkGroup key={group.uuid}>
+                <Checkmark
+                  readOnly
+                  label={t('outcomeTable.sectionRollupCellLabel', {
+                    outcome: outcomeDisplayTitle,
+                    section: sectionTitle
+                  })}
+                  sx={{ backgroundColor: '#eef2fd' }}
+                  value={group.completion[outcome.uuid] ?? 'empty'}
+                />
+                {group.nodes.map((node) => (
+                  <NodeCheckmark
                     key={node.uuid}
-                    value={status}
-                    onClick={onCheckmarkClick(node.uuid, status)}
+                    table={table}
+                    nodeUuid={node.uuid}
+                    outcomeUuid={outcome.uuid}
+                    outcomeTitle={outcomeDisplayTitle}
+                    status={node.completion[outcome.uuid] ?? 'empty'}
+                    readOnly={readOnly}
                   />
-                )
-              })}
-            </Styled.CheckmarkGroup>
-          ))}
+                ))}
+              </Styled.CheckmarkGroup>
+            )
+          })}
         </Styled.CheckmarkGroup>
       </Styled.BodyRow>
       {expanded &&
         outcome.children.map((childUuid) => (
-          <TagGroupRow key={childUuid} table={table} uuid={childUuid} />
+          <TagGroupRow
+            key={childUuid}
+            table={table}
+            uuid={childUuid}
+            readOnly={readOnly}
+          />
         ))}
     </>
+  )
+}
+
+const NodeCheckmark = ({
+  table,
+  nodeUuid,
+  outcomeUuid,
+  outcomeTitle,
+  status,
+  readOnly
+}: {
+  table: OutcomeTable
+  nodeUuid: string
+  outcomeUuid: string
+  outcomeTitle: string
+  status: OutcomeCheckmarkStatus
+  readOnly: boolean
+}) => {
+  const dispatch = useDispatch<AppDispatch>()
+  const { t } = useTranslation('workflow')
+  const nodeTitle = useNodeTitle(table.entities.nodes[nodeUuid])
+  const onClick = () => {
+    const params = { graphUuid: table.board.uuid, nodeUuid, outcomeUuid }
+    dispatch(
+      status === 'full' ? unlinkNodeOutcome(params) : linkNodeOutcome(params)
+    )
+  }
+
+  return (
+    <Checkmark
+      label={t('outcomeTable.assignmentCellLabel', {
+        outcome: outcomeTitle,
+        node: nodeTitle
+      })}
+      readOnly={readOnly}
+      value={status}
+      onClick={onClick}
+    />
   )
 }
 

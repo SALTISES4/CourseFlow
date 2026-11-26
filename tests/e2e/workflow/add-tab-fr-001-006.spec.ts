@@ -10,6 +10,8 @@ import {
   addTabColumnDropBelowReferenceNodeAndWait,
   addTabCustomCategoryRowDropAndWait,
   addTabRowDropBelowReferenceNodeAndWait,
+  addTabRowCellPreDropVisuals,
+  beginNodeCategoryDragOverRowCell,
   dragNodeCategoryOntoEmptyCell,
   dragNodeCategoryOntoNode,
   dragNodeCategoryOntoSection,
@@ -29,6 +31,7 @@ import {
   findNewNodeUuid,
   findSourceInChannelForColumnInsertBelow,
   findSourceWithNodesBelowInSection,
+  nodesInSection,
   orderedGraphChannels,
   workflowUuidFromPath,
 } from './workflow-graph.helpers';
@@ -54,6 +57,7 @@ import {
   workflowRightSidebarAddTabContent,
   workflowRightSidebarContentPanel,
   workflowRightSidebarEditTab,
+  workflowSectionRow,
 } from '../../shared/locators/workflow';
 
 test.use({
@@ -258,6 +262,67 @@ test.describe('add-tab-fr-001-006', () => {
           expect(response.ok()).toBeTruthy();
         }
       }
+    });
+
+    test('FR-WF-ADD-004: Row-mode add shows only the channel insertion line, never a filled cell hover', async ({
+      page,
+      workflow,
+    }) => {
+      const sectionUuid = workflow.sectionByTitle(disposableSectionTitle).uuid;
+      const workflowUuid = workflowUuidFromPath(workflow.path);
+      const before = await fetchGraphView(page, workflowUuid);
+      const targetChannelUuid = await channelUuidByTitle(page, E2E_CHANNEL_A);
+      const targetColumnIndex = orderedGraphChannels(before).findIndex(
+        (channel) => channel.uuid === targetChannelUuid,
+      );
+      expect(targetColumnIndex).toBeGreaterThanOrEqual(0);
+
+      const occupiedRows = [
+        ...new Set(nodesInSection(before, sectionUuid).map((node) => node.sectionRow ?? 0)),
+      ];
+      const targetRowIndex = occupiedRows.find(
+        (row) => !findNodeInSectionChannelAtRow(before, sectionUuid, targetChannelUuid, row),
+      );
+      expect(
+        targetRowIndex,
+        'Expected an occupied workflowSectionRow with an empty E2E Channel A cell',
+      ).toBeDefined();
+
+      const row = workflowSectionRow(page, sectionUuid, targetRowIndex!);
+      const targetCell = row.locator(':scope > div').nth(targetColumnIndex);
+      const beforeNodeCount = await workflowNodeCount(page);
+
+      try {
+        await beginNodeCategoryDragOverRowCell(
+          page,
+          E2E_CHANNEL_A,
+          sectionUuid,
+          targetRowIndex!,
+          targetColumnIndex,
+          'bottom',
+        );
+
+        await expect
+          .poll(async () => addTabRowCellPreDropVisuals(targetCell))
+          .toEqual({ filledHoverCount: 0, insertionLineCount: 1 });
+
+        const cellCount = await row.locator(':scope > div').count();
+        let totalInsertionLines = 0;
+        for (let index = 0; index < cellCount; index += 1) {
+          totalInsertionLines += (
+            await addTabRowCellPreDropVisuals(row.locator(':scope > div').nth(index))
+          ).insertionLineCount;
+        }
+        expect(totalInsertionLines).toBe(1);
+      } finally {
+        await page.keyboard.press('Escape');
+        await page.mouse.up();
+      }
+
+      await expect.poll(async () => workflowNodeCount(page)).toBe(beforeNodeCount);
+      await expect
+        .poll(async () => addTabRowCellPreDropVisuals(targetCell))
+        .toEqual({ filledHoverCount: 0, insertionLineCount: 0 });
     });
 
     test('FR-WF-ADD-004: row drop below reference node shifts all workflowChannels down one workflowSectionRow', async ({

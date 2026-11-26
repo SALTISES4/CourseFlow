@@ -270,7 +270,9 @@ export function workflowEditNodeFormDescriptionPlainTextarea(page: Page): Locato
 
 /** canonical: workflowRichTextDescriptionEditor — contenteditable region */
 export function workflowRichTextDescriptionEditor(page: Page): Locator {
-  return workflowRightSidebarContentPanel(page).locator('[contenteditable]');
+  return workflowRightSidebarContentPanel(page).getByRole('textbox', {
+    name: /^Description$/i,
+  });
 }
 
 /** canonical: workflowRichTextDescriptionEditorToolbar */

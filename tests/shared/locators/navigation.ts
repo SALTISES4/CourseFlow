@@ -12,13 +12,18 @@ export function mainNavigation(page: Page): Locator {
   return page.locator('[data-test-id="main-nav"]');
 }
 
-/** Visible sidebar panel (alias for mainNavigation root). */
+/** canonical: mainNavigationPanel — expanded inner panel */
 export function mainNavigationPanel(page: Page): Locator {
-  return mainNavigation(page);
+  return mainNavigation(page).locator('[data-test-id="main-nav-panel"]');
 }
 
 export function mainNavigationScrollRegion(page: Page): Locator {
   return mainNavigation(page).locator('[data-test-id="main-nav-scroll-region"]');
+}
+
+/** canonical: mainNavigationLoader — prohibited legacy loader inside mainNavigation */
+export function mainNavigationLoader(page: Page): Locator {
+  return mainNavigation(page).locator('.load-screen');
 }
 
 export function brandLockup(page: Page): Locator {
@@ -179,7 +184,7 @@ export async function prepareExpandedMainNavigation(page: Page): Promise<void> {
 
 export async function waitForMainNavigationReady(page: Page): Promise<void> {
   await expect(homeNavItem(page)).toBeVisible({ timeout: 15_000 });
-  await expect(mainNavigation(page).locator('.load-screen')).toHaveCount(0, {
+  await expect(mainNavigationLoader(page)).toHaveCount(0, {
     timeout: 15_000,
   });
 }
