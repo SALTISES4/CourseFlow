@@ -324,7 +324,7 @@ const GrandTotalRow = ({
                       const val = column.values[section.uuid] ?? 0
                       return acc + val
                     }, 0),
-                    group.format,
+                    column.format,
                     i18n.language
                   )}
                 </Styled.TableCell>
