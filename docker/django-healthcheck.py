@@ -12,7 +12,13 @@ def main() -> int:
     host = "127.0.0.1" if "*" in allowed_hosts else allowed_hosts[0]
     request = urllib.request.Request(
         "http://127.0.0.1:8000/api/ready",
-        headers={"Host": host},
+        headers={
+            "Host": host,
+            # The probe connects directly to Gunicorn, bypassing the TLS-terminating
+            # reverse proxy. Mark the original request as HTTPS so Django's
+            # production SSL redirect does not turn readiness into a 301 response.
+            "X-Forwarded-Proto": "https",
+        },
     )
 
     with urllib.request.urlopen(request, timeout=2) as response:
