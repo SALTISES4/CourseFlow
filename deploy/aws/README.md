@@ -14,7 +14,8 @@ CloudFormation templates live in the `saltise-infra` repository.
 6. retrieves RDS and Django secrets on the host;
 7. stops Django and uses the guarded `cf_rebuild_staging_database` command to
    drop the staging application tables, migrate, seed deterministic E2E data,
-   and import the curated template project snapshot;
+   restore the staging-only QA teacher accounts, and import the curated template
+   project snapshot;
 8. verifies that no migrations remain, starts Docker Compose, and verifies
    database-backed readiness.
 
@@ -23,6 +24,10 @@ existing staging application data. The rebuild command requires `ENV=staging`,
 an invocation-scoped `ALLOW_STAGING_DATABASE_RESET=true`, an explicit command
 confirmation, PostgreSQL, a non-local database host, and matching host/database
 fingerprints from the deployment configuration.
+
+The QA accounts are defined in `course_flow/staging_qa_users.py` and are restored
+only by the staging rebuild. They are intentionally separate from the Playwright
+fixture catalogue and are not created by the UAT rebuild.
 
 After the database has been dropped, the deployment does not restart the
 previous release on failure: its code may be incompatible with the freshly

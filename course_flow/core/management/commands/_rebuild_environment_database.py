@@ -56,6 +56,7 @@ class EnvironmentDatabaseRebuildCommand(BaseCommand):
     expected_name_variable: str
     confirmation_flag: str
     confirmation_destination: str
+    additional_seed_commands: tuple[str, ...] = ()
 
     def add_arguments(self, parser) -> None:
         parser.add_argument(
@@ -123,6 +124,8 @@ class EnvironmentDatabaseRebuildCommand(BaseCommand):
             clear_and_seed=True,
             verbosity=options["verbosity"],
         )
+        for command_name in self.additional_seed_commands:
+            call_command(command_name, verbosity=options["verbosity"])
         call_command(
             "cf_import_project_snapshot",
             str(_PERSISTENT_PROJECT_SNAPSHOT),
