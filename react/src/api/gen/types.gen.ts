@@ -1121,6 +1121,25 @@ export type GraphViewOut = {
 }
 
 /**
+ * LinkedWorkflowOut
+ */
+export type LinkedWorkflowOut = {
+  /**
+   * Uuid
+   */
+  uuid: string
+  /**
+   * Title
+   */
+  title: string
+  /**
+   * Description
+   */
+  description: string
+  overviewMetadata: WorkflowOverviewMetadataOut
+}
+
+/**
  * NodeGraphOut
  */
 export type NodeGraphOut = {
@@ -1198,6 +1217,7 @@ export type NodeGraphOut = {
    * Linkedworkflowuuid
    */
   linkedWorkflowUuid?: string | null
+  linkedWorkflow?: LinkedWorkflowOut | null
   /**
    * Threaduuid
    */
@@ -1686,6 +1706,7 @@ export type GraphNodeMutationOut = {
    * Linkedworkflowuuid
    */
   linkedWorkflowUuid?: string | null
+  linkedWorkflow?: LinkedWorkflowOut | null
   /**
    * Threaduuid
    */

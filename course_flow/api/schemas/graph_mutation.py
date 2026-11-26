@@ -9,6 +9,7 @@ from uuid import UUID
 from pydantic import Field, field_validator
 
 from course_flow.api.common.schemas import CamelSchema
+from course_flow.api.schemas.workflows import LinkedWorkflowOut
 from course_flow.core.enum import ContextClassification, TaskClassification
 
 
@@ -37,6 +38,7 @@ class GraphNodeMutationOut(CamelSchema):
     section_row: int | None = None
     workflow_uuid: UUID | None = None
     linked_workflow_uuid: UUID | None = None
+    linked_workflow: LinkedWorkflowOut | None = None
     thread_uuid: UUID | None = None
     outcome_uuids: list[UUID] = Field(default_factory=list)
 
