@@ -63,6 +63,10 @@ Where possible, framework code remains at the boundary.
 
 - [DigitalOcean UAT deployment](runbooks/uat-deployment.md)
 
+## Architecture technical debt
+
+- [Architecture technical-debt register](architecture/technical-debt.md)
+
 ## Migration discovery
 
 - [CourseFlow v1 to v2 content migration assessment](migration/v1_to_v2_assessment.md)

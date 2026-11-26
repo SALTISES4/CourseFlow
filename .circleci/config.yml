@@ -281,7 +281,8 @@ jobs:
       API_BASE_URL:
         type: string
     machine:
-      image: ubuntu-2404:current
+      # Temporary rollback; see docs/architecture/technical-debt.md#td-0002.
+      image: ubuntu-2404:2025.09.1
     working_directory: ~/repo
     environment:
       AWS_REGION: << parameters.AWS_REGION >>
