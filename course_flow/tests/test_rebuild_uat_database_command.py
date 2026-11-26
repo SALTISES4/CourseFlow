@@ -201,9 +201,13 @@ def test_rebuild_database_drops_migrates_seeds_and_imports(monkeypatch, target):
             None,
         ),
     ]
-    assert nested_commands == [
+    expected_commands = [
         ("migrate", (), {"interactive": False, "verbosity": 0}),
         ("cf_seed_e2e_data", (), {"clear_and_seed": True, "verbosity": 0}),
+    ]
+    if target.environment == "staging":
+        expected_commands.append(("cf_seed_staging_qa_users", (), {"verbosity": 0}))
+    expected_commands.append(
         (
             "cf_import_project_snapshot",
             (str(_rebuild_environment_database._PERSISTENT_PROJECT_SNAPSHOT),),
@@ -211,5 +215,6 @@ def test_rebuild_database_drops_migrates_seeds_and_imports(monkeypatch, target):
                 "owner_email": "teacher@courseflow.com",
                 "verbosity": 0,
             },
-        ),
-    ]
+        )
+    )
+    assert nested_commands == expected_commands

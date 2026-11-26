@@ -10,7 +10,8 @@ from course_flow.core.management.commands._rebuild_environment_database import (
 class Command(EnvironmentDatabaseRebuildCommand):
     help = (
         "Delete every table in the staging public schema, rerun migrations, and "
-        "seed the canonical E2E fixtures before importing persistent projects."
+        "seed the canonical E2E fixtures and QA users before importing persistent "
+        "projects."
     )
     environment = "staging"
     environment_label = "staging"
@@ -19,3 +20,4 @@ class Command(EnvironmentDatabaseRebuildCommand):
     expected_name_variable = "STAGING_DATABASE_RESET_NAME"
     confirmation_flag = "--confirm-staging-reset"
     confirmation_destination = "confirm_staging_reset"
+    additional_seed_commands = ("cf_seed_staging_qa_users",)
