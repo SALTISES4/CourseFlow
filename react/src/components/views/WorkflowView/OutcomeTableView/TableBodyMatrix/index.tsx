@@ -279,7 +279,7 @@ const GrandTotalRow = ({
   table: OutcomeTable
   workflowType: WorkflowType
 }) => {
-  const { t } = useTranslation('workflow')
+  const { t, i18n } = useTranslation('workflow')
   const extraColumns = table.extraColumns[workflowType]
 
   return (
@@ -319,10 +319,14 @@ const GrandTotalRow = ({
                   key={column.labelKey}
                   data-test-id={column.sectionTestId}
                 >
-                  {table.entities.sections.reduce((acc, section) => {
-                    const val = column.values[section.uuid] ?? 0
-                    return acc + val
-                  }, 0)}
+                  {renderExtraColumnValue(
+                    table.entities.sections.reduce((acc, section) => {
+                      const val = column.values[section.uuid] ?? 0
+                      return acc + val
+                    }, 0),
+                    group.format,
+                    i18n.language
+                  )}
                 </Styled.TableCell>
               ))}
             </Styled.CheckmarkGroup>
@@ -334,10 +338,14 @@ const GrandTotalRow = ({
             sx={{ marginLeft: 2 }}
           >
             <Styled.TableCell data-test-id={group.sectionTestId}>
-              {table.entities.sections.reduce((acc, section) => {
-                const val = group.values[section.uuid] ?? 0
-                return acc + val
-              }, 0)}
+              {renderExtraColumnValue(
+                table.entities.sections.reduce((acc, section) => {
+                  const val = group.values[section.uuid] ?? 0
+                  return acc + val
+                }, 0),
+                group.format,
+                i18n.language
+              )}
             </Styled.TableCell>
           </Styled.CheckmarkGroup>
         )
