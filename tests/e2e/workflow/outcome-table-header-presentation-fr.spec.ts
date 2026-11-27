@@ -182,6 +182,41 @@ test.describe("FR-WF-HEADER-003: Outcome table eligibility and routing", () => {
         await expect(groupHeader).toHaveCSS("position", "relative");
         await expect(groupHeader).not.toHaveCSS("transform", "none");
       }
+
+      const grandTotal = grid.locator(
+        '[data-test-id="workflow-outcome-table-grand-total-row"]',
+      );
+      await expect(
+        grandTotal.locator(
+          '[data-test-id="workflow-outcome-table-grand-total-credits-cell"]',
+        ),
+      ).toHaveText("");
+      await expect(
+        grandTotal.locator(
+          '[data-test-id="workflow-outcome-table-section-credits-total"]',
+        ),
+      ).toHaveCount(0);
+
+      const grandTotalSeparators = grandTotal.locator(".tag-bar");
+      await expect(grandTotalSeparators).toHaveCount(2);
+      const separatorCoverage = await grandTotalSeparators.evaluateAll(
+        (separators) =>
+          separators.map((separator) => {
+            const separatorHeight = separator.getBoundingClientRect().height;
+            const pseudoStyle = getComputedStyle(separator, "::before");
+            return {
+              bottom: Number.parseFloat(pseudoStyle.bottom),
+              height: Number.parseFloat(pseudoStyle.height),
+              separatorHeight,
+              top: Number.parseFloat(pseudoStyle.top),
+            };
+          }),
+      );
+      for (const coverage of separatorCoverage) {
+        expect(coverage.bottom).toBe(0);
+        expect(coverage.top).toBeLessThan(0);
+        expect(coverage.height).toBeGreaterThan(coverage.separatorHeight);
+      }
     });
   });
 });

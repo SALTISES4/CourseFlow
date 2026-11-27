@@ -12,26 +12,27 @@ type PropsType = {
 
 const Base = ({ children }: PropsType) => {
   return (
-    <UserProvider>
-      <div className="main-wrapper">
-        <MainSidebar />
+    <NetworkActivityProvider>
+      <UserProvider>
+        <div className="main-wrapper">
+          <MainSidebar />
 
-        <div className="main-block">
-          <TopBar />
-          <GlobalDialogs />
+          <div className="main-block">
+            <TopBar />
+            <GlobalDialogs />
 
-          {/* still being used as a portal in comparison view */}
-          <div className="titlebar"></div>
+            {/* still being used as a portal in comparison view */}
+            <div className="titlebar"></div>
 
-          <div className="right-panel-wrapper">
-            <div id="container" className="body-wrapper">
-              {children}
+            <div className="right-panel-wrapper">
+              <div id="container" className="body-wrapper">
+                {children}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <NetworkActivityProvider />
-    </UserProvider>
+      </UserProvider>
+    </NetworkActivityProvider>
   )
 }
 

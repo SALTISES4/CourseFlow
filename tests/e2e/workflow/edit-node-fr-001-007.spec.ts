@@ -421,7 +421,9 @@ test.describe('edit-node-fr-001-007', () => {
       await expect(workflowNode(page, nodeUuid)).toBeVisible({
         timeout: 15_000,
       });
-      await workflowNodeTitle(page, nodeUuid).click();
+      await workflowNodeContent(page, nodeUuid).click({
+        position: { x: 12, y: 12 },
+      });
       await expect(workflowEditNodeForm(page)).toBeVisible();
 
       try {
@@ -479,8 +481,15 @@ test.describe('edit-node-fr-001-007', () => {
       await workflowNodeContent(page, nodeUuid).click();
       await expect(workflowEditNodeForm(page)).toBeVisible();
 
+      const saveResponse = page.waitForResponse(
+        (response) =>
+          new URL(response.url()).pathname === `/api/node/${nodeUuid}/meta` &&
+          response.request().method() === 'PATCH' &&
+          (response.request().postDataJSON() as { title?: unknown }).title === uniqueTitle &&
+          response.ok(),
+      );
       await workflowEditNodeFormTitleField(page).fill(uniqueTitle);
-      await page.waitForTimeout(500);
+      await saveResponse;
 
       await page.reload();
       await expect(workflowNode(page, nodeUuid)).toBeVisible({
@@ -509,7 +518,10 @@ test.describe('edit-node-fr-001-007', () => {
      * Create two project tags, open edit-node Tags, assert the option list is
      * exactly those catalog labels, select one, and verify it persists.
      */
-    async function expectEditNodeTagsMatchProjectCatalog(page: Page, openEditForm: () => Promise<void>): Promise<void> {
+    async function expectEditNodeTagsMatchProjectCatalog(
+      page: Page,
+      openEditForm: () => Promise<string>,
+    ): Promise<void> {
       const stamp = Date.now();
       const tagA = `E2E Node Tag A ${stamp}`;
       const tagB = `E2E Node Tag B ${stamp}`;
@@ -517,10 +529,17 @@ test.describe('edit-node-fr-001-007', () => {
       await createProjectOverviewTag(page, tagA);
       await createProjectOverviewTag(page, tagB);
 
-      await openEditForm();
+      const nodeUuid = await openEditForm();
       await expectEditNodeTagsAutocompleteOptions(page, [tagA, tagB]);
+      const saveResponse = page.waitForResponse(
+        (response) =>
+          new URL(response.url()).pathname === `/api/node/${nodeUuid}/meta` &&
+          response.request().method() === 'PATCH' &&
+          Array.isArray((response.request().postDataJSON() as { tagIds?: unknown }).tagIds) &&
+          response.ok(),
+      );
       await selectEditNodeTag(page, tagA);
-      await page.waitForTimeout(500);
+      await saveResponse;
 
       // openEditForm navigates to the workflow, which provides the reload
       // boundary without aborting auth bootstrap via a second navigation.
@@ -538,7 +557,7 @@ test.describe('edit-node-fr-001-007', () => {
 
       await expectEditNodeTagsMatchProjectCatalog(page, async () => {
         await page.goto(workflow.path);
-        await openFirstNodeEditForm(page);
+        return openFirstNodeEditForm(page);
       });
     });
 
@@ -559,7 +578,7 @@ test.describe('edit-node-fr-001-007', () => {
           nodeUuid = await firstWorkflowNodeUuid(page);
           await linkNodeWorkflowViaApi(page, nodeUuid, null);
           await page.reload();
-          await openFirstNodeEditForm(page);
+          return openFirstNodeEditForm(page);
         });
       } finally {
         if (nodeUuid) {
@@ -576,7 +595,7 @@ test.describe('edit-node-fr-001-007', () => {
       await expect(addNewTagInput(page)).toBeVisible({ timeout: 15_000 });
 
       await expectEditNodeTagsMatchProjectCatalog(page, async () => {
-        await ensureProgramNodeAndOpenEditForm(page, workflow);
+        return ensureProgramNodeAndOpenEditForm(page, workflow);
       });
     });
   });
@@ -821,7 +840,9 @@ test.describe('edit-node-fr-001-007', () => {
       await expect(workflowNode(page, nodeUuid)).toBeVisible({
         timeout: 15_000,
       });
-      await workflowNodeTitle(page, nodeUuid).click();
+      await workflowNodeContent(page, nodeUuid).click({
+        position: { x: 12, y: 12 },
+      });
       await expect(workflowEditNodeForm(page)).toBeVisible();
 
       try {

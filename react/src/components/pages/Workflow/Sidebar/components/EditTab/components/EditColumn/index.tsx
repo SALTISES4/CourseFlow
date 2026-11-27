@@ -25,7 +25,14 @@ import { debounce } from '@mui/material'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
-import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
+import {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -40,6 +47,11 @@ function resolveChannelColour(
     columnType: themeColumnType,
     colour: null
   })
+}
+
+type EditableChannelMeta = {
+  title?: string
+  colour?: string
 }
 
 const EditColumn = ({ columnId }: { columnId: string }) => {
@@ -95,15 +107,48 @@ const EditColumnForm = ({
     resolveChannelColour(channel, themeColumnType)
   )
   const [titleDraft, setTitleDraft] = useState(editableTitle)
+  const activeChannelUuid = useRef(channel.uuid)
+  const titleDraftRef = useRef(editableTitle)
+  const colorDraftRef = useRef(color)
+  const titleDirty = useRef(false)
+  const colorDirty = useRef(false)
+  const pendingMeta = useRef<EditableChannelMeta>({})
 
   useEffect(() => {
-    setTitleDraft(editableTitle)
-    setColor(resolveChannelColour(channel, themeColumnType))
+    const canonicalColor = resolveChannelColour(channel, themeColumnType)
+
+    if (activeChannelUuid.current !== channel.uuid) {
+      activeChannelUuid.current = channel.uuid
+      titleDraftRef.current = editableTitle
+      colorDraftRef.current = canonicalColor
+      titleDirty.current = false
+      colorDirty.current = false
+      pendingMeta.current = {}
+      setTitleDraft(editableTitle)
+      setColor(canonicalColor)
+      return
+    }
+
+    if (!titleDirty.current || editableTitle === titleDraftRef.current) {
+      titleDirty.current = false
+      titleDraftRef.current = editableTitle
+      setTitleDraft(editableTitle)
+    }
+    if (!colorDirty.current || canonicalColor === colorDraftRef.current) {
+      colorDirty.current = false
+      colorDraftRef.current = canonicalColor
+      setColor(canonicalColor)
+    }
   }, [channel, editableTitle, themeColumnType])
 
   const debouncedPersistMeta = useMemo(
     () =>
-      debounce((meta: { title?: string; colour?: string }) => {
+      debounce(() => {
+        const meta = pendingMeta.current
+        pendingMeta.current = {}
+        if (Object.keys(meta).length === 0) {
+          return
+        }
         void dispatch(
           changeChannelMeta({
             graphUuid: channel.graphUuid,
@@ -115,16 +160,27 @@ const EditColumnForm = ({
     [channel.graphUuid, channel.uuid, dispatch]
   )
 
+  const queueMetaChange = useCallback(
+    (meta: EditableChannelMeta) => {
+      // One debounce window may contain edits to both fields; retain both.
+      pendingMeta.current = { ...pendingMeta.current, ...meta }
+      debouncedPersistMeta()
+    },
+    [debouncedPersistMeta]
+  )
+
   const onTitleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       if (!canEdit) {
         return
       }
       const value = e.target.value
+      titleDraftRef.current = value
+      titleDirty.current = true
       setTitleDraft(value)
-      debouncedPersistMeta({ title: value })
+      queueMetaChange({ title: value })
     },
-    [canEdit, debouncedPersistMeta]
+    [canEdit, queueMetaChange]
   )
 
   const onColorChange = useCallback(
@@ -134,13 +190,21 @@ const EditColumnForm = ({
       }
       const newColor = next || '#CFD8DC'
 
+      colorDraftRef.current = newColor
+      colorDirty.current = true
       setColor(newColor)
-      debouncedPersistMeta({ colour: newColor })
+      queueMetaChange({ colour: newColor })
     },
-    [canEdit, debouncedPersistMeta]
+    [canEdit, queueMetaChange]
   )
 
-  useEffect(() => () => debouncedPersistMeta.clear(), [debouncedPersistMeta])
+  useEffect(
+    () => () => {
+      pendingMeta.current = {}
+      debouncedPersistMeta.clear()
+    },
+    [debouncedPersistMeta]
+  )
 
   const onDuplicate = useCallback(() => {
     dispatch(

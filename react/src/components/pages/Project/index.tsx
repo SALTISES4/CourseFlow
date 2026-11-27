@@ -8,7 +8,7 @@ import { WorkspacePermissionsProvider } from '@cf/context/workspacePermissionsCo
 import { useWorkspaceAccessGuard } from '@cf/hooks/useWorkspaceAccessGuard'
 import { useWorkspaceEditLock } from '@cf/hooks/useWorkspaceEditLock'
 import MenuBar from '@cfComponents/globalNav/MenuBar'
-import Loader from '@cfComponents/UIPrimitives/Loader'
+import { NetworkActivityLoadingState } from '@cfComponents/NetworkActivityProvider'
 import ErrorView from '@cfPages/MsgViews/ErrorView'
 import WorkspaceAccessDenied from '@cfPages/MsgViews/WorkspaceAccessDenied'
 import { useQuery } from '@tanstack/react-query'
@@ -72,7 +72,7 @@ const ProjectDetails = () => {
   }
 
   if (isLoading) {
-    return <Loader />
+    return <NetworkActivityLoadingState />
   }
 
   if (isError) {
@@ -88,7 +88,7 @@ const ProjectDetails = () => {
   }
 
   if (isLoading || !projectResponse) {
-    return <Loader />
+    return <NetworkActivityLoadingState />
   }
 
   const project = projectResponse.item
@@ -98,7 +98,7 @@ const ProjectDetails = () => {
   }
 
   if (editLock.initialResolving) {
-    return <Loader />
+    return <NetworkActivityLoadingState />
   }
 
   return (

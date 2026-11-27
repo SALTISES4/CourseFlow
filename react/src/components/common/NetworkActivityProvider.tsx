@@ -1,5 +1,22 @@
 import CircularProgress from '@mui/material/CircularProgress'
-import { useEffect, useState } from 'react'
+import {
+  ReactNode,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState
+} from 'react'
+
+type NetworkActivityProviderProps = {
+  children: ReactNode
+}
+
+type SetRegisteredActivity = (token: symbol, active: boolean) => void
+
+const NetworkActivityContext = createContext<SetRegisteredActivity | null>(null)
 
 function isWorkspaceEditLockRequest(
   input: Parameters<typeof fetch>[0]
@@ -35,9 +52,31 @@ const GradientCircularProgress = () => (
   </>
 )
 
-const NetworkActivityProvider = () => {
+const NetworkActivityProvider = ({
+  children
+}: NetworkActivityProviderProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [requestCount, setRequestCount] = useState<number>(0)
+  const registeredActivities = useRef(new Set<symbol>())
+  const [registeredActivityCount, setRegisteredActivityCount] =
+    useState<number>(0)
+
+  const setRegisteredActivity = useCallback<SetRegisteredActivity>(
+    (token, active) => {
+      const previousCount = registeredActivities.current.size
+
+      if (active) {
+        registeredActivities.current.add(token)
+      } else {
+        registeredActivities.current.delete(token)
+      }
+
+      if (registeredActivities.current.size !== previousCount) {
+        setRegisteredActivityCount(registeredActivities.current.size)
+      }
+    },
+    []
+  )
 
   useEffect(() => {
     const originalFetch = window.fetch
@@ -65,16 +104,43 @@ const NetworkActivityProvider = () => {
   }, [])
 
   useEffect(() => {
-    if (requestCount > 0) {
+    if (requestCount > 0 || registeredActivityCount > 0) {
       setIsLoading(true)
       return
     }
 
     const timeout = window.setTimeout(() => setIsLoading(false), 500)
     return () => window.clearTimeout(timeout)
-  }, [requestCount])
+  }, [registeredActivityCount, requestCount])
 
-  return <>{isLoading && <NetworkActivityLoader />}</>
+  return (
+    <NetworkActivityContext.Provider value={setRegisteredActivity}>
+      {children}
+      {isLoading && <NetworkActivityLoader />}
+    </NetworkActivityContext.Provider>
+  )
+}
+
+// Registers page-level loading gates with the provider. This covers requests
+// that begin while the authenticated shell is mounting without rendering a
+// second activity indicator when the fetch interceptor also sees the request.
+export const NetworkActivityLoadingState = () => {
+  const setRegisteredActivity = useContext(NetworkActivityContext)
+  const token = useRef(Symbol('network-activity'))
+
+  if (!setRegisteredActivity) {
+    throw new Error(
+      'NetworkActivityLoadingState must be rendered inside NetworkActivityProvider'
+    )
+  }
+
+  useLayoutEffect(() => {
+    const activityToken = token.current
+    setRegisteredActivity(activityToken, true)
+    return () => setRegisteredActivity(activityToken, false)
+  }, [setRegisteredActivity])
+
+  return null
 }
 
 export const NetworkActivityLoader = () => (

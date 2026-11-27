@@ -357,6 +357,38 @@ test.describe('FR-CHAN-003: title and color auto-save', () => {
     await expect(field).toHaveValue(completeTitle);
   });
 
+  test('title and colour changes in one debounce window both persist', async ({ page }) => {
+    const channelUuid = await channelUuidByTitle(page, E2E_CHANNEL_C);
+    const titleField = workflowEditChannelFormTitleField(page);
+    const colorField = workflowEditChannelFormColorField(page);
+    const title = `E2E combined ${Date.now()}`;
+    const persistedColor = E2E_CHANNEL_COLOR_PATCH.toLowerCase();
+    const endpoint = `/api/channel/${channelUuid}`;
+
+    await workflowChannelHeader(page, channelUuid).click();
+    await expect(workflowEditChannelForm(page)).toBeVisible();
+
+    const updateResponse = page.waitForResponse(
+      (response) =>
+        new URL(response.url()).pathname === endpoint &&
+        response.request().method() === 'PATCH' &&
+        response.ok(),
+    );
+
+    await titleField.fill(title);
+    await colorField.fill(E2E_CHANNEL_COLOR_PATCH);
+    const response = await updateResponse;
+    expect(response.request().postDataJSON()).toEqual({
+      title,
+      colour: persistedColor,
+    });
+
+    await page.reload();
+    await workflowChannelHeader(page, channelUuid).click();
+    await expect(titleField).toHaveValue(title);
+    await expect(colorField).toHaveValue(persistedColor);
+  });
+
   test('clearing title shows Untitled node category on header and blank Title field', async ({
     page,
   }) => {

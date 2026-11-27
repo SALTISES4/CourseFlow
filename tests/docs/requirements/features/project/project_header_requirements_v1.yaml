@@ -26,7 +26,7 @@ uiObjectDefinitions:
   projectViewTabSelector:
     meaning: Tab selector in projectHeader for switching between project sub-views per FR-PROJ-HEADER-001.
   projectLoadingIndicator:
-    meaning: Full project-view loading presentation that replaces project-bound header and sub-view content while data for a newly addressed project is loading.
+    meaning: Bottom-right global network activity indicator shown while project-bound header and sub-view content are withheld pending data for a newly addressed project; the authenticated project route does not use the full-content `.load-screen` presentation.
   globalMessageSnackbar:
     meaning: Canonical definition in tests/docs/requirements/features/shared/card_content_requirements_v1.yaml (FR-CARD-005).
 
@@ -154,7 +154,7 @@ requirements:
 
     mainFlow:
       - system treats destinationId as a new project identity and loads project data for destination project D
-      - while uncached destination project data is loading, system removes projectHeader, projectViewTabSelector, and project sub-view content bound to source project S and renders projectLoadingIndicator instead; no project-bound content from S remains visible under D's URL
+      - while uncached destination project data is loading, system removes projectHeader, projectViewTabSelector, and project sub-view content bound to source project S and renders projectLoadingIndicator in the global bottom-right position; no full-content `.load-screen` or project-bound content from S remains visible under D's URL
       - after destination project data loads successfully, system removes projectLoadingIndicator and renders a new projectHeader, projectTitle, projectViewTabSelector, and destination sub-view bound only to destination project D
       - projectTitle and all project metadata, permissions, favourite state, dialogs, and sub-view state come from D; state bound to S is not retained across the project-identity change
       - the destination sub-view and active tab are derived from the destination URL per FR-PROJ-HEADER-001
@@ -163,7 +163,7 @@ requirements:
     roleBehavior: {}
 
     acceptanceCriteria:
-      - given project S is rendered at '/project/{sourceId}' and uncached project D is accessible, when the client-side URL changes to '/project/{destinationId}' and D's project response is pending, then projectLoadingIndicator is visible and projectHeader, projectTitle, projectViewTabSelector, and project overview content for S are not rendered
+      - given project S is rendered at '/project/{sourceId}' and uncached project D is accessible, when the client-side URL changes to '/project/{destinationId}' and D's project response is pending, then the bottom-right projectLoadingIndicator is visible, no `#container > .load-screen` exists, and projectHeader, projectTitle, projectViewTabSelector, and project overview content for S are not rendered
       - given the URL now addresses destination project D, system requests project data using destinationId and does not continue presenting data for sourceId
       - given D's project response succeeds, projectLoadingIndicator is removed, projectTitle shows D's title, projectViewTabSelector is rendered for D, the destination sub-view is visible, and S's title and project-bound content remain absent
       - given a project-bound DOM view for S existed before the project URL changed, that source view is detached during D's loading state and the subsequently rendered project view is bound to D

@@ -307,6 +307,58 @@ def test_search_default_sort_is_most_recently_modified(client: Client, user):
 
 
 @pytest.mark.django_db
+def test_favorite_search_sorts_by_when_project_was_favorited(client: Client, user):
+    raw = _issue_token_for(user)
+    favorited_first = Project.objects.create(
+        owner=user, title="Favorited first", description=""
+    )
+    favorited_last = Project.objects.create(
+        owner=user, title="Favorited last", description=""
+    )
+    now = timezone.now()
+    Project.objects.filter(pk=favorited_first.pk).update(modified_on=now)
+    Project.objects.filter(pk=favorited_last.pk).update(
+        modified_on=now - timedelta(days=1)
+    )
+
+    first_link = FavoriteProject.objects.create(user=user, project=favorited_first)
+    last_link = FavoriteProject.objects.create(user=user, project=favorited_last)
+    FavoriteProject.objects.filter(pk=first_link.pk).update(
+        date_created=now - timedelta(hours=1)
+    )
+    FavoriteProject.objects.filter(pk=last_link.pk).update(date_created=now)
+
+    body = _post_search(
+        client,
+        raw,
+        {
+            "pagination": {"page": 0, "resultsPerPage": 5},
+            "sort": {"value": "RECENTLY_FAVORITED", "direction": "DESC"},
+            "filters": {"isFavorite": True, "contentType": "project"},
+        },
+    )
+
+    assert [item["title"] for item in body["items"]] == [
+        "Favorited last",
+        "Favorited first",
+    ]
+
+
+@pytest.mark.django_db
+def test_recently_favorited_sort_requires_favorite_filter(client: Client, user):
+    raw = _issue_token_for(user)
+
+    body = _post_search(
+        client,
+        raw,
+        {"sort": {"value": "RECENTLY_FAVORITED", "direction": "DESC"}},
+        status_code=422,
+    )
+
+    assert "isFavorite=true" in str(body)
+
+
+@pytest.mark.django_db
 def test_filter_content_type_project_returns_only_projects(client: Client, user):
     raw = _issue_token_for(user)
     project = Project.objects.create(owner=user, title="P", description="")

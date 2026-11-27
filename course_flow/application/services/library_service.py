@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum
 from uuid import UUID
 
@@ -54,6 +54,12 @@ class LibraryObject:
     type: LibraryObjectType
     uuid: UUID
     resource: Project | Workflow
+
+FavoriteSortKey = UUID
+# The primary key is a deterministic insertion-order tie-breaker. It also keeps
+# legacy favorite rows ordered after migration backfills one shared timestamp.
+FavoriteSortValue = tuple[datetime, int]
+
 
 class LibraryService:
     def __init__(self) -> None:
@@ -276,6 +282,15 @@ class LibraryService:
             graph_qs=workflow_graph_qs,
         )
 
+        favorite_sort_values = (
+            self._favorite_sort_values(
+                user_id=user_id,
+                project_qs=project_qs,
+            )
+            if sort_value == LibrarySortValueIn.RECENTLY_FAVORITED
+            else None
+        )
+
         user = User.objects.get(pk=user_id)
         active_lock_cutoff = timezone.now()
         items = self._normalize_project_items(
@@ -294,7 +309,10 @@ class LibraryService:
         )
 
         items = self._sort_items(
-            items, sort_value=sort_value, sort_direction=sort_direction
+            items,
+            sort_value=sort_value,
+            sort_direction=sort_direction,
+            favorite_sort_values=favorite_sort_values,
         )
         total_results = len(items)
         page_count = (
@@ -410,6 +428,20 @@ class LibraryService:
                 graph__in=graph_qs,
             ).values_list("graph__uuid", flat=True)
         )
+
+    def _favorite_sort_values(
+        self,
+        *,
+        user_id: int,
+        project_qs: QuerySet[Project],
+    ) -> dict[FavoriteSortKey, FavoriteSortValue]:
+        return {
+            project_uuid: (date_created, row_id)
+            for project_uuid, date_created, row_id in FavoriteProject.objects.filter(
+                user_id=user_id,
+                project__in=project_qs,
+            ).values_list("project__uuid", "date_created", "id")
+        }
 
     def _normalize_project_items(
         self,
@@ -538,7 +570,12 @@ class LibraryService:
         ]
 
     def _sort_items(
-        self, items: list[LibraryItemOut], *, sort_value: str, sort_direction: str
+        self,
+        items: list[LibraryItemOut],
+        *,
+        sort_value: str,
+        sort_direction: str,
+        favorite_sort_values: dict[FavoriteSortKey, FavoriteSortValue] | None = None,
     ) -> list[LibraryItemOut]:
         reverse = sort_direction != "ASC"
 
@@ -548,4 +585,15 @@ class LibraryService:
             )
         if sort_value == "DATE_MODIFIED":
             return sorted(items, key=lambda row: row.modified_on, reverse=reverse)
+        if sort_value == "RECENTLY_FAVORITED":
+            if favorite_sort_values is None:
+                raise ValueError(
+                    "RECENTLY_FAVORITED sort requires favorite relationship metadata"
+                )
+            missing_value = (datetime.min.replace(tzinfo=UTC), -1)
+            return sorted(
+                items,
+                key=lambda row: favorite_sort_values.get(row.uuid, missing_value),
+                reverse=reverse,
+            )
         return sorted(items, key=lambda row: row.date_created, reverse=reverse)

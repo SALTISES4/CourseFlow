@@ -32,9 +32,6 @@ export const TableWrap = styled(Box)(({ theme }) => ({
       '&:has(+ .section-header-row)': {
         '& .checkmarks-group': {
           borderBottom: `1px solid ${theme.palette.divider}`
-        },
-        '& .tag-bar::before': {
-          height: '200%'
         }
       },
       '&:last-child .checkmarks-group': {
@@ -205,21 +202,24 @@ export const BodyRow = styled(Box, { target: 'body-row' })(({ theme }) => ({
   '&.tag-header-row .legend-wrap': {
     paddingRight: 0
   },
-  '.view-matrix &.section-header-row': {
-    '&:not(:first-of-type)': {
-      marginTop: theme.spacing(2),
+  '.view-matrix &.section-header-row.has-top-gap': {
+    marginTop: theme.spacing(2),
 
-      // ... but also add a white background to cut away the tag label bar from the gap
-      '.legend-wrap:after': {
-        content: '""',
-        position: 'absolute',
-        left: 0,
-        top: theme.spacing(-2),
-        width: '100%',
-        height: '100%',
-        background: theme.palette.common.white,
-        zIndex: -1
-      }
+    // keep group separator columns continuous through the row gap
+    '.tag-bar::before': {
+      top: theme.spacing(-2)
+    },
+
+    // add a white background to cut away the row legend from the gap
+    '.legend-wrap:after': {
+      content: '""',
+      position: 'absolute',
+      left: 0,
+      top: theme.spacing(-2),
+      width: '100%',
+      height: '100%',
+      background: theme.palette.common.white,
+      zIndex: -1
     }
   }
 }))
@@ -295,6 +295,7 @@ export const TableCell = styled(CheckmarkCell, { target: 'table-cell' })(
 
 export const TagBarEmptyCell = styled(CheckmarkCell, { target: 'tag-bar' })(
   ({ theme }) => ({
+    position: 'relative',
     display: 'flex',
     width: '70px',
     boxShadow: 'none',
@@ -302,11 +303,14 @@ export const TagBarEmptyCell = styled(CheckmarkCell, { target: 'tag-bar' })(
     justifyContent: 'center',
     '&::before': {
       content: '""',
-      position: 'relative',
+      position: 'absolute',
+      top: 0,
+      bottom: 0,
+      left: '50%',
       display: 'block',
       width: '28px',
-      height: '100%',
-      background: '#EEF2FD'
+      background: '#EEF2FD',
+      transform: 'translateX(-50%)'
     }
   })
 )

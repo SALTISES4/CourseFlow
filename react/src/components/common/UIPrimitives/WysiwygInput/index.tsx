@@ -7,6 +7,14 @@ import { WysiwygWrap } from './styles'
 import 'react-quill/dist/quill.snow.css'
 
 const EMPTY_QUILL_HTML = '<p><br></p>'
+const SUPPORTED_FORMATS = [
+  'bold',
+  'italic',
+  'underline',
+  'script',
+  'list',
+  'link'
+]
 
 const TOOLBAR_CONTROL_LABELS = [
   ['.ql-bold', 'Bold'],
@@ -100,6 +108,7 @@ const WysiwygField = (props: PropsType) => {
         theme="snow"
         placeholder={props.placeholder}
         modules={modules}
+        formats={SUPPORTED_FORMATS}
         readOnly={props.readOnly}
         value={value}
         onChange={(nextValue, _delta, source) => {

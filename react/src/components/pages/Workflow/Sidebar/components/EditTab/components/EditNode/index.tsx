@@ -390,6 +390,7 @@ const EditNodeForm = ({
                   <WysiwygField
                     placeholder={t('edit.description')}
                     field={field}
+                    readOnly={!canEdit}
                   />
                 )}
               />

@@ -1,4 +1,8 @@
-import { LibraryContentTypeIn } from '@cf/api/gen'
+import {
+  LibraryContentTypeIn,
+  LibrarySortDirectionIn,
+  LibrarySortValueIn
+} from '@cf/api/gen'
 import { useLibrarySearch } from '@cf/api/wrappedHooks'
 import { CFRoutes } from '@cf/router/appRoutes'
 import CFLogo from '@cfComponents/UIPrimitives/SVG/CFLogo'
@@ -22,12 +26,19 @@ import { Link, generatePath, useLocation } from 'react-router-dom'
 
 import * as SC from './styles'
 
+const FAVORITES_PER_PAGE = 5
+
 const Favorites = () => {
   const { t } = useTranslation('common')
+  const location = useLocation()
   const { data, isError } = useLibrarySearch({
     pagination: {
       page: 0,
-      resultsPerPage: 5
+      resultsPerPage: FAVORITES_PER_PAGE
+    },
+    sort: {
+      value: LibrarySortValueIn.RECENTLY_FAVORITED,
+      direction: LibrarySortDirectionIn.DESC
     },
     filters: {
       isFavorite: true,
@@ -36,7 +47,7 @@ const Favorites = () => {
   })
 
   const SeeAll = () => {
-    if (!data || data.meta.totalResults < 5) {
+    if (!data || data.meta.totalResults <= FAVORITES_PER_PAGE) {
       return <></>
     }
 
@@ -70,15 +81,15 @@ const Favorites = () => {
         </SC.SectionLabel>
 
         <List>
-          {data.items.map((item, id) => (
-            <ListItem disablePadding dense key={id}>
+          {data.items.map((item) => (
+            <ListItem disablePadding dense key={item.uuid}>
               <ListItemButton
                 component={Link}
                 to={generatePath(CFRoutes.PROJECT_WORKFLOW, {
                   uuid: String(item.uuid)
                 })}
                 data-test-id="panel-favourite"
-                selected={location.pathname.includes(item.uuid)}
+                selected={location.pathname.includes(String(item.uuid))}
               >
                 <ListItemText primary={item.title} />
               </ListItemButton>

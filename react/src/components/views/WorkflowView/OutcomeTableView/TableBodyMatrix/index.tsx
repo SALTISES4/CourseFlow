@@ -245,7 +245,10 @@ const SectionHeaderRow = ({
   const extraColumns = table.extraColumns[workflowType]
 
   return (
-    <Styled.BodyRow className="section-header-row" role="row">
+    <Styled.BodyRow
+      className={`section-header-row${index > 0 ? ' has-top-gap' : ''}`}
+      role="row"
+    >
       <Styled.BodyLegendWrap>
         <Styled.TableLegend role="rowheader">{title}</Styled.TableLegend>
       </Styled.BodyLegendWrap>
@@ -326,7 +329,7 @@ const GrandTotalRow = ({
 
   return (
     <Styled.BodyRow
-      className="section-header-row"
+      className="section-header-row has-top-gap"
       data-test-id="workflow-outcome-table-grand-total-row"
       role="row"
     >
@@ -394,16 +397,6 @@ const GrandTotalRow = ({
                     i18n.language
                   )
                 : null}
-            </Styled.TableCell>
-            <Styled.TableCell data-test-id={group.sectionTestId}>
-              {renderExtraColumnValue(
-                table.entities.sections.reduce((acc, section) => {
-                  const val = group.values[section.uuid] ?? 0
-                  return acc + val
-                }, 0),
-                group.format,
-                i18n.language
-              )}
             </Styled.TableCell>
           </Styled.CheckmarkGroup>
         )

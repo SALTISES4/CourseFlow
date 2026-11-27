@@ -26,10 +26,14 @@ type LibrarySearchItem = {
 type LibrarySearchRequestBody = {
   filters?: Record<string, unknown> | null;
   pagination?: { page?: number; resultsPerPage?: number } | null;
+  sort?: { value?: string; direction?: string } | null;
 };
 
-type LibrarySearchResponseBody = {
+export type LibrarySearchResponseBody = {
   items: LibrarySearchItem[];
+  meta: {
+    totalResults: number;
+  };
 };
 
 export type SidebarFavouriteEntry = {
@@ -42,7 +46,9 @@ function isSidebarFavouritesSearchRequest(body: LibrarySearchRequestBody): boole
     body.filters?.isFavorite === true &&
     body.filters?.contentType === 'project' &&
     body.pagination?.resultsPerPage === SIDEBAR_FAVOURITES_RESULTS_PER_PAGE &&
-    (body.pagination?.page ?? 0) === 0
+    (body.pagination?.page ?? 0) === 0 &&
+    body.sort?.value === 'RECENTLY_FAVORITED' &&
+    body.sort.direction === 'DESC'
   );
 }
 
@@ -50,16 +56,16 @@ export async function waitForSidebarFavouritesSearchResponse(
   page: Page,
   trigger: () => Promise<unknown>,
 ): Promise<LibrarySearchResponseBody> {
-  const responsePromise = page.waitForResponse(
-    (response) => {
+  const requestPromise = page.waitForRequest(
+    (request) => {
       if (
-        !response.url().includes('/api/library/search') ||
-        response.request().method() !== 'POST'
+        !request.url().includes('/api/library/search') ||
+        request.method() !== 'POST'
       ) {
         return false;
       }
 
-      const requestBody = response.request().postDataJSON() as LibrarySearchRequestBody;
+      const requestBody = request.postDataJSON() as LibrarySearchRequestBody;
       return isSidebarFavouritesSearchRequest(requestBody);
     },
     { timeout: 15_000 },
@@ -67,13 +73,18 @@ export async function waitForSidebarFavouritesSearchResponse(
 
   await trigger();
 
-  const response = await responsePromise;
+  const request = await requestPromise;
+  const response = await request.response();
   expect(
-    response.ok(),
+    response?.ok(),
     'Sidebar favourites library search must succeed.',
   ).toBeTruthy();
 
-  return (await response.json()) as LibrarySearchResponseBody;
+  const replay = await authenticatedApiRequest(page, 'POST', '/api/library/search', {
+    data: request.postDataJSON(),
+  });
+  expect(replay.ok(), 'Sidebar favourites query replay must succeed.').toBeTruthy();
+  return (await replay.json()) as LibrarySearchResponseBody;
 }
 
 async function readLibraryObjectFavouriteState(
@@ -141,6 +152,33 @@ export async function withLibraryObjectFavouriteState(
   }
 }
 
+export async function withOnlyFavouritedProjects(
+  page: Page,
+  projects: Array<{ uuid: string; title: string }>,
+  assertion: () => Promise<void>,
+): Promise<void> {
+  const initiallyFavourited = await listFavouritedProjects(page);
+  const initialIds = new Set(initiallyFavourited.map((project) => project.uuid));
+  const desiredIds = new Set(projects.map((project) => project.uuid));
+  const candidates = new Map(
+    [...initiallyFavourited, ...projects].map((project) => [
+      project.uuid,
+      { ...project, contentType: 'project' as const },
+    ]),
+  );
+
+  try {
+    for (const project of candidates.values()) {
+      await setLibraryObjectFavouriteState(page, project, desiredIds.has(project.uuid));
+    }
+    await assertion();
+  } finally {
+    for (const project of [...candidates.values()].reverse()) {
+      await setLibraryObjectFavouriteState(page, project, initialIds.has(project.uuid));
+    }
+  }
+}
+
 /** Read visible sidebar Favourites rows (title + resolved link pathname). */
 export async function readSidebarFavouriteEntries(page: Page): Promise<SidebarFavouriteEntry[]> {
   const links = favouritedItemLinks(page);
@@ -202,7 +240,7 @@ export async function listFavouritedProjects(
  */
 export async function expectSidebarFavouritesShowProjectsOnly(
   page: Page,
-): Promise<void> {
+): Promise<LibrarySearchResponseBody> {
   const favouritedProjects = await listFavouritedProjects(page);
   expect(
     favouritedProjects.length,
@@ -238,6 +276,8 @@ export async function expectSidebarFavouritesShowProjectsOnly(
       `Sidebar favourite[${index}] must route to a project (FR-NAV-005).`,
     ).toMatch(/^\/project\/[0-9a-f-]+/);
   }
+
+  return sidebarResponse;
 }
 
 /**

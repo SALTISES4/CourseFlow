@@ -1,6 +1,7 @@
 import { test, expect, type Page } from '../../fixtures';
 import { loginAs } from '../../helpers/auth';
 import { authenticatedApiRequest } from '../../helpers/api';
+import { ensurePageWorkspaceEditLock } from '../../helpers/edit-lock';
 import {
   expectSectionNumberLabelsMatchOrder,
   sectionOrderUuids,
@@ -482,13 +483,15 @@ test.describe('Duplicate section — FR-SEC-005', () => {
       const program = workflow.workflowByType('program');
       const course = workflow.workflowByType('course');
       const source = program.sections[0]!;
-      let nodeUuid: string | undefined;
       let duplicateUuid: string | undefined;
       let sectionCountBefore: number | undefined;
 
       try {
         await page.goto(program.workflow_path);
-        nodeUuid = await ensureFirstWorkflowNodeViaApi(page, program.workflow_uuid);
+        expect(
+          await ensurePageWorkspaceEditLock(page, 'workflow', program.workflow_uuid),
+        ).toBe(true);
+        const nodeUuid = await ensureFirstWorkflowNodeViaApi(page, program.workflow_uuid);
         await linkNodeWorkflowViaApi(page, nodeUuid, course.workflow_uuid);
         await page.reload();
         await expect(sectionContainers(page)).toHaveCount(program.sections.length, {
@@ -532,9 +535,6 @@ test.describe('Duplicate section — FR-SEC-005', () => {
       } finally {
         if (duplicateUuid && (await sectionContainer(page, duplicateUuid).count()) > 0) {
           await deleteSectionViaHover(page, duplicateUuid);
-        }
-        if (nodeUuid) {
-          await linkNodeWorkflowViaApi(page, nodeUuid, null);
         }
         if (sectionCountBefore !== undefined) {
           await expect(sectionContainers(page)).toHaveCount(sectionCountBefore, { timeout: 15_000 });

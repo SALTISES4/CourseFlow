@@ -849,7 +849,7 @@ locatorMappings:
     strategy: "{projectHeader} favourite toggle control for current project"
     confidence: inferred
   projectLoadingIndicator:
-    strategy: "#container > .load-screen replacing projectHeader and project sub-view content while destination project data loads"
+    strategy: '[data-testid="network-activity-loader"] while destination project data loads; authenticated project routes do not render #container > .load-screen'
     confidence: implemented
   projectMetadataAddContributorsButton:
     strategy: "{projectMetadataPermissionsPanel} control with label 'Add CourseFlow user' that shows the same addContributorsDialog as contextActionBarAddContributorsButton"
@@ -1924,6 +1924,9 @@ locatorMappings:
     confidence: confirmed
   networkActivityLoader:
     strategy: '[data-testid="network-activity-loader"]'
+    confidence: confirmed
+  legacyCenteredProjectLoader:
+    strategy: '#container > .load-screen while an authenticated project route is initially loading'
     confidence: confirmed
   legacyCenteredWorkflowLoader:
     strategy: '#container > .load-screen while an authenticated workflow route is initially loading'

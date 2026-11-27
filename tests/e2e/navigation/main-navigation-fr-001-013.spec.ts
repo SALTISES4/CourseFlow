@@ -5,6 +5,7 @@ import {
   expectSidebarFavouritesShowProjectsOnly,
   readSidebarFavouriteEntries,
   withLibraryObjectFavouriteState,
+  withOnlyFavouritedProjects,
 } from '../../helpers/main-navigation-favourites';
 import {
   expectRelatedWorkflowLinkOpensInNewTab,
@@ -17,6 +18,7 @@ import {
   getSeedAsset,
   getWorkflowByType,
   loadWorkflowManifest,
+  type ProjectAssetEntry,
   type ProjectCollectionAssetEntry,
 } from '../../helpers/manifest';
 import { gotoAuthenticatedShell } from '../../helpers/navigation';
@@ -45,6 +47,7 @@ test.use({
     'actor.teacher',
     'project.favourite_collection',
     'project.primary',
+    'project.templates',
     'workflow.standard_activity',
     'workflow.navigation_course',
     'workflow.navigation_program',
@@ -170,25 +173,63 @@ test.describe('Main navigation — calibration (FR-NAV-001-013)', () => {
       });
     });
 
-    test('FR-NAV-005/006: favourites section lists up to five favourited projects', async ({
-      page,
-    }) => {
-      await expectSidebarFavouritesShowProjectsOnly(page);
+    test('FR-NAV-005: exactly five favourites omits View all', async ({ page }) => {
+      const manifest = loadWorkflowManifest();
+      const favouriteProjects = getSeedAsset<ProjectCollectionAssetEntry>(
+        manifest,
+        'project.favourite_collection',
+      );
 
-      const favouriteCount = await favouritedItemLinks(page).count();
-      expect(favouriteCount).toBeGreaterThanOrEqual(1);
-      expect(favouriteCount).toBeLessThanOrEqual(5);
+      await withOnlyFavouritedProjects(page, favouriteProjects.items, async () => {
+        const sidebarResponse = await expectSidebarFavouritesShowProjectsOnly(page);
 
-      if (favouriteCount >= 5) {
-        await expect(viewAllLink(page)).toBeVisible();
-      }
+        expect(sidebarResponse.meta.totalResults).toBe(5);
+        await expect(favouritedItemLinks(page)).toHaveCount(5);
+        await expect(viewAllLink(page)).toHaveCount(0);
+      });
+    });
+
+    test('FR-NAV-006: six favourites shows five rows and View all', async ({ page }) => {
+      const manifest = loadWorkflowManifest();
+      const favouriteProjects = getSeedAsset<ProjectCollectionAssetEntry>(
+        manifest,
+        'project.favourite_collection',
+      );
+      const templateProject = getSeedAsset<ProjectAssetEntry>(manifest, 'project.templates');
+
+      await withOnlyFavouritedProjects(
+        page,
+        [...favouriteProjects.items, templateProject],
+        async () => {
+          const sidebarResponse = await expectSidebarFavouritesShowProjectsOnly(page);
+
+          expect(sidebarResponse.meta.totalResults).toBe(6);
+          await expect(favouritedItemLinks(page)).toHaveCount(5);
+          await expect(viewAllLink(page)).toBeVisible();
+        },
+      );
     });
 
     test('FR-NAV-007: View all navigates to /favourites when shown', async ({ page }) => {
-      const viewAll = viewAllLink(page);
-      await expect(viewAll).toBeVisible();
-      await viewAll.click();
-      await expect(page).toHaveURL(/\/favourites\/?$/);
+      const manifest = loadWorkflowManifest();
+      const favouriteProjects = getSeedAsset<ProjectCollectionAssetEntry>(
+        manifest,
+        'project.favourite_collection',
+      );
+      const templateProject = getSeedAsset<ProjectAssetEntry>(manifest, 'project.templates');
+
+      await withOnlyFavouritedProjects(
+        page,
+        [...favouriteProjects.items, templateProject],
+        async () => {
+          await page.reload();
+          await waitForMainNavigationReady(page);
+          const viewAll = viewAllLink(page);
+          await expect(viewAll).toBeVisible();
+          await viewAll.click();
+          await expect(page).toHaveURL(/\/favourites\/?$/);
+        },
+      );
     });
 
     test('FR-NAV-008: favourited item navigates to project Workflows view', async ({ page }) => {
@@ -198,23 +239,27 @@ test.describe('Main navigation — calibration (FR-NAV-001-013)', () => {
         'project.favourite_collection',
       );
 
-      const entries = await readSidebarFavouriteEntries(page);
-      expect(entries.length).toBeGreaterThan(0);
+      await withOnlyFavouritedProjects(page, favouriteProjects.items, async () => {
+        await page.reload();
+        await waitForMainNavigationReady(page);
+        const entries = await readSidebarFavouriteEntries(page);
+        expect(entries.length).toBeGreaterThan(0);
 
-      const favouriteProjectLink = favouritedItemLinks(page).first();
-      await expect(favouriteProjectLink).toBeVisible();
+        const favouriteProjectLink = favouritedItemLinks(page).first();
+        await expect(favouriteProjectLink).toBeVisible();
 
-      const projectTitle = entries[0]!.title;
-      const favouriteProject = favouriteProjects.items.find(
-        (project) => project.title === projectTitle,
-      );
-      expect(
-        favouriteProject,
-        `Sidebar favourite "${projectTitle}" must match a seeded favourite project.`,
-      ).toBeDefined();
+        const projectTitle = entries[0]!.title;
+        const favouriteProject = favouriteProjects.items.find(
+          (project) => project.title === projectTitle,
+        );
+        expect(
+          favouriteProject,
+          `Sidebar favourite "${projectTitle}" must match a seeded favourite project.`,
+        ).toBeDefined();
 
-      await favouriteProjectLink.click();
-      await expect(page).toHaveURL(projectWorkflowsUrlPattern(favouriteProject!.uuid));
+        await favouriteProjectLink.click();
+        await expect(page).toHaveURL(projectWorkflowsUrlPattern(favouriteProject!.uuid));
+      });
     });
   });
 

@@ -1619,6 +1619,7 @@ export const zLibrarySortDirectionIn = z.enum(['ASC', 'DESC'])
 export const zLibrarySortValueIn = z.enum([
   'DATE_CREATED',
   'DATE_MODIFIED',
+  'RECENTLY_FAVORITED',
   'A_Z'
 ])
 

@@ -134,9 +134,9 @@ export function projectViewTabSelector(page: Page): Locator {
   return page.getByRole('tablist');
 }
 
-/** canonical: projectLoadingIndicator — full project-view loader during route identity changes */
+/** canonical: projectLoadingIndicator — global activity loader during route identity changes */
 export function projectLoadingIndicator(page: Page): Locator {
-  return page.locator('#container > .load-screen');
+  return page.getByTestId('network-activity-loader');
 }
 
 export function projectOverviewTab(page: Page): Locator {

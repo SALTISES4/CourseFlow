@@ -70,6 +70,11 @@ const markGraphFailed = (graphUuid: string) =>
     status: 'failed'
   })
 
+let channelMetaRequestSequence = 0
+// Resource PATCH responses can arrive out of order. Only the latest user intent
+// for a channel may update canonical state.
+const latestChannelMetaRequest = new Map<ResourceUuid, number>()
+
 /**
  * Explicit backend command: renameNode.
  * Current backend contract does not support title mutation on Node yet.
@@ -382,15 +387,26 @@ export const changeChannelMeta = (
   input: ChangeChannelMetaInput
 ): GraphMutationThunk<Promise<void>> => {
   return async (dispatch, getState) => {
+    const requestId = ++channelMetaRequestSequence
+    latestChannelMetaRequest.set(input.channelUuid, requestId)
+
     try {
       const channel = await changeChannelMetaCommand(input)
+      if (latestChannelMetaRequest.get(input.channelUuid) !== requestId) {
+        return
+      }
       const graph = selectGraphByUuid(input.graphUuid)(getState())
       const revisionId = graph?.revisionId ?? 0
       applyGraphDelta(
         dispatch,
         buildChannelMetaMutationEnvelope(input.graphUuid, revisionId, channel)
       )
+      latestChannelMetaRequest.delete(input.channelUuid)
     } catch (error) {
+      if (latestChannelMetaRequest.get(input.channelUuid) !== requestId) {
+        return
+      }
+      latestChannelMetaRequest.delete(input.channelUuid)
       dispatch(markGraphFailed(input.graphUuid))
       throw error
     }

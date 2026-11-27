@@ -24,6 +24,7 @@ class LibrarySortDirectionIn(str, Enum):
 class LibrarySortValueIn(str, Enum):
     DATE_CREATED = "DATE_CREATED"
     DATE_MODIFIED = "DATE_MODIFIED"
+    RECENTLY_FAVORITED = "RECENTLY_FAVORITED"
     A_Z = "A_Z"
 
 
@@ -128,6 +129,23 @@ class LibrarySearchIn(CamelSchema):
         if isinstance(value, list):
             raise ValueError("filters must be an object")
         return value
+
+    @model_validator(mode="after")
+    def validate_recently_favorited_sort(self):
+        if (
+            self.sort is not None
+            and self.sort.value == LibrarySortValueIn.RECENTLY_FAVORITED
+            and (
+                self.filters is None
+                or self.filters.is_favorite is not True
+                or self.filters.content_type != LibraryContentTypeIn.PROJECT
+            )
+        ):
+            raise ValueError(
+                "RECENTLY_FAVORITED sort requires isFavorite=true and "
+                "contentType=project"
+            )
+        return self
 
 
 class LibraryFavoriteIn(CamelSchema):

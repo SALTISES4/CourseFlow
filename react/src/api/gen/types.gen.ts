@@ -3215,6 +3215,7 @@ export type LibrarySortIn = {
 export enum LibrarySortValueIn {
   DATE_CREATED = 'DATE_CREATED',
   DATE_MODIFIED = 'DATE_MODIFIED',
+  RECENTLY_FAVORITED = 'RECENTLY_FAVORITED',
   A_Z = 'A_Z'
 }
 

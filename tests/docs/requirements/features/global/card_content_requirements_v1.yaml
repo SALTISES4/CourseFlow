@@ -59,6 +59,8 @@ uiObjectDefinitions:
     meaning: Application-wide transient snackbar for async success and error feedback.
   networkActivityLoader:
     meaning: Global foreground-network activity indicator shown while the authenticated client has one or more foreground requests in progress.
+  legacyCenteredProjectLoader:
+    meaning: Legacy full-content project loader rendered as a `.load-screen` element; prohibited during authenticated initial project loading by FR-CARD-003.
   legacyCenteredWorkflowLoader:
     meaning: Legacy full-content workflow loader rendered as a `.load-screen` element; prohibited during authenticated initial workflow loading by FR-CARD-004.
 
@@ -82,6 +84,7 @@ locatorMappings:
   cardLinkedInUseChip: "canonical_locators.yaml -> cardLinkedInUseChip"
   globalMessageSnackbar: "canonical_locators.yaml -> globalMessageSnackbar"
   networkActivityLoader: "canonical_locators.yaml -> networkActivityLoader"
+  legacyCenteredProjectLoader: "canonical_locators.yaml -> legacyCenteredProjectLoader"
   legacyCenteredWorkflowLoader: "canonical_locators.yaml -> legacyCenteredWorkflowLoader"
 
 requirements:
@@ -97,6 +100,8 @@ requirements:
 
     uiObjects:
       - projectCard
+      - networkActivityLoader
+      - legacyCenteredProjectLoader
       - cardHeaderRegion
       - cardFooterRegion
       - cardFooterTagsRegion
@@ -228,11 +233,13 @@ requirements:
 
     mainFlow:
       - when user clicks projectCard card body, system navigates to that project's 'Workflows' view at route pattern /project/{id}/workflows
+      - while the authenticated project's initial data is still loading after navigation, system shows exactly one networkActivityLoader and does not show legacyCenteredProjectLoader; moving the global loader to the centre is outside this requirement
 
     roleBehavior: {}
 
     acceptanceCriteria:
       - given non-archived projectCard, user clicks projectCard card body, current route matches /project/{id}/workflows
+      - given non-archived projectCard is clicked and the initial authenticated project request remains pending, exactly one networkActivityLoader is visible and legacyCenteredProjectLoader is not rendered
 
   - id: FR-CARD-004
     title: workflowCard click destination
