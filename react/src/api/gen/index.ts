@@ -335,6 +335,7 @@ export {
   LibrarySortDirectionIn,
   type LibrarySortIn,
   LibrarySortValueIn,
+  type LinkedWorkflowOut,
   type LinkNodeOutcomeData,
   type LinkNodeOutcomeResponse,
   type LinkNodeOutcomeResponses,

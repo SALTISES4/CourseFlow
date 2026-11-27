@@ -175,6 +175,7 @@ function mapViewToBundle(view: GraphViewOut): GraphResourceBundle {
     sectionRow: node.sectionRow ?? null,
     workflowUuid: node.workflowUuid ?? null,
     linkedWorkflowUuid: node.linkedWorkflowUuid ?? null,
+    linkedWorkflow: node.linkedWorkflow ?? null,
     threadUuid: node.threadUuid ?? null,
     outcomeUuids: node.outcomeUuids ?? []
   }))
@@ -338,6 +339,7 @@ function mapMutationNode(
     sectionRow: node.sectionRow ?? null,
     workflowUuid: node.workflowUuid ?? null,
     linkedWorkflowUuid: node.linkedWorkflowUuid ?? null,
+    linkedWorkflow: node.linkedWorkflow ?? null,
     threadUuid: node.threadUuid ?? null,
     outcomeUuids: node.outcomeUuids ?? []
   }

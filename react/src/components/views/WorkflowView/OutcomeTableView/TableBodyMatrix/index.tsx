@@ -395,6 +395,16 @@ const GrandTotalRow = ({
                   )
                 : null}
             </Styled.TableCell>
+            <Styled.TableCell data-test-id={group.sectionTestId}>
+              {renderExtraColumnValue(
+                table.entities.sections.reduce((acc, section) => {
+                  const val = group.values[section.uuid] ?? 0
+                  return acc + val
+                }, 0),
+                group.format,
+                i18n.language
+              )}
+            </Styled.TableCell>
           </Styled.CheckmarkGroup>
         )
       )}

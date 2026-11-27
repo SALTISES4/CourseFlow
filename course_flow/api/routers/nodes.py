@@ -65,6 +65,11 @@ def _node_graph_out(n: Node) -> NodeGraphOut:
         section_row=n.section_row,
         workflow_uuid=n.workflow.uuid if n.workflow_id else None,
         linked_workflow_uuid=(n.linked_workflow.uuid if n.linked_workflow_id else None),
+        linked_workflow=(
+            get_graph_view_service().get_linked_workflow_detail(n.linked_workflow.uuid)
+            if n.linked_workflow_id
+            else None
+        ),
         thread_uuid=n.thread.uuid if n.thread_id else None,
         outcome_uuids=[o.uuid for o in n.outcomes.all()],
     )
