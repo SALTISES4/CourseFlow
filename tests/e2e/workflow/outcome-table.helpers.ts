@@ -143,6 +143,18 @@ export async function patchOutcomeTableNodeViaApi(
   expect(response.ok(), await response.text()).toBe(true);
 }
 
+export async function deleteWorkflowNodeViaApi(
+  page: Page,
+  nodeUuid: string,
+): Promise<void> {
+  const response = await authenticatedApiRequest(
+    page,
+    "DELETE",
+    `/api/node/${nodeUuid}`,
+  );
+  expect(response.ok(), await response.text()).toBe(true);
+}
+
 export async function createWorkflowChannelViaApi(
   page: Page,
   workflow: WorkflowHandle,

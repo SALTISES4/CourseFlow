@@ -75,20 +75,19 @@ def get_public_graph_view(request, uuid: UUID):
     if payload is None:
         raise HttpError(404, "Graph not found")
 
-    public_payload = deepcopy(payload)
-    public_payload["graph"]["author_id"] = None
-    public_payload["graph"]["workflow_project_id"] = None
-    for collection in ("sections", "channels", "nodes", "outcomes"):
-        for item in public_payload[collection]:
-            item["thread_uuid"] = None
-    for node in public_payload["nodes"]:
-        node["linked_workflow_uuid"] = None
-    public_payload["thread_comment_counts"] = []
-
-    return GraphViewOut.model_validate(
+    public_payload = GraphViewOut.model_validate(
         {
-            **public_payload,
+            **deepcopy(payload),
             "permissions": _anonymous_permissions(),
             "project_permissions": None,
         }
     )
+    public_payload.graph.author_id = None
+    public_payload.graph.workflow_project_id = None
+    for collection in ("sections", "channels", "nodes", "outcomes"):
+        for item in getattr(public_payload, collection):
+            item.thread_uuid = None
+    for node in public_payload.nodes:
+        node.linked_workflow_uuid = None
+    public_payload.thread_comment_counts = []
+    return public_payload

@@ -2,6 +2,7 @@ import type { Page } from '@playwright/test';
 
 import { expect, test } from '../../fixtures';
 import { authenticatedApiRequest } from '../../helpers/api';
+import { ensurePageWorkspaceEditLock } from '../../helpers/edit-lock';
 import { loginAs } from '../../helpers/auth';
 import { getNavigationLinkedWorkflows } from '../../helpers/main-navigation-workflow-context';
 import { workflowOverviewPath } from '../../helpers/workflow-navigation';
@@ -67,6 +68,7 @@ async function updateOverviewMetadata(
   workflowUuid: string,
   overviewMetadata: Record<string, boolean | number>,
 ): Promise<void> {
+  await ensurePageWorkspaceEditLock(page, 'workflow', workflowUuid);
   const response = await authenticatedApiRequest(
     page,
     'PATCH',

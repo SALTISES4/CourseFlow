@@ -58,9 +58,18 @@ test.describe('Project header — calibration (FR-PROJ-HEADER-001-002)', () => {
   });
 
   test.describe('FR-PROJ-HEADER-002: favourite toggle', () => {
+    test.use({
+      seedAsset: 'workflow.standard_activity',
+      actorAsset: 'actor.teacher',
+      seedAccess: 'disposable-project-copy',
+    });
+
     test('favourite toggle round-trip shows snackbar feedback and restores seed state', async ({
       page,
+      workflow,
     }) => {
+      await gotoAuthenticatedShell(page, `/project/${workflow.manifest.project_uuid}`);
+      await waitForProjectOverviewLoaded(page);
       const toggle = projectHeaderFavouriteToggle(page);
       await expect(toggle).toBeVisible();
 

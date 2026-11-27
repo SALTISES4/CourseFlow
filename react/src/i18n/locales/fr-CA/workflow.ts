@@ -106,6 +106,8 @@ const workflowFr = {
     gridLabel: 'Affectations du tableau des résultats',
     presentationControlsLabel: 'Options d’affichage du tableau des résultats',
     assignmentCellLabel: '{{outcome}} — {{node}}',
+    assignmentUpdateFailed:
+      'L’affectation du résultat n’a pas pu être mise à jour.',
     sectionRollupCellLabel: '{{outcome}} — résumé de {{section}}',
     untaggedOutcomes: 'Résultats sans étiquette',
     summary: {

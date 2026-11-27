@@ -105,6 +105,7 @@ const workflow = {
     gridLabel: 'Outcome table assignments',
     presentationControlsLabel: 'Outcome table display options',
     assignmentCellLabel: '{{outcome}} — {{node}}',
+    assignmentUpdateFailed: 'The outcome assignment could not be updated.',
     sectionRollupCellLabel: '{{outcome}} — {{section}} summary',
     untaggedOutcomes: 'Untagged outcomes',
     summary: {

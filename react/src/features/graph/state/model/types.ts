@@ -430,12 +430,14 @@ export interface LinkNodeOutcomeInput {
   graphUuid: GraphUuid
   nodeUuid: ResourceUuid
   outcomeUuid: ResourceUuid
+  affectedOutcomeUuids?: ResourceUuid[]
 }
 
 export interface UnlinkNodeOutcomeInput {
   graphUuid: GraphUuid
   nodeUuid: ResourceUuid
   outcomeUuid: ResourceUuid
+  affectedOutcomeUuids?: ResourceUuid[]
 }
 
 export interface OutcomeMetaPatch {

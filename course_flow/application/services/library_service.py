@@ -547,12 +547,10 @@ class LibraryService:
         if edit_lock is None or edit_lock.expires_at <= active_lock_cutoff:
             return None
 
-        locked_by = cls._owner_name(edit_lock.holder)
-
-        if locked_by == cls._owner_name(user):
+        if user is not None and edit_lock.holder_id == user.id:
             return None
 
-        return locked_by
+        return cls._owner_name(edit_lock.holder)
 
     def _permission_payload(self, context: PermissionContext) -> PermissionContextOut:
         return permission_context_out(context)

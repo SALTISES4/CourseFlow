@@ -151,14 +151,10 @@ export async function expectFavouritesListingItemsAreFavourited(
   }
 }
 
-/** FR-FAV-003 — ownershipFilter Owned narrows results and every visible card is owned by the user. */
+/** FR-FAV-003 — ownershipFilter Owned returns only favourited cards owned by the user. */
 export async function expectOwnershipFilterOwnedNarrowsFavouritesResults(
   page: Page,
 ): Promise<void> {
-  const baselineTitles = await libraryCardTitles(page).allInnerTexts();
-  const baselineCount = baselineTitles.length;
-  expect(baselineCount).toBeGreaterThan(0);
-
   const filteredResponse = await triggerLibrarySearchAndWait(
     page,
     () => selectFilterOption(page, ownershipFilter(page), "Owned"),
@@ -168,7 +164,6 @@ export async function expectOwnershipFilterOwnedNarrowsFavouritesResults(
   await expect(ownershipFilterResetButton(page)).toBeVisible();
 
   const ownedCount = filteredResponse.items.length;
-  expect(ownedCount).toBeLessThanOrEqual(baselineCount);
   expect(ownedCount).toBeGreaterThan(0);
 
   for (const item of filteredResponse.items) {

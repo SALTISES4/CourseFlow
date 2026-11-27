@@ -209,6 +209,36 @@ def test_search_returns_only_active_edit_lock_holders_to_editors(
 
 
 @pytest.mark.django_db
+def test_search_compares_edit_lock_holder_identity_not_display_name(
+    client: Client, user, teammate
+):
+    raw = _issue_token_for(user)
+    user.first_name = "Shared"
+    user.last_name = "Name"
+    user.save(update_fields=["first_name", "last_name"])
+    teammate.first_name = "Shared"
+    teammate.last_name = "Name"
+    teammate.save(update_fields=["first_name", "last_name"])
+    project = Project.objects.create(owner=user, title="Project", description="")
+    graph = _graph_with_workflow(
+        user,
+        project=project,
+        workflow_title="Workflow",
+    )
+    WorkspaceEditLock.objects.create(
+        workflow=graph.workflow,
+        holder=teammate,
+        expires_at=timezone.now() + timedelta(minutes=1),
+    )
+
+    body = _post_search(client, raw, {"filters": {"contentType": "workflow"}})
+
+    assert [item["editLockHolderName"] for item in body["items"]] == [
+        "Shared Name"
+    ]
+
+
+@pytest.mark.django_db
 def test_published_scope_returns_only_active_published_resources(
     client: Client, user, teammate
 ):

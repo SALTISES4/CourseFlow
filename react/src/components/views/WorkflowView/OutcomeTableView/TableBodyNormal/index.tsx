@@ -1,3 +1,4 @@
+import { isApiErrorNotificationHandled } from '@cf/api/apiError'
 import { WorkflowPermission } from '@cf/api/gen/types.gen'
 import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import {
@@ -14,12 +15,17 @@ import { AppDispatch, RootState } from '@cf/redux/store'
 import OutcomeHeader from '@cfPages/Workflow/Sidebar/components/OutcomesTab/Outcome/Header'
 import useNodeTitle from '@cfViews/WorkflowView/GraphView/components/Section/Cell/CellNode/useNodeTitle'
 import useOutcomeTitle from '@cfViews/WorkflowView/OutcomeEditView/useOutcomeTitle'
+import { enqueueSnackbar } from 'notistack'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { type ProjectTagsMap } from '..'
 import Checkmark, { OutcomeCheckmarkStatus } from '../Checkmark'
+import {
+  affectedOutcomeUuids,
+  useOutcomeAssignmentPending
+} from '../outcomeAssignment'
 import * as Styled from '../styles'
 
 const TableBody = ({
@@ -189,11 +195,30 @@ const NodeCheckmark = ({
   const dispatch = useDispatch<AppDispatch>()
   const { t } = useTranslation('workflow')
   const nodeTitle = useNodeTitle(table.entities.nodes[nodeUuid])
+  const assignmentPending = useOutcomeAssignmentPending(
+    table.board.uuid,
+    nodeUuid,
+    outcomeUuid
+  )
   const onClick = () => {
-    const params = { graphUuid: table.board.uuid, nodeUuid, outcomeUuid }
-    dispatch(
+    const params = {
+      graphUuid: table.board.uuid,
+      nodeUuid,
+      outcomeUuid,
+      affectedOutcomeUuids: affectedOutcomeUuids(
+        table.outcomeTree.outcomes,
+        outcomeUuid
+      )
+    }
+    void dispatch(
       status === 'full' ? unlinkNodeOutcome(params) : linkNodeOutcome(params)
-    )
+    ).catch((error: unknown) => {
+      if (!isApiErrorNotificationHandled(error)) {
+        enqueueSnackbar(t('outcomeTable.assignmentUpdateFailed'), {
+          variant: 'error'
+        })
+      }
+    })
   }
 
   return (
@@ -202,7 +227,7 @@ const NodeCheckmark = ({
         outcome: outcomeTitle,
         node: nodeTitle
       })}
-      readOnly={readOnly}
+      readOnly={readOnly || assignmentPending}
       value={status}
       onClick={onClick}
     />

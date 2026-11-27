@@ -3,6 +3,7 @@ import { ensurePageWorkspaceEditLock } from "../../helpers/edit-lock";
 import { createOutcomeViaApi } from "./outcome-drag.helpers";
 import {
   createWorkflowNodeViaApi,
+  deleteWorkflowNodeViaApi,
   openOutcomeTable,
   outcomeTableGrid,
   patchOutcomeTableNodeViaApi,
@@ -120,6 +121,10 @@ test.describe("program Competency matrix summaries", () => {
   }) => {
     await page.goto(workflow.path);
     await ensurePageWorkspaceEditLock(page, "workflow", workflow.workflowUuid);
+    const seedGraph = await fetchGraphView(page, workflow.workflowUuid);
+    for (const node of seedGraph.nodes) {
+      await deleteWorkflowNodeViaApi(page, node.uuid);
+    }
     const firstNodeUuid = await createWorkflowNodeViaApi(page, workflow);
     const secondNodeUuid = await createWorkflowNodeViaApi(page, workflow);
     const firstTitle = "Program summary general";

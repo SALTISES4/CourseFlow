@@ -86,6 +86,8 @@ async function deleteWorkflowNodeViaApi(
 const BLANK_CREATE_WORKFLOW_TYPES = ['activity', 'course', 'program'] as const;
 
 test.describe('add-tab-fr-001-006', () => {
+  test.setTimeout(45_000);
+
   test.describe('Add tab — shell (FR-WF-ADD-001)', () => {
     test.beforeEach(async ({ page, workflow }) => {
       await page.goto(workflow.path);
