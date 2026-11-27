@@ -51,7 +51,7 @@ const TableHeader = ({ table }: { table: OutcomeTable }) => {
 
   return (
     <Styled.TableHeader role="row">
-      <Styled.HeaderLegendWrap aria-hidden />
+      <Styled.HeaderLegendWrap className="corner-cell" aria-hidden />
       {groups}
     </Styled.TableHeader>
   )

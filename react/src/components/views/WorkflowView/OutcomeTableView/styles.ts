@@ -92,8 +92,9 @@ export const HeaderLegendWrap = styled(Box, {
     }
   }),
 
-  // empty corner cell
-  '&:first-child': {
+  // empty corner cell; this must not depend on DOM position because semantic
+  // grouping wrappers can introduce additional first children
+  '&.corner-cell': {
     width: `${HEADING_WIDTH}px`,
     marginRight: theme.spacing(2),
     position: 'sticky',

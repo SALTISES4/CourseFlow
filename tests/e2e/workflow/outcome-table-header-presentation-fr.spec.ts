@@ -160,6 +160,29 @@ test.describe("FR-WF-HEADER-003: Outcome table eligibility and routing", () => {
         "normal",
       );
     });
+
+    test("Competency matrix keeps program summary group headers tilted", async ({
+      page,
+      workflow,
+    }) => {
+      await page.goto(workflow.path);
+      await ensureFirstWorkflowNodeViaApi(page, workflow.workflowUuid);
+      await createEligibleOutcomeTable(page, workflow, "Program outcome");
+      await page.reload();
+      await outcomeTableTab(page).click();
+      await selectTableStyle(page, "Competency matrix");
+
+      const grid = outcomeTableGrid(page);
+      for (const groupName of ["Classification", "Ponderation"]) {
+        const groupHeader = grid
+          .getByRole("group", { name: groupName })
+          .locator(":scope > div")
+          .first();
+        await expect(groupHeader).toHaveCSS("width", "70px");
+        await expect(groupHeader).toHaveCSS("position", "relative");
+        await expect(groupHeader).not.toHaveCSS("transform", "none");
+      }
+    });
   });
 });
 
