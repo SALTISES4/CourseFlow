@@ -132,7 +132,7 @@ uiObjectDefinitions:
     meaning: Canonical definition in tests/docs/requirements/features/global/context_action_bar_requirements_v1.yaml.
   workflowOutcomeTableViewSettingsMenuTagsSection:
     meaning: Canonical definition in tests/docs/requirements/features/global/context_action_bar_requirements_v1.yaml.
-  workflowOutcomeTableStyleTrigger:
+  workflowOutcomeTableStyleSelector:
     meaning: Canonical definition in tests/docs/requirements/features/global/context_action_bar_requirements_v1.yaml.
   workflowOutcomeTableSortTrigger:
     meaning: Canonical definition in tests/docs/requirements/features/global/context_action_bar_requirements_v1.yaml.
@@ -206,7 +206,7 @@ locatorMappings:
   workflowOutcomeTableViewSettingsMenuItemExpandOutcomes: "canonical_locators.yaml -> workflowOutcomeTableViewSettingsMenuItemExpandOutcomes"
   workflowOutcomeTableViewSettingsMenuItemCollapseOutcomes: "canonical_locators.yaml -> workflowOutcomeTableViewSettingsMenuItemCollapseOutcomes"
   workflowOutcomeTableViewSettingsMenuTagsSection: "canonical_locators.yaml -> workflowOutcomeTableViewSettingsMenuTagsSection"
-  workflowOutcomeTableStyleTrigger: "canonical_locators.yaml -> workflowOutcomeTableStyleTrigger"
+  workflowOutcomeTableStyleSelector: "canonical_locators.yaml -> workflowOutcomeTableStyleSelector"
   workflowOutcomeTableSortTrigger: "canonical_locators.yaml -> workflowOutcomeTableSortTrigger"
   workflowOutcome: "canonical_locators.yaml -> workflowOutcome"
   workflowOutcomeHeaderToggle: "canonical_locators.yaml -> workflowOutcomeHeaderToggle"
@@ -260,7 +260,7 @@ requirements:
 
     trigger:
       - user navigates to 'Outcome table' sub-view
-      - user selects 'Normal' on workflowOutcomeTableStyleTrigger per FR-CAB-010
+      - user presses 'Normal' on workflowOutcomeTableStyleSelector per FR-CAB-010
 
     mainFlow:
       - workflowOutcomeTableView renders workflowOutcomeTableGrid as a scrollable matrix of workflowOutcomeTableGridCell entries at every workflowOutcome and workflowNode pair, plus workflowOutcomeTableSectionOutcomeCell entries at every workflowOutcome and workflowSectionContainer pair
@@ -341,7 +341,7 @@ requirements:
 
     trigger:
       - user navigates to 'Outcome table' sub-view
-      - user selects 'Competency matrix' on workflowOutcomeTableStyleTrigger per FR-CAB-010
+      - user presses 'Competency matrix' on workflowOutcomeTableStyleSelector per FR-CAB-010
 
     mainFlow:
       - workflowOutcomeTableView renders workflowOutcomeTableGrid as a scrollable matrix of workflowOutcomeTableGridCell entries at every workflowOutcome and workflowNode pair, plus workflowOutcomeTableSectionOutcomeCell entries at every workflowOutcome and workflowSectionContainer pair
@@ -901,7 +901,7 @@ requirements:
     uiObjects:
       - workflowOutcomeTableView
       - workflowOutcomeTablePresentationControls
-      - workflowOutcomeTableStyleTrigger
+      - workflowOutcomeTableStyleSelector
       - workflowOutcomeTableSortTrigger
       - workflowOutcomeTableViewSettingsMenuItemExpandOutcomes
       - workflowOutcomeTableViewSettingsMenuItemCollapseOutcomes

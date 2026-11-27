@@ -75,8 +75,10 @@ test("FR-WF-OT-001/002/005/009 and FR-CAB-009/010: eligible course table renders
   ]);
   await expect(assignmentCell).toHaveAttribute("aria-checked", "true");
 
-  await page.getByRole("button", { name: "Normal" }).click();
-  await page.getByRole("menuitem", { name: "Competency matrix" }).click();
+  await page
+    .getByRole("group", { name: "Outcome table display options" })
+    .getByRole("button", { name: "Competency matrix", exact: true })
+    .click();
   await expect(grid).toHaveAttribute("data-layout", "competency-matrix");
   await expect(
     grid.getByRole("columnheader", { name: "Total hours" }),
@@ -146,8 +148,9 @@ test.describe("FR-WF-PUBLIC-002: anonymous outcome table", () => {
     await expect(assignmentCell).toBeDisabled();
     await expect(assignmentCell).toHaveAttribute("aria-disabled", "true");
 
-    await presentationControls.getByRole("button", { name: "Normal" }).click();
-    await page.getByRole("menuitem", { name: "Competency matrix" }).click();
+    await presentationControls
+      .getByRole("button", { name: "Competency matrix", exact: true })
+      .click();
     await expect(grid).toHaveAttribute("data-layout", "competency-matrix");
 
     await presentationControls.getByRole("button", { name: "Sort" }).click();

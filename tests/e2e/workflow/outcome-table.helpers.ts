@@ -52,16 +52,9 @@ export async function selectOutcomeTableStyle(
   page: Page,
   style: "Normal" | "Competency matrix",
 ): Promise<void> {
-  const controls = outcomeTableControls(page);
-  await controls
-    .getByRole("button", { name: /^(Normal|Competency matrix)$/ })
+  await outcomeTableControls(page)
+    .getByRole("button", { name: style, exact: true })
     .click();
-  const option = page.getByRole("menuitem", { name: style, exact: true });
-  if (await option.isEnabled()) {
-    await option.click();
-  } else {
-    await page.keyboard.press("Escape");
-  }
 }
 
 export async function selectOutcomeTableSort(

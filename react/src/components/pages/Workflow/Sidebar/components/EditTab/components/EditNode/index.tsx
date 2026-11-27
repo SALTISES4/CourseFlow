@@ -496,6 +496,7 @@ const EditNodeForm = ({
                       value={field.value}
                       readOnly={!canEdit}
                       fullWidth
+                      alwaysShrinkLabel
                       onValueChange={field.onChange}
                       onValueCommit={field.onBlur}
                     />
@@ -512,6 +513,7 @@ const EditNodeForm = ({
                       value={field.value}
                       readOnly={!canEdit}
                       fullWidth
+                      alwaysShrinkLabel
                       onValueChange={field.onChange}
                       onValueCommit={field.onBlur}
                     />
@@ -528,6 +530,7 @@ const EditNodeForm = ({
                       value={field.value}
                       readOnly={!canEdit}
                       fullWidth
+                      alwaysShrinkLabel
                       onValueChange={field.onChange}
                       onValueCommit={field.onBlur}
                     />

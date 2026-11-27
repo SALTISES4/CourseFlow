@@ -68,6 +68,8 @@ export const Border = styled(Box)(({ theme }) => ({
 }))
 
 export const Content = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
   padding: theme.spacing(1),
   borderBottomLeftRadius: theme.shape.borderRadius,
   borderBottomRightRadius: theme.shape.borderRadius,

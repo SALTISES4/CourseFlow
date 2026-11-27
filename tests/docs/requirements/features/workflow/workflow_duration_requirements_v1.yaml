@@ -1,7 +1,7 @@
 # Functional requirements: workflow duration fields
 # Status: Accepted
-# Version: 4.0
-# Source: product decisions recorded 2026-11-16, 2026-11-24, and 2026-11-26.
+# Version: 5.1
+# Source: product decisions recorded 2026-11-16, 2026-11-24, 2026-11-26, and 2026-11-27.
 # Scope: all duration-valued workflow and node fields, including Time,
 #   Ponderation, Classification, linked-workflow mirrors, calculated totals,
 #   outcome tables, and compact graph-node metadata.
@@ -22,7 +22,7 @@ durationSemantics:
     timeHours: any non-negative whole number whose conversion remains a safe integer
     wholeHours: any non-negative whole number whose conversion remains a safe integer
     minutes: 0 through 59
-  displayRule: Graph-node Time tags render exact canonical minutes as '[hours] H [minutes] M'. Ponderation and Classification surfaces render one integer hour value. When an automatically calculated Classification value contains a minute remainder, the UI rounds to the nearest hour for display only, with 30 through 59 remainder minutes rounding up. Time-specific outcome-table values retain localized decimal-hour presentation.
+  displayRule: Graph-node Time tags render exact canonical minutes as compact non-zero Hours and Minutes components using lowercase 'h' and 'm' unit labels, omitting Hours when zero, omitting Minutes when zero, and rendering both when both are non-zero. Ponderation and Classification surfaces render one integer hour value. When an automatically calculated Classification value contains a minute remainder, the UI rounds to the nearest hour for display only, with 30 through 59 remainder minutes rounding up. Time-specific outcome-table values retain localized decimal-hour presentation.
   requirednessRule: This shared contract does not make a hosting field required. Empty values persist as null unless the hosting calculation explicitly treats an empty contribution as zero.
 
 compatibilityConstraints:
@@ -130,7 +130,7 @@ requirements:
       - active locale changes
 
     mainFlow:
-      - compact graph-node Time metadata converts canonical minutes to whole Hours plus remainder Minutes and renders '[hours] H [minutes] M'
+      - compact graph-node Time metadata converts canonical minutes to whole Hours plus remainder Minutes, uses lowercase 'h' and 'm' unit labels, omits a zero Hours or Minutes component, and renders both components when both are non-zero
       - linked read-only Time controls render separate Hours and Minutes inputs like editable Time controls
       - editable and read-only Ponderation and Classification child fields render one integer Hours value
       - Ponderation values are exact whole hours because their persisted minute values are divisible by 60
@@ -139,19 +139,28 @@ requirements:
       - Time-specific outcome-table cells whose headers identify hours render the localized numeric value with one fractional digit
 
     acceptanceCriteria:
-      - 10 minutes on a graph node displays as '0 H 10 M'
-      - 315 minutes on a graph node displays as '5 H 15 M'
+      - 10 minutes on a graph node displays as '10 m'
+      - 300 minutes on a graph node displays as '5 h'
+      - 315 minutes on a graph node displays as '5 h 15 m'
       - 315 minutes in a linked read-only Time control displays Hours 5 and Minutes 15
       - 10 minutes in an outcome-table hours cell displays as the localized equivalent of 0.2 hours
       - a Ponderation value of 3,060 minutes displays as the integer 51
       - an automatically calculated Classification value of 89 minutes displays as 1 hour, while 90 minutes displays as 2 hours; both API values remain unchanged
-      - changing locale changes applicable number formatting without changing canonical minutes, graph-node H/M values, or whole-hour rounding
+      - changing locale changes applicable number formatting without changing canonical minutes, graph-node h/m values, or whole-hour rounding
 
     openQuestions: []
 
 openQuestions: []
 
 changelog:
+  - version: '5.1'
+    date: '2026-11-27'
+    changes:
+      - Changed compact graph-node Time unit labels from uppercase H/M to lowercase h/m.
+  - version: '5.0'
+    date: '2026-11-27'
+    changes:
+      - Made compact graph-node Time tags omit zero Hours or Minutes components while preserving exact canonical-minute values.
   - version: '4.0'
     date: '2026-11-26'
     changes:

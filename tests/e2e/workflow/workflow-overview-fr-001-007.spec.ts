@@ -1,3 +1,5 @@
+import type { Page } from '@playwright/test';
+
 import { expect, test } from '../../fixtures';
 import { authenticatedApiRequest } from '../../helpers/api';
 import { loginAs } from '../../helpers/auth';
@@ -55,8 +57,24 @@ import {
   workflowMetadataSwitchCalculateCreditsAutomatically,
   workflowMetadataSwitchCalculatePonderationAutomatically,
   workflowMetadataSwitchCalculateTimeAutomatically,
+  workflowMetadataClassificationWarningBanner,
+  workflowMetadataWarningBanner,
   workflowOverviewView,
 } from './workflow-overview.locators';
+
+async function updateOverviewMetadata(
+  page: Page,
+  workflowUuid: string,
+  overviewMetadata: Record<string, boolean | number>,
+): Promise<void> {
+  const response = await authenticatedApiRequest(
+    page,
+    'PATCH',
+    `/api/workflow/${workflowUuid}`,
+    { data: { overviewMetadata } },
+  );
+  expect(response.ok(), await response.text()).toBe(true);
+}
 
 test.use({
   seedAsset: 'workflow.standard_activity',
@@ -288,6 +306,29 @@ test.describe('workflow-overview-fr-001-007', () => {
       }
     });
 
+    for (const workflowType of ['course', 'program'] as const) {
+      test(`FR-WF-OV-004: ${workflowType} ponderation warning starts after a non-zero value is entered`, async ({
+        page,
+        workflow,
+      }) => {
+        const target = workflow.workflowByType(workflowType);
+        await updateOverviewMetadata(page, target.workflow_uuid, {
+          calculatePonderationAutomatically: false,
+          timeMinutes: 1_800,
+          theoryTimeMinutes: 0,
+          practicalTimeMinutes: 0,
+          individualTimeMinutes: 0,
+        });
+        await openWorkflowOverview(page, target.workflow_path);
+
+        await expect(workflowMetadataWarningBanner(page)).toHaveCount(0);
+
+        await workflowMetadataFieldTheoryTime(page).fill('10');
+
+        await expect(workflowMetadataWarningBanner(page)).toBeVisible();
+      });
+    }
+
     test('FR-WF-OV-005: program credits switch controls the whole-number field', async ({
       page,
     }) => {
@@ -324,6 +365,26 @@ test.describe('workflow-overview-fr-001-007', () => {
       } finally {
         await setWorkflowOverviewSwitch(page, automaticSwitch, false);
       }
+    });
+
+    test('FR-WF-OV-006: classification warning starts after a non-zero value is entered', async ({
+      page,
+      workflow,
+    }) => {
+      const program = workflow.workflowByType('program');
+      await updateOverviewMetadata(page, program.workflow_uuid, {
+        calculateClassificationAutomatically: false,
+        timeMinutes: 1_800,
+        generalTimeMinutes: 0,
+        specificTimeMinutes: 0,
+      });
+      await openWorkflowOverview(page, program.workflow_path);
+
+      await expect(workflowMetadataClassificationWarningBanner(page)).toHaveCount(0);
+
+      await workflowMetadataFieldGeneralTime(page).fill('10');
+
+      await expect(workflowMetadataClassificationWarningBanner(page)).toBeVisible();
     });
 
     test('FR-WF-OV-007: permissions panel is visible and read-only', async ({

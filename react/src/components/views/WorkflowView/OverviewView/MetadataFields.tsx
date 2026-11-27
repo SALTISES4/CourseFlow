@@ -113,9 +113,13 @@ const MetadataFields = ({
   const classificationTotal =
     (values.generalTimeMinutes ?? 0) + (values.specificTimeMinutes ?? 0)
   const hasPonderationMismatch =
-    isCourseOrProgram && ponderationTotal !== (values.timeMinutes ?? 0)
+    isCourseOrProgram &&
+    ponderationTotal > 0 &&
+    ponderationTotal !== (values.timeMinutes ?? 0)
   const hasClassificationMismatch =
-    isProgram && classificationTotal !== (values.timeMinutes ?? 0)
+    isProgram &&
+    classificationTotal > 0 &&
+    classificationTotal !== (values.timeMinutes ?? 0)
 
   return (
     <Grid

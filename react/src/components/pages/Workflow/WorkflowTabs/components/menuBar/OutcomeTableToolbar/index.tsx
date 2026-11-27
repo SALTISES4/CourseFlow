@@ -6,14 +6,15 @@ import {
 import type { AppDispatch, RootState } from '@cf/redux/store'
 import { MenuItemType, SimpleMenu } from '@cfComponents/menu/Menu'
 import SortIcon from '@mui/icons-material/Sort'
-import TableChartIcon from '@mui/icons-material/TableChart'
+import ToggleButton from '@mui/material/ToggleButton'
 import type { ParseKeys } from 'i18next'
+import { type MouseEvent, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 
 import * as Styled from './styles'
 
-const ViewMenu = () => {
+const ViewToggle = () => {
   const { t } = useTranslation('workflow')
   const dispatch = useDispatch<AppDispatch>()
   const viewType = useSelector(
@@ -23,31 +24,36 @@ const ViewMenu = () => {
     normal: t('outcomeTable.view.normal'),
     matrix: t('outcomeTable.view.competencyMatrix')
   }
-  const header: MenuItemType = {
-    content: labels[viewType],
-    icon: <TableChartIcon />,
-    showIconInList: true,
-    show: true
-  }
-  const menuItems: MenuItemType[] = (
-    Object.keys(labels) as OutcomeTableUiState['viewType'][]
-  ).map((nextViewType) => ({
-    uuid: `outcome-table-style-${nextViewType}`,
-    content: labels[nextViewType],
-    action: () =>
-      dispatch(
-        outcomeTableUiActions.viewTypeChange({ viewType: nextViewType })
-      ),
-    disabled: nextViewType === viewType,
-    show: true
-  }))
+
+  const onViewTypeChange = useCallback(
+    (
+      _event: MouseEvent<HTMLElement>,
+      nextViewType: OutcomeTableUiState['viewType'] | null
+    ) => {
+      if (nextViewType === null) {
+        return
+      }
+
+      dispatch(outcomeTableUiActions.viewTypeChange({ viewType: nextViewType }))
+    },
+    [dispatch]
+  )
 
   return (
-    <SimpleMenu
-      id="outcome-table-style"
-      header={header}
-      menuItems={menuItems}
-    />
+    <Styled.ViewTypeWrapper>
+      <Styled.ViewTypeButtonGroup
+        exclusive
+        value={viewType}
+        onChange={onViewTypeChange}
+      >
+        <ToggleButton color="primary" size="small" value="normal">
+          {labels.normal}
+        </ToggleButton>
+        <ToggleButton color="primary" size="small" value="matrix">
+          {labels.matrix}
+        </ToggleButton>
+      </Styled.ViewTypeButtonGroup>
+    </Styled.ViewTypeWrapper>
   )
 }
 
@@ -113,7 +119,7 @@ const OutcomeTableToolbar = ({
   workflowType: WorkflowType
 }) => (
   <Styled.ToolbarWrapper>
-    <ViewMenu />
+    <ViewToggle />
     <SortMenu workflowType={workflowType} />
   </Styled.ToolbarWrapper>
 )

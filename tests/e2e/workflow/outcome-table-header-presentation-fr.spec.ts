@@ -52,17 +52,9 @@ async function selectTableStyle(
   page: Page,
   style: "Normal" | "Competency matrix",
 ): Promise<void> {
-  const controls = presentationControls(page);
-  const trigger = controls.getByRole("button", {
-    name: /^(Normal|Competency matrix)$/,
-  });
-  await trigger.click();
-  const option = page.getByRole("menuitem", { name: style, exact: true });
-  if (await option.isEnabled()) {
-    await option.click();
-  } else {
-    await page.keyboard.press("Escape");
-  }
+  await presentationControls(page)
+    .getByRole("button", { name: style, exact: true })
+    .click();
 }
 
 async function selectSort(
@@ -172,6 +164,47 @@ test.describe("FR-WF-HEADER-003: Outcome table eligibility and routing", () => {
 });
 
 test.describe("FR-CAB-008/009/010 and FR-WF-OT-003/011: presentation lifecycle", () => {
+  test("FR-CAB-010: table styles are direct segmented buttons, not a dropdown", async ({
+    page,
+    workflow,
+  }) => {
+    await createEligibleOutcomeTable(page, workflow, "Style control outcome");
+    await openEligibleOutcomeTable(page, workflow);
+
+    const controls = presentationControls(page);
+    const normalButton = controls.getByRole("button", {
+      name: "Normal",
+      exact: true,
+    });
+    const matrixButton = controls.getByRole("button", {
+      name: "Competency matrix",
+      exact: true,
+    });
+
+    await expect(normalButton).toBeVisible();
+    await expect(matrixButton).toBeVisible();
+    await expect(normalButton).toHaveAttribute("aria-pressed", "true");
+    await expect(matrixButton).toHaveAttribute("aria-pressed", "false");
+
+    await matrixButton.click();
+
+    await expect(outcomeTableGrid(page)).toHaveAttribute(
+      "data-layout",
+      "competency-matrix",
+    );
+    await expect(normalButton).toHaveAttribute("aria-pressed", "false");
+    await expect(matrixButton).toHaveAttribute("aria-pressed", "true");
+    await expect(
+      page.getByRole("menuitem", { name: "Normal", exact: true }),
+    ).toHaveCount(0);
+    await expect(
+      page.getByRole("menuitem", {
+        name: "Competency matrix",
+        exact: true,
+      }),
+    ).toHaveCount(0);
+  });
+
   test("FR-CAB-008/009: completed View settings and Sort actions dismiss their menus", async ({
     page,
     workflow,

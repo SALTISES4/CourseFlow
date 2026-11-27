@@ -16,6 +16,7 @@ import {
   selectOutcomeTagGroups,
   selectOutcomeTagGroupsTree
 } from './outcomes.selectors'
+import { getEffectiveNodeTimeMinutes } from '../model/effectiveNodeMeta'
 import type {
   ChannelEntity,
   NodeEntity,
@@ -379,10 +380,9 @@ function populateExtraColumns(
     linkedWorkflow?.practicalTimeMinutes ?? node.ponderationPracticeMinutes
   const individual =
     linkedWorkflow?.individualTimeMinutes ?? node.ponderationIndividualMinutes
-  const isSpecific =
-    linkedWorkflow?.specificTimeMinutes ?? node.specificEducation
+  const isSpecific = node.specificEducation
 
-  const timeRequired = linkedWorkflow?.timeMinutes ?? node.timeRequiredMinutes
+  const timeRequired = getEffectiveNodeTimeMinutes(node)
 
   const values: Record<ExtraColumnValueKey, number | null | undefined> = {
     specificEducationMinutes: isSpecific ? timeRequired : undefined,

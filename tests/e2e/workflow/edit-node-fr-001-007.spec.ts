@@ -87,6 +87,17 @@ async function richTextMarkupSnapshot(editor: Locator): Promise<{
   }));
 }
 
+async function expectInputLabelShrunk(
+  page: Page,
+  input: Locator,
+): Promise<void> {
+  const inputId = await input.getAttribute('id');
+  expect(inputId).not.toBeNull();
+  await expect(
+    workflowRightSidebarContentPanel(page).locator(`label[for="${inputId}"]`),
+  ).toHaveAttribute('data-shrink', 'true');
+}
+
 test.describe('edit-node-fr-001-007', () => {
   test.describe('Open workflowEditNodeForm (FR-WF-EN-001)', () => {
     test.beforeEach(async ({ page, workflow }) => {
@@ -371,6 +382,18 @@ test.describe('edit-node-fr-001-007', () => {
       await expect(workflowEditNodeFormPonderationTheoryField(page)).toBeVisible();
       await expect(workflowEditNodeFormPonderationPracticeField(page)).toBeVisible();
       await expect(workflowEditNodeFormPonderationIndividualField(page)).toBeVisible();
+      await expectInputLabelShrunk(
+        page,
+        workflowEditNodeFormPonderationTheoryField(page),
+      );
+      await expectInputLabelShrunk(
+        page,
+        workflowEditNodeFormPonderationPracticeField(page),
+      );
+      await expectInputLabelShrunk(
+        page,
+        workflowEditNodeFormPonderationIndividualField(page),
+      );
       await expect(workflowEditNodeFormSpecificEducationSwitch(page)).toBeVisible();
       await expect(workflowEditNodeFormSpecificEducationSwitch(page)).not.toBeChecked();
       await expect(workflowEditNodeFormTagsField(page)).toBeVisible();
@@ -417,6 +440,18 @@ test.describe('edit-node-fr-001-007', () => {
         await expect(workflowEditNodeFormPonderationTheoryField(page)).toHaveAttribute('readonly', '');
         await expect(workflowEditNodeFormPonderationPracticeField(page)).toHaveAttribute('readonly', '');
         await expect(workflowEditNodeFormPonderationIndividualField(page)).toHaveAttribute('readonly', '');
+        await expectInputLabelShrunk(
+          page,
+          workflowEditNodeFormPonderationTheoryField(page),
+        );
+        await expectInputLabelShrunk(
+          page,
+          workflowEditNodeFormPonderationPracticeField(page),
+        );
+        await expectInputLabelShrunk(
+          page,
+          workflowEditNodeFormPonderationIndividualField(page),
+        );
 
         await expect(workflowEditNodeFormTagsField(page)).toBeVisible();
         await expect(workflowEditNodeFormTagsField(page)).toBeEnabled();
