@@ -3,17 +3,15 @@ from __future__ import annotations
 from uuid import UUID
 
 from django.db.models import Count, Q
-
-from course_flow.api.schemas.workflows import LinkedWorkflowOut
-from course_flow.core.models import Comment, Edge, Graph, Node, Outcome, Thread
-from course_flow.core.node_meta import read_node_meta_fields
-
 from ninja.errors import HttpError
 
 from course_flow.api.schemas.graph_view import NodeGraphOut
 from course_flow.api.schemas.workflows import (
+    LinkedWorkflowOut,
     WorkflowOverviewMetadataOut,
 )
+from course_flow.core.models import Comment, Edge, Graph, Node, Outcome, Thread
+from course_flow.core.node_meta import read_node_meta_fields
 
 
 class GraphViewService:
