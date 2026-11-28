@@ -12,6 +12,7 @@ import {
   parseWholeHoursInput
 } from '../src/components/common/duration'
 import { graphStateReducer } from '../src/features/graph/state/graphState'
+import { getEffectiveNodeTimeMinutes } from '../src/features/graph/state/model/effectiveNodeMeta'
 import type {
   ChannelEntity,
   NodeEntity,
@@ -72,9 +73,26 @@ const node: NodeEntity = {
   sectionRow: 0,
   workflowUuid: null,
   linkedWorkflowUuid: null,
+  linkedWorkflow: null,
   threadUuid: null,
   outcomeUuids: []
 }
+
+assert.equal(getEffectiveNodeTimeMinutes(node), 240)
+assert.equal(
+  getEffectiveNodeTimeMinutes({
+    timeRequiredMinutes: 0,
+    linkedWorkflow: { overviewMetadata: { timeMinutes: 315 } }
+  }),
+  315
+)
+assert.equal(
+  getEffectiveNodeTimeMinutes({
+    timeRequiredMinutes: 240,
+    linkedWorkflow: { overviewMetadata: { timeMinutes: null } }
+  }),
+  null
+)
 
 const store = configureStore({ reducer: { graph: graphStateReducer } })
 store.dispatch(sectionsActions.upsertMany([section]))
@@ -112,6 +130,35 @@ assert.equal(secondCredits.values[sectionUuid], 3)
 // Recomputing the selector must not mutate a previously returned view model.
 assert.equal(firstCredits.values[nodeUuid], 2)
 assert.equal(firstCredits.values[sectionUuid], 2)
+
+store.dispatch(
+  nodesActions.upsertMany([
+    {
+      ...node,
+      timeRequiredMinutes: 0,
+      specificEducation: true,
+      linkedWorkflowUuid: 'linked-workflow',
+      linkedWorkflow: {
+        uuid: 'linked-workflow',
+        title: 'Linked workflow',
+        description: '',
+        overviewMetadata: {
+          timeMinutes: 315,
+          specificTimeMinutes: 0
+        }
+      }
+    }
+  ])
+)
+const linkedTable = selectOutcomeTable(
+  store.getState() as unknown as RootState,
+  graphUuid
+)
+const linkedClassification = linkedTable.extraColumns.program[0]
+assert(linkedClassification && 'columns' in linkedClassification)
+const [linkedGeneral, linkedSpecific] = linkedClassification.columns
+assert.equal(linkedGeneral?.values[nodeUuid], undefined)
+assert.equal(linkedSpecific?.values[nodeUuid], 315)
 
 store.dispatch(
   nodesActions.upsertMany([
@@ -202,6 +249,9 @@ assert.deepEqual(parseDurationParts('5', '60'), {
   value: null,
   field: 'minutes'
 })
-assert.equal(formatDurationHoursMinutes(315), '5 H 15 M')
+assert.equal(formatDurationHoursMinutes(300), '5 h')
+assert.equal(formatDurationHoursMinutes(30), '30 m')
+assert.equal(formatDurationHoursMinutes(315), '5 h 15 m')
+assert.equal(formatDurationHoursMinutes(0), '')
 
 console.log('Outcome table selector accumulation is isolated.')

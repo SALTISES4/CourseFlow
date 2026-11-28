@@ -90,6 +90,7 @@ export interface NodeEntity {
   workflowUuid: WorkflowUuid | null
   /** Optional symbolic link to another library workflow (`NodeGraphOut.linkedWorkflowUuid`). */
   linkedWorkflowUuid: WorkflowUuid | null
+  linkedWorkflow: LinkedWorkflowOut | null
   threadUuid: ResourceUuid | null
   outcomeUuids: ResourceUuid[]
 }
@@ -429,12 +430,14 @@ export interface LinkNodeOutcomeInput {
   graphUuid: GraphUuid
   nodeUuid: ResourceUuid
   outcomeUuid: ResourceUuid
+  affectedOutcomeUuids?: ResourceUuid[]
 }
 
 export interface UnlinkNodeOutcomeInput {
   graphUuid: GraphUuid
   nodeUuid: ResourceUuid
   outcomeUuid: ResourceUuid
+  affectedOutcomeUuids?: ResourceUuid[]
 }
 
 export interface OutcomeMetaPatch {
@@ -481,5 +484,6 @@ export interface MoveOutcomeInput {
 }
 import type {
   ContextClassification,
+  LinkedWorkflowOut,
   TaskClassification
 } from '@cf/api/gen/types.gen'

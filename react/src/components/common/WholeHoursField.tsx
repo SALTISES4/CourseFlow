@@ -15,6 +15,7 @@ type Props = {
   disabled?: boolean
   readOnly?: boolean
   fullWidth?: boolean
+  alwaysShrinkLabel?: boolean
   onValueChange?: (value: number | null) => void
   onValueCommit?: (value: number | null) => void
 }
@@ -29,6 +30,7 @@ const WholeHoursField = ({
   disabled = false,
   readOnly = false,
   fullWidth = false,
+  alwaysShrinkLabel = false,
   onValueChange,
   onValueCommit
 }: Props) => {
@@ -84,6 +86,7 @@ const WholeHoursField = ({
       size="small"
       fullWidth={fullWidth}
       disabled={disabled}
+      InputLabelProps={alwaysShrinkLabel ? { shrink: true } : undefined}
       error={!parsed.valid}
       helperText={!parsed.valid ? t('duration.hoursInvalid') : undefined}
       inputProps={{ min: 0, step: 1, inputMode: 'numeric' }}

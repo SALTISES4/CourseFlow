@@ -3,6 +3,9 @@ import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 
 export const Wrap = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  flexGrow: 1,
   marginTop: theme.spacing(2)
 }))
 
@@ -20,7 +23,8 @@ export const WorkflowLink = styled(Typography)({
 
 export const Footer = styled(Box)(({ theme }) => ({
   display: 'flex',
-  marginTop: theme.spacing(1),
+  marginTop: 'auto',
+  paddingTop: theme.spacing(1),
   justifyContent: 'space-between',
   color: theme.palette.secondary.light,
   '& .MuiSvgIcon-root': {
@@ -46,3 +50,7 @@ export const Tag = styled('span')(({ theme }) => ({
     fontSize: '12px'
   }
 }))
+
+export const TimeTag = styled(Tag)({
+  marginLeft: 'auto'
+})

@@ -21,7 +21,7 @@ import { useGraphBootstrap } from '@cf/features/graph/state/useGraphBootstrap'
 import { useWorkspaceAccessGuard } from '@cf/hooks/useWorkspaceAccessGuard'
 import { useWorkspaceEditLock } from '@cf/hooks/useWorkspaceEditLock'
 import { AppDispatch, RootState } from '@cf/redux/store'
-import { NetworkActivityLoader } from '@cfComponents/NetworkActivityProvider'
+import { NetworkActivityLoadingState } from '@cfComponents/NetworkActivityProvider'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import ErrorView from '@cfPages/MsgViews/ErrorView'
 import WorkspaceAccessDenied from '@cfPages/MsgViews/WorkspaceAccessDenied'
@@ -39,10 +39,6 @@ type WorkflowContentProps = {
   editLock?: ReturnType<typeof useWorkspaceEditLock>
 }
 
-// Keep an explicit authenticated loading state so its presentation can change
-// without changing the workflow loading gates.
-const AuthenticatedWorkflowLoadingState = NetworkActivityLoader
-
 const WorkflowContent = ({
   workflow,
   publicView,
@@ -59,7 +55,7 @@ const WorkflowContent = ({
   )
 
   if (!shellReady && loadState?.graph !== 'failed') {
-    return publicView ? <Loader /> : <AuthenticatedWorkflowLoadingState />
+    return publicView ? <Loader /> : <NetworkActivityLoadingState />
   }
 
   if (loadState?.graph === 'failed') {
@@ -197,11 +193,11 @@ const AuthenticatedWorkflow = () => {
   }
 
   if (isPending || !resolvedWorkflowResponse) {
-    return <AuthenticatedWorkflowLoadingState />
+    return <NetworkActivityLoadingState />
   }
 
   if (editLock.initialResolving) {
-    return <AuthenticatedWorkflowLoadingState />
+    return <NetworkActivityLoadingState />
   }
 
   return (

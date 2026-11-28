@@ -379,17 +379,17 @@ export function workflowEditNodeFormPonderationGroup(page: Page): Locator {
 
 /** canonical: workflowEditNodeFormPonderationTheoryField */
 export function workflowEditNodeFormPonderationTheoryField(page: Page): Locator {
-  return workflowRightSidebarContentPanel(page).getByLabel(/^Hrs\. theory$/i);
+  return workflowRightSidebarContentPanel(page).getByLabel(/^Theory$/i);
 }
 
 /** canonical: workflowEditNodeFormPonderationPracticeField */
 export function workflowEditNodeFormPonderationPracticeField(page: Page): Locator {
-  return workflowRightSidebarContentPanel(page).getByLabel(/^Hrs\. practice$/i);
+  return workflowRightSidebarContentPanel(page).getByLabel(/^Practice$/i);
 }
 
 /** canonical: workflowEditNodeFormPonderationIndividualField */
 export function workflowEditNodeFormPonderationIndividualField(page: Page): Locator {
-  return workflowRightSidebarContentPanel(page).getByLabel(/^Hrs\. individual$/i);
+  return workflowRightSidebarContentPanel(page).getByLabel(/^Individual$/i);
 }
 
 /** canonical: workflowEditNodeFormSpecificEducationSwitch */

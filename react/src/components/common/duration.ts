@@ -71,7 +71,12 @@ export const formatDurationHoursMinutes = (value: DurationMinutes): string => {
     return ''
   }
   const { hours, minutes } = durationPartsFromMinutes(value)
-  return `${hours} H ${minutes} M`
+  return [
+    Number(hours) > 0 ? `${hours} h` : '',
+    Number(minutes) > 0 ? `${minutes} m` : ''
+  ]
+    .filter(Boolean)
+    .join(' ')
 }
 
 export const formatWholeHoursInput = (value: DurationMinutes): string => {

@@ -3,7 +3,13 @@ from __future__ import annotations
 from uuid import UUID
 
 from django.db.models import Count, Q
+from ninja.errors import HttpError
 
+from course_flow.api.schemas.graph_view import NodeGraphOut
+from course_flow.api.schemas.workflows import (
+    LinkedWorkflowOut,
+    WorkflowOverviewMetadataOut,
+)
 from course_flow.core.models import Comment, Edge, Graph, Node, Outcome, Thread
 from course_flow.core.node_meta import read_node_meta_fields
 
@@ -151,24 +157,29 @@ class GraphViewService:
                 for c in channels
             ],
             "nodes": [
-                {
-                    "uuid": n.uuid,
-                    "node_type": n.node_type,
-                    "title": n.title or "",
-                    "title_copy_count": n.title_copy_count,
-                    "description": n.description or "",
+                NodeGraphOut(
+                    uuid=n.uuid,
+                    node_type=n.node_type,
+                    title=n.title or "",
+                    title_copy_count=n.title_copy_count,
+                    description=n.description or "",
                     **read_node_meta_fields(n),
-                    "tag_ids": list(n.tags.values_list("id", flat=True)),
-                    "section_uuid": n.section.uuid if n.section_id else None,
-                    "channel_uuid": n.channel.uuid if n.channel_id else None,
-                    "section_row": n.section_row,
-                    "workflow_uuid": n.workflow.uuid if n.workflow_id else None,
-                    "linked_workflow_uuid": (
+                    tag_ids=list(n.tags.values_list("id", flat=True)),
+                    section_uuid=n.section.uuid if n.section_id else None,
+                    channel_uuid=n.channel.uuid if n.channel_id else None,
+                    section_row=n.section_row,
+                    workflow_uuid=n.workflow.uuid if n.workflow_id else None,
+                    linked_workflow_uuid=(
                         n.linked_workflow.uuid if n.linked_workflow_id else None
                     ),
-                    "thread_uuid": n.thread.uuid if n.thread_id else None,
-                    "outcome_uuids": [o.uuid for o in n.outcomes.all()],
-                }
+                    linked_workflow=(
+                        self.get_linked_workflow_detail(n.linked_workflow.uuid)
+                        if n.linked_workflow_id
+                        else None
+                    ),
+                    thread_uuid=n.thread.uuid if n.thread_id else None,
+                    outcome_uuids=[o.uuid for o in n.outcomes.all()],
+                )
                 for n in nodes
             ],
             "edges": [
@@ -212,3 +223,22 @@ class GraphViewService:
                 for tu in thread_uuids
             ],
         }
+
+    def get_linked_workflow_detail(self, uuid: UUID) -> LinkedWorkflowOut:
+        from course_flow.api.deps import get_workflow_service
+        service = get_workflow_service()
+        workflow = service.get_by_workflow_uuid(uuid)
+
+        if (
+            workflow is None
+        ):
+            raise HttpError(404, "Workflow not found")
+
+        return LinkedWorkflowOut(
+            uuid=uuid,
+            title=workflow.title,
+            description=workflow.description,
+            overview_metadata=WorkflowOverviewMetadataOut.model_validate(
+                workflow.overview_metadata
+            )
+        )

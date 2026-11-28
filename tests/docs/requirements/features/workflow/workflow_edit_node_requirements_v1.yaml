@@ -100,11 +100,11 @@ uiObjectDefinitions:
   workflowEditNodeFormPonderationGroup:
     meaning: Field group on workflowEditNodeForm with heading 'Ponderation'; program workflow type only.
   workflowEditNodeFormPonderationTheoryField:
-    meaning: Single non-negative whole-number Hours input inside workflowEditNodeFormPonderationGroup labeled 'Theory'; its canonical value is integer minutes divisible by 60.
+    meaning: Single non-negative whole-number Hours input inside workflowEditNodeFormPonderationGroup labeled 'Theory'; its label remains shrunk above the input; its canonical value is integer minutes divisible by 60.
   workflowEditNodeFormPonderationPracticeField:
-    meaning: Single non-negative whole-number Hours input inside workflowEditNodeFormPonderationGroup labeled 'Practical'; its canonical value is integer minutes divisible by 60.
+    meaning: Single non-negative whole-number Hours input inside workflowEditNodeFormPonderationGroup labeled 'Practice'; its label remains shrunk above the input; its canonical value is integer minutes divisible by 60.
   workflowEditNodeFormPonderationIndividualField:
-    meaning: Single non-negative whole-number Hours input inside workflowEditNodeFormPonderationGroup labeled 'Individual'; its canonical value is integer minutes divisible by 60.
+    meaning: Single non-negative whole-number Hours input inside workflowEditNodeFormPonderationGroup labeled 'Individual'; its label remains shrunk above the input; its canonical value is integer minutes divisible by 60.
   workflowEditNodeFormSpecificEducationSwitch:
     meaning: Binary switch on workflowEditNodeForm labeled 'Specific education'; program workflow type only.
   workflowEditNodeFormLinkWorkflowButton:
@@ -468,6 +468,7 @@ requirements:
     acceptanceCriteria:
       - given parent workflow type is program and the workflowNode has no linked workflow, the visible fields in workflowEditNodeForm are, in order, workflowEditNodeFormTitleField, workflowEditNodeFormDescriptionField, workflowEditNodeFormTimeField, workflowEditNodeFormCreditsField, workflowEditNodeFormPonderationGroup (with its three whole-number Hours fields), workflowEditNodeFormSpecificEducationSwitch, and workflowEditNodeFormTagsAutocomplete; workflowEditNodeFormLinkWorkflowButton, workflowEditNodeFormDuplicateButton and workflowEditNodeFormDeleteButton are visible in the action area
       - given parent workflow type is program and the workflowNode has no linked workflow, workflowEditNodeFormPonderationTheoryField, workflowEditNodeFormPonderationPracticeField, and workflowEditNodeFormPonderationIndividualField each contain one non-negative whole-number Hours input; minutes and fractional hours are rejected
+      - given any Ponderation field is empty or unfocused, its Theory, Practice, or Individual label remains shrunk above the input and does not transition from inside the field on focus
       - given parent workflow type is program and the workflowNode has no linked workflow, workflowEditNodeFormLinkWorkflowButton displays 'Link a course'
       - given parent workflow type is program and the workflowNode is newly created (no prior user interaction with workflowEditNodeFormSpecificEducationSwitch), workflowEditNodeFormSpecificEducationSwitch defaults to OFF
 

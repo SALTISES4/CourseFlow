@@ -27,7 +27,7 @@ const TableHeader = ({
 
   return (
     <Styled.TableHeader role="row">
-      <Styled.HeaderLegendWrap aria-hidden />
+      <Styled.HeaderLegendWrap className="corner-cell" aria-hidden />
       {table.tagGroups.map((group, index) => {
         const found = projectTagsMap[group.uuid]
         const groupTitle =

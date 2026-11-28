@@ -77,10 +77,10 @@ const Meta = ({
             </Styled.IconWrap>
           )}
           {hasTime && (
-            <Styled.Tag>
+            <Styled.TimeTag>
               <TimerOutlinedIcon />
               <span>{formatDurationHoursMinutes(timeMinutes)}</span>
-            </Styled.Tag>
+            </Styled.TimeTag>
           )}
         </Styled.Footer>
       )}

@@ -849,7 +849,7 @@ locatorMappings:
     strategy: "{projectHeader} favourite toggle control for current project"
     confidence: inferred
   projectLoadingIndicator:
-    strategy: "#container > .load-screen replacing projectHeader and project sub-view content while destination project data loads"
+    strategy: '[data-testid="network-activity-loader"] while destination project data loads; authenticated project routes do not render #container > .load-screen'
     confidence: implemented
   projectMetadataAddContributorsButton:
     strategy: "{projectMetadataPermissionsPanel} control with label 'Add CourseFlow user' that shows the same addContributorsDialog as contextActionBarAddContributorsButton"
@@ -1218,7 +1218,7 @@ locatorMappings:
     strategy: "{workflowEditNodeFormPonderationGroup} numeric input with accessible name 'Individual' and step='1'"
     confidence: inferred
   workflowEditNodeFormPonderationPracticeField:
-    strategy: "{workflowEditNodeFormPonderationGroup} numeric input with accessible name 'Practical' and step='1'"
+    strategy: "{workflowEditNodeFormPonderationGroup} numeric input with accessible name 'Practice' and step='1'"
     confidence: inferred
   workflowEditNodeFormPonderationTheoryField:
     strategy: "{workflowEditNodeFormPonderationGroup} numeric input with accessible name 'Theory' and step='1'"
@@ -1640,17 +1640,14 @@ locatorMappings:
   workflowOutcomeTableSortTrigger:
     strategy: "{contextActionBar} button named 'Sort' on 'Outcome table' sub-view"
     confidence: inferred
-  workflowOutcomeTableStyleMenu:
-    strategy: "role='menu' opened from {workflowOutcomeTableStyleTrigger}"
+  workflowOutcomeTableStyleButtonCompetencyMatrix:
+    strategy: "{workflowOutcomeTableStyleSelector} role='button' named 'Competency matrix' with pressed state"
     confidence: inferred
-  workflowOutcomeTableStyleMenuItemCompetencyMatrix:
-    strategy: "{workflowOutcomeTableStyleMenu} role='menuitem' named 'Competency matrix'"
+  workflowOutcomeTableStyleButtonNormal:
+    strategy: "{workflowOutcomeTableStyleSelector} role='button' named 'Normal' with pressed state"
     confidence: inferred
-  workflowOutcomeTableStyleMenuItemNormal:
-    strategy: "{workflowOutcomeTableStyleMenu} role='menuitem' named 'Normal'"
-    confidence: inferred
-  workflowOutcomeTableStyleTrigger:
-    strategy: "{contextActionBar} button whose accessible name contains 'Table style' and the active style label"
+  workflowOutcomeTableStyleSelector:
+    strategy: "two-button segmented control within {workflowOutcomeTablePresentationControls}; both style buttons are simultaneously visible and exactly one is pressed"
     confidence: inferred
   workflowOutcomeTableTab:
     strategy: "{workflowViewTabSelector} role='tab' named 'Outcome table'"
@@ -1927,6 +1924,9 @@ locatorMappings:
     confidence: confirmed
   networkActivityLoader:
     strategy: '[data-testid="network-activity-loader"]'
+    confidence: confirmed
+  legacyCenteredProjectLoader:
+    strategy: '#container > .load-screen while an authenticated project route is initially loading'
     confidence: confirmed
   legacyCenteredWorkflowLoader:
     strategy: '#container > .load-screen while an authenticated workflow route is initially loading'

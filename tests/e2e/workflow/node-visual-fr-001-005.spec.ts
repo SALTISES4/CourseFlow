@@ -1,4 +1,6 @@
 import { test, expect } from '../../fixtures';
+import { authenticatedApiRequest } from '../../helpers/api';
+import { ensurePageWorkspaceEditLock } from '../../helpers/edit-lock';
 import {
   assertNodeIsBelowSourceInSameColumn,
   findNodeBelowSourceInSection,
@@ -155,14 +157,14 @@ test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
     const contextLabel = ACTIVITY_CONTEXT_OPTIONS[1]!;
     const taskLabel = ACTIVITY_TASK_TYPE_OPTIONS[1]!;
     const title = `E2E Canvas Meta ${Date.now()}`;
-    const timeDisplay = '2 H 0 M';
+    const timeDisplay = '5 h';
 
     try {
       await patchNodeMetaViaApi(page, nodeUuid, {
         title,
         contextClassification: 'individual_work',
         taskClassification: 'gather_information',
-        timeRequiredMinutes: 120,
+        timeRequiredMinutes: 300,
       });
       await page.reload();
 
@@ -171,7 +173,7 @@ test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
         contextLabel,
         taskLabel,
         timeDisplay,
-        timeHours: '2',
+        timeHours: '5',
         timeMinutes: '0',
       });
     } finally {
@@ -184,7 +186,7 @@ test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
     }
   });
 
-  test('FR-WF-NODE-001: one-hour node time uses hours and minutes', async ({
+  test('FR-WF-NODE-001: whole-hour node time omits zero minutes and remains bottom-right', async ({
     page,
     workflow,
   }) => {
@@ -197,7 +199,24 @@ test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
       });
       await page.reload();
 
-      await expect(workflowNodeMetaTimeTag(page, nodeUuid)).toHaveText('1 H 0 M');
+      const timeTag = workflowNodeMetaTimeTag(page, nodeUuid);
+      await expect(timeTag).toHaveText('1 h');
+
+      const contentBox = await workflowNodeContent(
+        page,
+        nodeUuid,
+      ).boundingBox();
+      const timeBox = await timeTag.boundingBox();
+      expect(contentBox).toBeTruthy();
+      expect(timeBox).toBeTruthy();
+      const rightInset =
+        contentBox!.x + contentBox!.width - (timeBox!.x + timeBox!.width);
+      const bottomInset =
+        contentBox!.y + contentBox!.height - (timeBox!.y + timeBox!.height);
+      expect(rightInset).toBeGreaterThanOrEqual(0);
+      expect(rightInset).toBeLessThanOrEqual(10);
+      expect(bottomInset).toBeGreaterThanOrEqual(0);
+      expect(bottomInset).toBeLessThanOrEqual(10);
     } finally {
       await patchNodeMetaViaApi(page, nodeUuid, {
         timeRequiredMinutes: 0,
@@ -264,7 +283,7 @@ test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
       await patchNodeMetaViaApi(page, nodeUuid, {
         contextClassification: 'individual_work',
         taskClassification: 'gather_information',
-        timeRequiredMinutes: 10,
+        timeRequiredMinutes: 30,
       });
       await page.reload();
 
@@ -273,7 +292,7 @@ test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
       await expect(workflowNodeMetaContextTag(page, nodeUuid)).toBeVisible();
       await expect(workflowNodeMetaTaskTag(page, nodeUuid)).toBeVisible();
       await expect(workflowNodeMetaTimeTag(page, nodeUuid)).toBeVisible();
-      await expect(workflowNodeMetaTimeTag(page, nodeUuid)).toContainText('0 H 10 M');
+      await expect(workflowNodeMetaTimeTag(page, nodeUuid)).toHaveText('30 m');
 
       // Context/task left-aligned; time right-aligned within workflowNodeMeta.
       const contextBox = await workflowNodeMetaContextTag(page, nodeUuid).boundingBox();
@@ -348,11 +367,27 @@ test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
     const nodeUuid = await firstWorkflowNodeUuid(page);
 
     try {
+      await ensurePageWorkspaceEditLock(page, 'workflow', activityUuid);
+      const timeResponse = await authenticatedApiRequest(
+        page,
+        'PATCH',
+        `/api/workflow/${activityUuid}`,
+        {
+          data: {
+            overviewMetadata: {
+              calculateTimeAutomatically: false,
+              timeMinutes: 315,
+            },
+          },
+        },
+      );
+      expect(timeResponse.ok(), await timeResponse.text()).toBe(true);
+
       await linkNodeWorkflowViaApi(page, nodeUuid, activityUuid);
       await patchNodeMetaViaApi(page, nodeUuid, {
         contextClassification: 'formative',
         taskClassification: 'none',
-        timeRequiredMinutes: 180,
+        timeRequiredMinutes: 0,
       });
       await page.reload();
 
@@ -371,7 +406,7 @@ test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
 
       // Course parent: context icon may show; task tag does not apply.
       await expect(workflowNodeMetaIconTags(page, nodeUuid)).toHaveCount(1);
-      await expect(workflowNodeMetaTimeTag(page, nodeUuid)).toBeVisible();
+      await expect(workflowNodeMetaTimeTag(page, nodeUuid)).toHaveText('5 h 15 m');
     } finally {
       await patchNodeMetaViaApi(page, nodeUuid, {
         contextClassification: 'none',
@@ -396,9 +431,25 @@ test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
     await expect(workflowNode(page, nodeUuid)).toBeVisible({ timeout: 15_000 });
 
     try {
+      await ensurePageWorkspaceEditLock(page, 'workflow', courseUuid);
+      const timeResponse = await authenticatedApiRequest(
+        page,
+        'PATCH',
+        `/api/workflow/${courseUuid}`,
+        {
+          data: {
+            overviewMetadata: {
+              calculateTimeAutomatically: false,
+              timeMinutes: 240,
+            },
+          },
+        },
+      );
+      expect(timeResponse.ok(), await timeResponse.text()).toBe(true);
+
       await linkNodeWorkflowViaApi(page, nodeUuid, courseUuid);
       await patchNodeMetaViaApi(page, nodeUuid, {
-        timeRequiredMinutes: 240,
+        timeRequiredMinutes: 0,
       });
       await page.reload();
 
@@ -406,7 +457,7 @@ test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
       await expect(link).toBeVisible();
       await expect(link).toHaveText('Linked course');
       await expect(workflowNodeMetaIconTags(page, nodeUuid)).toHaveCount(0);
-      await expect(workflowNodeMetaTimeTag(page, nodeUuid)).toBeVisible();
+      await expect(workflowNodeMetaTimeTag(page, nodeUuid)).toHaveText('4 h');
     } finally {
       await patchNodeMetaViaApi(page, nodeUuid, {
         timeRequiredMinutes: 0,

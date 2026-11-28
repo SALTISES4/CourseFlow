@@ -73,16 +73,19 @@ const LinkedWorkflowMirrorFields = ({
             label={t('edit.theoryHours')}
             value={ponderationTheoryMinutes}
             readOnly
+            alwaysShrinkLabel
           />
           <WholeHoursField
             label={t('edit.practiceHours')}
             value={ponderationPracticeMinutes}
             readOnly
+            alwaysShrinkLabel
           />
           <WholeHoursField
             label={t('edit.individualHours')}
             value={ponderationIndividualMinutes}
             readOnly
+            alwaysShrinkLabel
           />
         </>
       )}

@@ -312,6 +312,46 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
       const { card } = await showLibraryProjectCard(page, manifest.project_title);
       await expectProjectCardClickNavigatesToWorkflowsView(page, card, manifest.project_uuid);
     });
+
+    test('clicking project card does not show a centered project spinner', async ({ page }) => {
+      const { card } = await showLibraryProjectCard(page, manifest.project_title);
+
+      let releaseProjectRequest!: () => void;
+      const projectRequestHeld = new Promise<void>((resolve) => {
+        releaseProjectRequest = resolve;
+      });
+      const projectApiPath = `/api/project/${manifest.project_uuid}`;
+
+      await page.route(`**${projectApiPath}`, async (route) => {
+        if (
+          route.request().method() === 'GET' &&
+          new URL(route.request().url()).pathname === projectApiPath
+        ) {
+          await projectRequestHeld;
+        }
+        await route.continue();
+      });
+
+      const projectRequestStarted = page.waitForRequest(
+        (request) =>
+          request.method() === 'GET' &&
+          new URL(request.url()).pathname === projectApiPath,
+      );
+
+      try {
+        await cardTitleText(card).click();
+        await projectRequestStarted;
+
+        await expect(networkActivityLoader(page)).toBeVisible();
+        await expect(page.locator('#container > .load-screen')).toHaveCount(0);
+      } finally {
+        releaseProjectRequest();
+      }
+
+      await expect(page).toHaveURL(
+        new RegExp(`/project/${manifest.project_uuid}/workflows/?$`),
+      );
+    });
   });
 
   test.describe('FR-CARD-004: workflowCard click destination', () => {

@@ -1,5 +1,6 @@
 import { WorkflowPermission } from '@cf/api/gen/types.gen'
 import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
+import { getEffectiveNodeTimeMinutes } from '@cf/features/graph/state/model/effectiveNodeMeta'
 import {
   selectGraphByUuid,
   selectNodeByUuid
@@ -86,6 +87,8 @@ const SectionCellNode = ({
     return null
   }
 
+  const effectiveTimeMinutes = getEffectiveNodeTimeMinutes(node)
+
   return (
     <>
       <StyledNode.CellInner
@@ -126,7 +129,7 @@ const SectionCellNode = ({
             parentWorkflowType={graph?.workflowType}
             contextType={node.contextClassification}
             taskType={node.taskClassification}
-            timeMinutes={node.timeRequiredMinutes}
+            timeMinutes={effectiveTimeMinutes}
           />
         </StyledNode.Content>
 

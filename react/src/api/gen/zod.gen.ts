@@ -565,6 +565,16 @@ export const zGraphMetaOut = z.object({
 })
 
 /**
+ * LinkedWorkflowOut
+ */
+export const zLinkedWorkflowOut = z.object({
+  uuid: z.string().uuid(),
+  title: z.string(),
+  description: z.string(),
+  overviewMetadata: zWorkflowOverviewMetadataOut
+})
+
+/**
  * OutcomeGraphOut
  */
 export const zOutcomeGraphOut = z.object({
@@ -653,6 +663,7 @@ export const zNodeGraphOut = z.object({
   sectionRow: z.number().int().nullish(),
   workflowUuid: z.string().uuid().nullish(),
   linkedWorkflowUuid: z.string().uuid().nullish(),
+  linkedWorkflow: zLinkedWorkflowOut.nullish(),
   threadUuid: z.string().uuid().nullish(),
   outcomeUuids: z.array(z.string().uuid()).optional()
 })
@@ -820,6 +831,7 @@ export const zGraphNodeMutationOut = z.object({
   sectionRow: z.number().int().nullish(),
   workflowUuid: z.string().uuid().nullish(),
   linkedWorkflowUuid: z.string().uuid().nullish(),
+  linkedWorkflow: zLinkedWorkflowOut.nullish(),
   threadUuid: z.string().uuid().nullish(),
   outcomeUuids: z.array(z.string().uuid()).optional()
 })
@@ -1607,6 +1619,7 @@ export const zLibrarySortDirectionIn = z.enum(['ASC', 'DESC'])
 export const zLibrarySortValueIn = z.enum([
   'DATE_CREATED',
   'DATE_MODIFIED',
+  'RECENTLY_FAVORITED',
   'A_Z'
 ])
 

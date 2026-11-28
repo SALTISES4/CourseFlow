@@ -54,6 +54,7 @@ import type {
 import { selectGraphByUuid } from '../selectors/canonical.selectors'
 import { workflowActions } from '../slices/canonical/workflow.slice'
 import { graphLoadActions } from '../slices/graphLoad.slice'
+import { optimisticOpsActions } from '../slices/optimisticOps.slice'
 
 type GraphMutationState = { graph: GraphState }
 type GraphMutationThunk<ReturnType = void> = ThunkAction<
@@ -69,6 +70,13 @@ const markGraphFailed = (graphUuid: string) =>
     resource: 'graph',
     status: 'failed'
   })
+
+let channelMetaRequestSequence = 0
+let sectionMetaRequestSequence = 0
+// Resource PATCH responses can arrive out of order. Only the latest user intent
+// for a section or channel may update canonical state.
+const latestChannelMetaRequest = new Map<ResourceUuid, number>()
+const latestSectionMetaRequest = new Map<ResourceUuid, number>()
 
 /**
  * Explicit backend command: renameNode.
@@ -300,12 +308,23 @@ export const linkNodeOutcome = (
   input: LinkNodeOutcomeInput
 ): GraphMutationThunk<Promise<void>> => {
   return async (dispatch) => {
+    const operationUuid = crypto.randomUUID()
+    dispatch(
+      optimisticOpsActions.enqueue({
+        uuid: operationUuid,
+        graphUuid: input.graphUuid,
+        type: 'linkNodeOutcome',
+        status: 'pending',
+        submittedAt: new Date().toISOString(),
+        targetIds: input.affectedOutcomeUuids ?? [input.outcomeUuid],
+        payload: { nodeUuid: input.nodeUuid, outcomeUuid: input.outcomeUuid }
+      })
+    )
     try {
       const delta = await linkNodeOutcomeCommand(input)
       applyGraphDelta(dispatch, delta)
-    } catch (error) {
-      dispatch(markGraphFailed(input.graphUuid))
-      throw error
+    } finally {
+      dispatch(optimisticOpsActions.removeById(operationUuid))
     }
   }
 }
@@ -314,12 +333,23 @@ export const unlinkNodeOutcome = (
   input: UnlinkNodeOutcomeInput
 ): GraphMutationThunk<Promise<void>> => {
   return async (dispatch) => {
+    const operationUuid = crypto.randomUUID()
+    dispatch(
+      optimisticOpsActions.enqueue({
+        uuid: operationUuid,
+        graphUuid: input.graphUuid,
+        type: 'unlinkNodeOutcome',
+        status: 'pending',
+        submittedAt: new Date().toISOString(),
+        targetIds: input.affectedOutcomeUuids ?? [input.outcomeUuid],
+        payload: { nodeUuid: input.nodeUuid, outcomeUuid: input.outcomeUuid }
+      })
+    )
     try {
       const delta = await unlinkNodeOutcomeCommand(input)
       applyGraphDelta(dispatch, delta)
-    } catch (error) {
-      dispatch(markGraphFailed(input.graphUuid))
-      throw error
+    } finally {
+      dispatch(optimisticOpsActions.removeById(operationUuid))
     }
   }
 }
@@ -359,15 +389,26 @@ export const changeSectionMeta = (
   input: ChangeSectionMetaInput
 ): GraphMutationThunk<Promise<void>> => {
   return async (dispatch, getState) => {
+    const requestId = ++sectionMetaRequestSequence
+    latestSectionMetaRequest.set(input.sectionUuid, requestId)
+
     try {
       const section = await changeSectionMetaCommand(input)
+      if (latestSectionMetaRequest.get(input.sectionUuid) !== requestId) {
+        return
+      }
       const graph = selectGraphByUuid(input.graphUuid)(getState())
       const revisionId = graph?.revisionId ?? 0
       applyGraphDelta(
         dispatch,
         buildSectionMetaMutationEnvelope(input.graphUuid, revisionId, section)
       )
+      latestSectionMetaRequest.delete(input.sectionUuid)
     } catch (error) {
+      if (latestSectionMetaRequest.get(input.sectionUuid) !== requestId) {
+        return
+      }
+      latestSectionMetaRequest.delete(input.sectionUuid)
       dispatch(markGraphFailed(input.graphUuid))
       throw error
     }
@@ -382,15 +423,26 @@ export const changeChannelMeta = (
   input: ChangeChannelMetaInput
 ): GraphMutationThunk<Promise<void>> => {
   return async (dispatch, getState) => {
+    const requestId = ++channelMetaRequestSequence
+    latestChannelMetaRequest.set(input.channelUuid, requestId)
+
     try {
       const channel = await changeChannelMetaCommand(input)
+      if (latestChannelMetaRequest.get(input.channelUuid) !== requestId) {
+        return
+      }
       const graph = selectGraphByUuid(input.graphUuid)(getState())
       const revisionId = graph?.revisionId ?? 0
       applyGraphDelta(
         dispatch,
         buildChannelMetaMutationEnvelope(input.graphUuid, revisionId, channel)
       )
+      latestChannelMetaRequest.delete(input.channelUuid)
     } catch (error) {
+      if (latestChannelMetaRequest.get(input.channelUuid) !== requestId) {
+        return
+      }
+      latestChannelMetaRequest.delete(input.channelUuid)
       dispatch(markGraphFailed(input.graphUuid))
       throw error
     }

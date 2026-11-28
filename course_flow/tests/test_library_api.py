@@ -209,6 +209,36 @@ def test_search_returns_only_active_edit_lock_holders_to_editors(
 
 
 @pytest.mark.django_db
+def test_search_compares_edit_lock_holder_identity_not_display_name(
+    client: Client, user, teammate
+):
+    raw = _issue_token_for(user)
+    user.first_name = "Shared"
+    user.last_name = "Name"
+    user.save(update_fields=["first_name", "last_name"])
+    teammate.first_name = "Shared"
+    teammate.last_name = "Name"
+    teammate.save(update_fields=["first_name", "last_name"])
+    project = Project.objects.create(owner=user, title="Project", description="")
+    graph = _graph_with_workflow(
+        user,
+        project=project,
+        workflow_title="Workflow",
+    )
+    WorkspaceEditLock.objects.create(
+        workflow=graph.workflow,
+        holder=teammate,
+        expires_at=timezone.now() + timedelta(minutes=1),
+    )
+
+    body = _post_search(client, raw, {"filters": {"contentType": "workflow"}})
+
+    assert [item["editLockHolderName"] for item in body["items"]] == [
+        "Shared Name"
+    ]
+
+
+@pytest.mark.django_db
 def test_published_scope_returns_only_active_published_resources(
     client: Client, user, teammate
 ):
@@ -304,6 +334,58 @@ def test_search_default_sort_is_most_recently_modified(client: Client, user):
         "Created first",
         "Created second",
     ]
+
+
+@pytest.mark.django_db
+def test_favorite_search_sorts_by_when_project_was_favorited(client: Client, user):
+    raw = _issue_token_for(user)
+    favorited_first = Project.objects.create(
+        owner=user, title="Favorited first", description=""
+    )
+    favorited_last = Project.objects.create(
+        owner=user, title="Favorited last", description=""
+    )
+    now = timezone.now()
+    Project.objects.filter(pk=favorited_first.pk).update(modified_on=now)
+    Project.objects.filter(pk=favorited_last.pk).update(
+        modified_on=now - timedelta(days=1)
+    )
+
+    first_link = FavoriteProject.objects.create(user=user, project=favorited_first)
+    last_link = FavoriteProject.objects.create(user=user, project=favorited_last)
+    FavoriteProject.objects.filter(pk=first_link.pk).update(
+        date_created=now - timedelta(hours=1)
+    )
+    FavoriteProject.objects.filter(pk=last_link.pk).update(date_created=now)
+
+    body = _post_search(
+        client,
+        raw,
+        {
+            "pagination": {"page": 0, "resultsPerPage": 5},
+            "sort": {"value": "RECENTLY_FAVORITED", "direction": "DESC"},
+            "filters": {"isFavorite": True, "contentType": "project"},
+        },
+    )
+
+    assert [item["title"] for item in body["items"]] == [
+        "Favorited last",
+        "Favorited first",
+    ]
+
+
+@pytest.mark.django_db
+def test_recently_favorited_sort_requires_favorite_filter(client: Client, user):
+    raw = _issue_token_for(user)
+
+    body = _post_search(
+        client,
+        raw,
+        {"sort": {"value": "RECENTLY_FAVORITED", "direction": "DESC"}},
+        status_code=422,
+    )
+
+    assert "isFavorite=true" in str(body)
 
 
 @pytest.mark.django_db

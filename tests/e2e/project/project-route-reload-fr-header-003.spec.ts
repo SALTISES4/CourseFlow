@@ -80,6 +80,7 @@ test.describe('Project route identity reload (FR-PROJ-HEADER-003)', () => {
     await destinationRequest;
     await expect(page).toHaveURL(new RegExp(`/project/${destinationProject.uuid}/?$`));
     await expect(projectLoadingIndicator(page)).toBeVisible();
+    await expect(page.locator('#container > .load-screen')).toHaveCount(0);
     await expect(projectTitle(page)).toHaveCount(0);
     await expect(projectViewTabSelector(page)).toHaveCount(0);
     await expect(projectOverviewView(page)).toHaveCount(0);

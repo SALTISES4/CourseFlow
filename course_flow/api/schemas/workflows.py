@@ -135,6 +135,13 @@ class WorkflowDetailOutResp(CamelSchema):
     item: WorkflowDetailOut
 
 
+class LinkedWorkflowOut(CamelSchema):
+    uuid: UUID
+    title: str
+    description: str
+    overview_metadata: WorkflowOverviewMetadataOut
+
+
 class PublicWorkflowDetailOut(CamelSchema):
     uuid: UUID
     graph_uuid: UUID

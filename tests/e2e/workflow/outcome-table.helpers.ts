@@ -52,16 +52,9 @@ export async function selectOutcomeTableStyle(
   page: Page,
   style: "Normal" | "Competency matrix",
 ): Promise<void> {
-  const controls = outcomeTableControls(page);
-  await controls
-    .getByRole("button", { name: /^(Normal|Competency matrix)$/ })
+  await outcomeTableControls(page)
+    .getByRole("button", { name: style, exact: true })
     .click();
-  const option = page.getByRole("menuitem", { name: style, exact: true });
-  if (await option.isEnabled()) {
-    await option.click();
-  } else {
-    await page.keyboard.press("Escape");
-  }
 }
 
 export async function selectOutcomeTableSort(
@@ -146,6 +139,18 @@ export async function patchOutcomeTableNodeViaApi(
     {
       data: patch,
     },
+  );
+  expect(response.ok(), await response.text()).toBe(true);
+}
+
+export async function deleteWorkflowNodeViaApi(
+  page: Page,
+  nodeUuid: string,
+): Promise<void> {
+  const response = await authenticatedApiRequest(
+    page,
+    "DELETE",
+    `/api/node/${nodeUuid}`,
   );
   expect(response.ok(), await response.text()).toBe(true);
 }

@@ -52,17 +52,9 @@ async function selectTableStyle(
   page: Page,
   style: "Normal" | "Competency matrix",
 ): Promise<void> {
-  const controls = presentationControls(page);
-  const trigger = controls.getByRole("button", {
-    name: /^(Normal|Competency matrix)$/,
-  });
-  await trigger.click();
-  const option = page.getByRole("menuitem", { name: style, exact: true });
-  if (await option.isEnabled()) {
-    await option.click();
-  } else {
-    await page.keyboard.press("Escape");
-  }
+  await presentationControls(page)
+    .getByRole("button", { name: style, exact: true })
+    .click();
 }
 
 async function selectSort(
@@ -168,10 +160,109 @@ test.describe("FR-WF-HEADER-003: Outcome table eligibility and routing", () => {
         "normal",
       );
     });
+
+    test("Competency matrix keeps program summary group headers tilted", async ({
+      page,
+      workflow,
+    }) => {
+      await page.goto(workflow.path);
+      await ensureFirstWorkflowNodeViaApi(page, workflow.workflowUuid);
+      await createEligibleOutcomeTable(page, workflow, "Program outcome");
+      await page.reload();
+      await outcomeTableTab(page).click();
+      await selectTableStyle(page, "Competency matrix");
+
+      const grid = outcomeTableGrid(page);
+      for (const groupName of ["Classification", "Ponderation"]) {
+        const groupHeader = grid
+          .getByRole("group", { name: groupName })
+          .locator(":scope > div")
+          .first();
+        await expect(groupHeader).toHaveCSS("width", "70px");
+        await expect(groupHeader).toHaveCSS("position", "relative");
+        await expect(groupHeader).not.toHaveCSS("transform", "none");
+      }
+
+      const grandTotal = grid.locator(
+        '[data-test-id="workflow-outcome-table-grand-total-row"]',
+      );
+      await expect(
+        grandTotal.locator(
+          '[data-test-id="workflow-outcome-table-grand-total-credits-cell"]',
+        ),
+      ).toHaveText("");
+      await expect(
+        grandTotal.locator(
+          '[data-test-id="workflow-outcome-table-section-credits-total"]',
+        ),
+      ).toHaveCount(0);
+
+      const grandTotalSeparators = grandTotal.locator(".tag-bar");
+      await expect(grandTotalSeparators).toHaveCount(2);
+      const separatorCoverage = await grandTotalSeparators.evaluateAll(
+        (separators) =>
+          separators.map((separator) => {
+            const separatorHeight = separator.getBoundingClientRect().height;
+            const pseudoStyle = getComputedStyle(separator, "::before");
+            return {
+              bottom: Number.parseFloat(pseudoStyle.bottom),
+              height: Number.parseFloat(pseudoStyle.height),
+              separatorHeight,
+              top: Number.parseFloat(pseudoStyle.top),
+            };
+          }),
+      );
+      for (const coverage of separatorCoverage) {
+        expect(coverage.bottom).toBe(0);
+        expect(coverage.top).toBeLessThan(0);
+        expect(coverage.height).toBeGreaterThan(coverage.separatorHeight);
+      }
+    });
   });
 });
 
 test.describe("FR-CAB-008/009/010 and FR-WF-OT-003/011: presentation lifecycle", () => {
+  test("FR-CAB-010: table styles are direct segmented buttons, not a dropdown", async ({
+    page,
+    workflow,
+  }) => {
+    await createEligibleOutcomeTable(page, workflow, "Style control outcome");
+    await openEligibleOutcomeTable(page, workflow);
+
+    const controls = presentationControls(page);
+    const normalButton = controls.getByRole("button", {
+      name: "Normal",
+      exact: true,
+    });
+    const matrixButton = controls.getByRole("button", {
+      name: "Competency matrix",
+      exact: true,
+    });
+
+    await expect(normalButton).toBeVisible();
+    await expect(matrixButton).toBeVisible();
+    await expect(normalButton).toHaveAttribute("aria-pressed", "true");
+    await expect(matrixButton).toHaveAttribute("aria-pressed", "false");
+
+    await matrixButton.click();
+
+    await expect(outcomeTableGrid(page)).toHaveAttribute(
+      "data-layout",
+      "competency-matrix",
+    );
+    await expect(normalButton).toHaveAttribute("aria-pressed", "false");
+    await expect(matrixButton).toHaveAttribute("aria-pressed", "true");
+    await expect(
+      page.getByRole("menuitem", { name: "Normal", exact: true }),
+    ).toHaveCount(0);
+    await expect(
+      page.getByRole("menuitem", {
+        name: "Competency matrix",
+        exact: true,
+      }),
+    ).toHaveCount(0);
+  });
+
   test("FR-CAB-008/009: completed View settings and Sort actions dismiss their menus", async ({
     page,
     workflow,

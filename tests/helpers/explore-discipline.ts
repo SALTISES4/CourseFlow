@@ -250,6 +250,17 @@ export async function expectDisciplineFilterReadOnlyZeroResultRow(page: Page): P
   await openDisciplineFilterPopover(page);
 
   const options = disciplineFilterCheckboxOptions(page);
+  await expect
+    .poll(async () => {
+      let disabledCount = 0;
+      for (let i = 0; i < (await options.count()); i++) {
+        if (await options.nth(i).isDisabled()) {
+          disabledCount += 1;
+        }
+      }
+      return disabledCount;
+    })
+    .toBeGreaterThan(0);
   const count = await options.count();
   let readOnlyLabel: string | null = null;
 

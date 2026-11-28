@@ -1,3 +1,4 @@
+import { isApiErrorNotificationHandled } from '@cf/api/apiError'
 import { WorkflowPermission } from '@cf/api/gen/types.gen'
 import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import {
@@ -19,12 +20,17 @@ import {
   useNodeTitle
 } from '@cfViews/WorkflowView/GraphView/components/Section/Cell/CellNode/useNodeTitle'
 import useOutcomeTitle from '@cfViews/WorkflowView/OutcomeEditView/useOutcomeTitle'
+import { enqueueSnackbar } from 'notistack'
 import { Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { type WorkflowType } from '..'
 import Checkmark, { OutcomeCheckmarkStatus } from '../Checkmark'
+import {
+  affectedOutcomeUuids,
+  useOutcomeAssignmentPending
+} from '../outcomeAssignment'
 import * as Styled from '../styles'
 
 const TableBody = ({
@@ -177,6 +183,11 @@ const CheckmarkGroup = ({
   })
   const outcomeDisplayTitle = `${outcome.prefix} ${outcomeTitle}`
   const status = node.completion[outcomeUuid] ?? 'empty'
+  const assignmentPending = useOutcomeAssignmentPending(
+    table.board.uuid,
+    node.uuid,
+    outcomeUuid
+  )
   const expanded = useSelector((state: RootState) =>
     selectIsOutcomeExpanded(state, outcome.uuid)
   )
@@ -193,12 +204,22 @@ const CheckmarkGroup = ({
       const params = {
         graphUuid: table.board.uuid,
         nodeUuid,
-        outcomeUuid: outcome.uuid
+        outcomeUuid: outcome.uuid,
+        affectedOutcomeUuids: affectedOutcomeUuids(
+          table.outcomeTree.outcomes,
+          outcome.uuid
+        )
       }
 
-      dispatch(
+      void dispatch(
         action === 'link' ? linkNodeOutcome(params) : unlinkNodeOutcome(params)
-      )
+      ).catch((error: unknown) => {
+        if (!isApiErrorNotificationHandled(error)) {
+          enqueueSnackbar(t('outcomeTable.assignmentUpdateFailed'), {
+            variant: 'error'
+          })
+        }
+      })
     }
   }
   return (
@@ -209,7 +230,7 @@ const CheckmarkGroup = ({
           outcome: outcomeDisplayTitle,
           node: nodeTitle
         })}
-        readOnly={readOnly}
+        readOnly={readOnly || assignmentPending}
         value={status}
         onClick={onCheckmarkClick(node.uuid, status)}
       />
@@ -245,7 +266,10 @@ const SectionHeaderRow = ({
   const extraColumns = table.extraColumns[workflowType]
 
   return (
-    <Styled.BodyRow className="section-header-row" role="row">
+    <Styled.BodyRow
+      className={`section-header-row${index > 0 ? ' has-top-gap' : ''}`}
+      role="row"
+    >
       <Styled.BodyLegendWrap>
         <Styled.TableLegend role="rowheader">{title}</Styled.TableLegend>
       </Styled.BodyLegendWrap>
@@ -326,7 +350,7 @@ const GrandTotalRow = ({
 
   return (
     <Styled.BodyRow
-      className="section-header-row"
+      className="section-header-row has-top-gap"
       data-test-id="workflow-outcome-table-grand-total-row"
       role="row"
     >

@@ -77,14 +77,12 @@ uiObjectDefinitions:
     meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_outcome_table_requirements_v1.yaml.
   workflowOutcomeTableCompetencyMatrixLayout:
     meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_outcome_table_requirements_v1.yaml.
-  workflowOutcomeTableStyleTrigger:
-    meaning: Table-style dropdown on contextActionBar when active sub-view is 'Outcome table'; shows the active style label ('Normal' or 'Competency matrix').
-  workflowOutcomeTableStyleMenu:
-    meaning: Menu opened from workflowOutcomeTableStyleTrigger listing table style rows per FR-CAB-010.
-  workflowOutcomeTableStyleMenuItemNormal:
-    meaning: Table style menu row labeled 'Normal' in workflowOutcomeTableStyleMenu.
-  workflowOutcomeTableStyleMenuItemCompetencyMatrix:
-    meaning: Table style menu row labeled 'Competency matrix' in workflowOutcomeTableStyleMenu.
+  workflowOutcomeTableStyleSelector:
+    meaning: Two-button segmented table-style control on contextActionBar when active sub-view is 'Outcome table'; both style choices are always visible and exactly one is pressed.
+  workflowOutcomeTableStyleButtonNormal:
+    meaning: Direct table-style button labeled 'Normal' in workflowOutcomeTableStyleSelector.
+  workflowOutcomeTableStyleButtonCompetencyMatrix:
+    meaning: Direct table-style button labeled 'Competency matrix' in workflowOutcomeTableStyleSelector.
   workflowOutcomeTableViewSettingsMenuItemExpandOutcomes:
     meaning: Menu row labeled 'Expand all outcomes' in workflowViewSettingsMenu when active sub-view is 'Outcome table'.
   workflowOutcomeTableViewSettingsMenuItemCollapseOutcomes:
@@ -92,7 +90,7 @@ uiObjectDefinitions:
   workflowOutcomeTableViewSettingsMenuTagsSection:
     meaning: "'TAGS' area in workflowViewSettingsMenu on 'Outcome table' sub-view listing tags assigned to workflowOutcomes in the current workflow; node-only tags are excluded."
   workflowOutcomeTableSortTrigger:
-    meaning: "'Sort' dropdown on contextActionBar when active sub-view is 'Outcome table'; separate from workflowViewSettingsTrigger and workflowOutcomeTableStyleTrigger."
+    meaning: "'Sort' dropdown on contextActionBar when active sub-view is 'Outcome table'; separate from workflowViewSettingsTrigger and workflowOutcomeTableStyleSelector."
   workflowOutcomeTableSortMenu:
     meaning: Menu opened from workflowOutcomeTableSortTrigger listing sort mode rows per FR-CAB-009.
   workflowOutcomeTableSortMenuItemChronological:
@@ -142,10 +140,9 @@ locatorMappings:
   workflowJumpToMenu: "canonical_locators.yaml -> workflowJumpToMenu"
   workflowJumpToMenuSectionItem: "canonical_locators.yaml -> workflowJumpToMenuSectionItem"
   workflowSectionContainer: "canonical_locators.yaml -> workflowSectionContainer"
-  workflowOutcomeTableStyleTrigger: "canonical_locators.yaml -> workflowOutcomeTableStyleTrigger"
-  workflowOutcomeTableStyleMenu: "canonical_locators.yaml -> workflowOutcomeTableStyleMenu"
-  workflowOutcomeTableStyleMenuItemNormal: "canonical_locators.yaml -> workflowOutcomeTableStyleMenuItemNormal"
-  workflowOutcomeTableStyleMenuItemCompetencyMatrix: "canonical_locators.yaml -> workflowOutcomeTableStyleMenuItemCompetencyMatrix"
+  workflowOutcomeTableStyleSelector: "canonical_locators.yaml -> workflowOutcomeTableStyleSelector"
+  workflowOutcomeTableStyleButtonNormal: "canonical_locators.yaml -> workflowOutcomeTableStyleButtonNormal"
+  workflowOutcomeTableStyleButtonCompetencyMatrix: "canonical_locators.yaml -> workflowOutcomeTableStyleButtonCompetencyMatrix"
   workflowOutcomeTableViewSettingsMenuItemExpandOutcomes: "canonical_locators.yaml -> workflowOutcomeTableViewSettingsMenuItemExpandOutcomes"
   workflowOutcomeTableViewSettingsMenuItemCollapseOutcomes: "canonical_locators.yaml -> workflowOutcomeTableViewSettingsMenuItemCollapseOutcomes"
   workflowOutcomeTableViewSettingsMenuTagsSection: "canonical_locators.yaml -> workflowOutcomeTableViewSettingsMenuTagsSection"
@@ -647,8 +644,8 @@ requirements:
       - workflowOutcomeTableSortMenuItemChronological
       - workflowOutcomeTableSortMenuItemNodeCategory
       - workflowOutcomeTableSortMenuItemContext
-      - workflowOutcomeTableStyleMenuItemNormal
-      - workflowOutcomeTableStyleMenuItemCompetencyMatrix
+      - workflowOutcomeTableStyleButtonNormal
+      - workflowOutcomeTableStyleButtonCompetencyMatrix
       - workflowOutcomeTableNormalLayout
       - workflowOutcomeTableCompetencyMatrixLayout
       - workflowView
@@ -671,7 +668,7 @@ requirements:
       - user selects a row in workflowOutcomeTableSortMenu
 
     mainFlow:
-      - workflowOutcomeTableSortTrigger is visible on contextActionBar on 'Outcome table' sub-view and is separate from workflowViewSettingsTrigger and workflowOutcomeTableStyleTrigger
+      - workflowOutcomeTableSortTrigger is visible on contextActionBar on 'Outcome table' sub-view and is separate from workflowViewSettingsTrigger and workflowOutcomeTableStyleSelector
       - workflowOutcomeTableSortMenu lists workflowOutcomeTableSortMenuItemChronological labeled 'Chronological', workflowOutcomeTableSortMenuItemNodeCategory labeled 'Node category', and on course workflows only workflowOutcomeTableSortMenuItemContext labeled 'Context'
       - on program workflows, workflowOutcomeTableSortMenuItemContext is not shown
       - every sort mode preserves workflowSectionContainer order from workflowView and reorders workflowNode entries only within their existing workflowSectionContainer; no sort mode moves a workflowNode into a different section
@@ -712,7 +709,7 @@ requirements:
     openQuestions: []
 
   - id: FR-CAB-010
-    title: "Table style control on contextActionBar for 'Outcome table' sub-view"
+    title: "Segmented table style buttons on contextActionBar for 'Outcome table' sub-view"
 
     designEvidence:
       - FIGMA-WF-OT-COURSE-STANDARD-SCROLLED-LEFT
@@ -727,10 +724,9 @@ requirements:
 
     uiObjects:
       - contextActionBar
-      - workflowOutcomeTableStyleTrigger
-      - workflowOutcomeTableStyleMenu
-      - workflowOutcomeTableStyleMenuItemNormal
-      - workflowOutcomeTableStyleMenuItemCompetencyMatrix
+      - workflowOutcomeTableStyleSelector
+      - workflowOutcomeTableStyleButtonNormal
+      - workflowOutcomeTableStyleButtonCompetencyMatrix
       - workflowOutcomeTableView
       - workflowOutcomeTableNormalLayout
       - workflowOutcomeTableCompetencyMatrixLayout
@@ -742,15 +738,14 @@ requirements:
 
     trigger:
       - user navigates to 'Outcome table' sub-view
-      - user clicks workflowOutcomeTableStyleTrigger
-      - user selects workflowOutcomeTableStyleMenuItemNormal or workflowOutcomeTableStyleMenuItemCompetencyMatrix
+      - user presses workflowOutcomeTableStyleButtonNormal or workflowOutcomeTableStyleButtonCompetencyMatrix
 
     mainFlow:
-      - workflowOutcomeTableStyleTrigger is visible on contextActionBar when active sub-view is 'Outcome table' and is separate from workflowViewSettingsTrigger and workflowOutcomeTableSortTrigger
-      - on first entry to 'Outcome table' in a newly opened workflow, workflowOutcomeTableStyleTrigger shows 'Normal' as the active table style and workflowOutcomeTableView renders workflowOutcomeTableNormalLayout per FR-WF-OT-001
-      - workflowOutcomeTableStyleMenu lists workflowOutcomeTableStyleMenuItemNormal labeled 'Normal' and workflowOutcomeTableStyleMenuItemCompetencyMatrix labeled 'Competency matrix'
-      - when user selects 'Normal', workflowOutcomeTableView renders workflowOutcomeTableNormalLayout per FR-WF-OT-001 without changing route
-      - when user selects 'Competency matrix', workflowOutcomeTableView renders workflowOutcomeTableCompetencyMatrixLayout per FR-WF-OT-002 without changing route
+      - workflowOutcomeTableStyleSelector is visible on contextActionBar when active sub-view is 'Outcome table' and is separate from workflowViewSettingsTrigger and workflowOutcomeTableSortTrigger
+      - workflowOutcomeTableStyleSelector is a segmented control that renders workflowOutcomeTableStyleButtonNormal and workflowOutcomeTableStyleButtonCompetencyMatrix simultaneously as direct buttons; it is not a dropdown and does not open a menu
+      - on first entry to 'Outcome table' in a newly opened workflow, workflowOutcomeTableStyleButtonNormal is pressed, workflowOutcomeTableStyleButtonCompetencyMatrix is not pressed, and workflowOutcomeTableView renders workflowOutcomeTableNormalLayout per FR-WF-OT-001
+      - when user presses workflowOutcomeTableStyleButtonNormal, it becomes the single pressed style button and workflowOutcomeTableView renders workflowOutcomeTableNormalLayout per FR-WF-OT-001 without changing route
+      - when user presses workflowOutcomeTableStyleButtonCompetencyMatrix, it becomes the single pressed style button and workflowOutcomeTableView renders workflowOutcomeTableCompetencyMatrixLayout per FR-WF-OT-002 without changing route
       - both course and program workflows support both table styles
       - the selected table style is preserved when the actor moves among sub-views within the same mounted workflow; returning to 'Outcome table' restores that selected style
       - the selected table style resets to 'Normal' when the actor leaves and later reopens the workflow, opens a different workflow, or reloads the page; the selected style is not persisted to backend data or browser storage
@@ -758,20 +753,20 @@ requirements:
 
     roleBehavior:
       owner:
-        workflowOutcomeTableStyleTrigger: available
+        workflowOutcomeTableStyleSelector: available
       editor:
-        workflowOutcomeTableStyleTrigger: available
+        workflowOutcomeTableStyleSelector: available
       commenter:
-        workflowOutcomeTableStyleTrigger: available
+        workflowOutcomeTableStyleSelector: available
       viewer:
-        workflowOutcomeTableStyleTrigger: available
+        workflowOutcomeTableStyleSelector: available
       user:
-        workflowOutcomeTableStyleTrigger: available
+        workflowOutcomeTableStyleSelector: available
 
     acceptanceCriteria:
-      - given actor first enters Outcome Table in a newly opened workflow, 'Normal' is active and workflowOutcomeTableNormalLayout is visible
-      - given actor selects 'Competency matrix', workflowOutcomeTableCompetencyMatrixLayout replaces the Normal layout without changing '/workflow/{id}/outcome-table'; selecting 'Normal' restores workflowOutcomeTableNormalLayout on the same route
-      - given either a course or program workflow, both 'Normal' and 'Competency matrix' style options are available
+      - given actor first enters Outcome Table in a newly opened workflow, both direct style buttons are visible, workflowOutcomeTableStyleButtonNormal is pressed, workflowOutcomeTableStyleButtonCompetencyMatrix is not pressed, no table-style dropdown or menu is rendered, and workflowOutcomeTableNormalLayout is visible
+      - given actor presses workflowOutcomeTableStyleButtonCompetencyMatrix, it becomes pressed, workflowOutcomeTableStyleButtonNormal becomes not pressed, and workflowOutcomeTableCompetencyMatrixLayout replaces the Normal layout without changing '/workflow/{id}/outcome-table'; pressing workflowOutcomeTableStyleButtonNormal restores workflowOutcomeTableNormalLayout on the same route
+      - given either a course or program workflow, both 'Normal' and 'Competency matrix' style buttons are simultaneously visible and enabled
       - given actor selects a table style and moves to another sub-view and back within the mounted workflow, the selected style is restored
       - given actor reopens the workflow, opens another workflow, or reloads the page, selected style resets to 'Normal'
       - given the workflow is read-only or actor does not hold the edit lock, both table styles remain selectable and changing style does not persist workflow data

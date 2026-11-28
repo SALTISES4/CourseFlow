@@ -30,7 +30,7 @@ import {
   workflowEditNodeFormTitleField,
   workflowLinkWorkflowDialog,
   workflowNode,
-  workflowNodeTitle,
+  workflowNodeContent,
   workflowRichTextDescriptionEditor,
   workflowRichTextDescriptionEditorBoldButton,
   workflowRichTextDescriptionEditorBulletListButton,
@@ -56,7 +56,9 @@ export async function firstWorkflowSectionUuid(page: Page): Promise<string> {
 /** Open edit form for the first node on an already-loaded workflow graph. */
 export async function openFirstNodeEditForm(page: Page): Promise<string> {
   const nodeUuid = await firstWorkflowNodeUuid(page);
-  await workflowNodeTitle(page, nodeUuid).click();
+  await workflowNodeContent(page, nodeUuid).click({
+    position: { x: 12, y: 12 },
+  });
   await expect(workflowEditNodeForm(page)).toBeVisible();
   return nodeUuid;
 }
@@ -66,7 +68,11 @@ export async function linkNodeWorkflowViaApi(page: Page, nodeUuid: string, workf
   const response = await authenticatedApiRequest(page, 'POST', `/api/node/${nodeUuid}/link-workflow`, {
     data: { workflowUuid },
   });
-  expect(response.ok()).toBeTruthy();
+  if (!response.ok()) {
+    throw new Error(
+      `Link node workflow failed with HTTP ${response.status()}: ${await response.text()}`,
+    );
+  }
 }
 
 /**
@@ -227,7 +233,9 @@ export async function openProgramLinkWorkflowDialog(page: Page, workflow: Workfl
   await linkNodeWorkflowViaApi(page, nodeUuid, null);
   await page.reload();
   await expect(workflowNode(page, nodeUuid)).toBeVisible({ timeout: 15_000 });
-  await workflowNodeTitle(page, nodeUuid).click();
+  await workflowNodeContent(page, nodeUuid).click({
+    position: { x: 12, y: 12 },
+  });
   await expect(workflowEditNodeForm(page)).toBeVisible();
   await workflowEditNodeFormLinkWorkflowButton(page, 'Link a course').click();
   await expect(workflowLinkWorkflowDialog(page, 'program')).toBeVisible({
