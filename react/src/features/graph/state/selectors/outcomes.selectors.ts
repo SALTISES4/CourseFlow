@@ -46,7 +46,7 @@ export const selectTopLevelSortedOutcomesFromUuids = createSelector(
       .map((uuid) => ({
         outcome: outcomeEntities[uuid],
         order: padRight(
-          getPrefixPath(state, graphUuid, uuid).replaceAll('.', '')
+          getPrefixPath(state, graphUuid, uuid).replace(/\./g, '')
         )
       }))
       .filter(
