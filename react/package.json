@@ -16,6 +16,7 @@
     "build": "tsc && vite build",
     "check-ui-strings": "node ./scripts/check-ui-strings.mjs",
     "check-i18n": "yarn check-ui-strings && node ./scripts/check-i18n-catalogues.mjs",
+    "test:service-worker-retirement": "node --test ./scripts/retire-service-worker.test.mjs",
     "test:outcome-table-selector": "node -r esbuild-runner/register -e \"require('./scripts/test-outcome-table-selector.ts')\"",
     "unsafe-build": "vite build",
     "tsc-watch": "tsc --watch",
@@ -48,7 +49,6 @@
     "vite": "^5.4.11",
     "vite-plugin-compression": "^0.5.1",
     "vite-plugin-eslint": "^1.8.1",
-    "vite-plugin-pwa": "^0.21.0",
     "vite-tsconfig-paths": "^5.1.3"
   },
   "dependencies": {

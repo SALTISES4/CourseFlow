@@ -3,7 +3,6 @@ import { readFileSync } from 'node:fs'
 import react from '@vitejs/plugin-react'
 import { defineConfig, loadEnv } from 'vite'
 import viteCompression from 'vite-plugin-compression'
-import { VitePWA } from 'vite-plugin-pwa'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
 const packageJson = JSON.parse(
@@ -68,20 +67,7 @@ const baseConfig = {
   preview: {
     port: 8081
   },
-  plugins: [
-    react(),
-    tsconfigPaths(),
-    viteCompression(),
-    VitePWA({
-      workbox: {
-        inlineWorkboxRuntime: true,
-        navigateFallbackDenylist: [/^\/admin/, /^\/api/],
-        modifyURLPrefix: {
-          assets: 'static/assets'
-        }
-      }
-    })
-  ]
+  plugins: [react(), tsconfigPaths(), viteCompression()]
 }
 
 export default defineConfig(({ command, mode }) => {

@@ -199,8 +199,13 @@ jobs:
           command: |
             cd react
             yarn check-i18n
+            yarn test:service-worker-retirement
             yarn build
             test -f dist/index.html
+            test -f dist/sw.js
+            test ! -e dist/registerSW.js
+            test ! -e dist/manifest.webmanifest
+            cmp public/sw.js dist/sw.js
       - persist_to_workspace:
           root: ~/repo
           paths:
